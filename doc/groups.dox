@@ -1,0 +1,33 @@
+
+/**
+@brief The main, catch-all namespace for TEO.
+ */
+namespace teo {}
+
+/**
+ * \defgroup manip-waiter_libraries manip-waiter Libraries
+ *
+ * @brief manip-waiter libraries.
+ *
+ */
+
+/**
+ * \defgroup manip-waiter_programs manip-waiter Programs
+ *
+ * @brief manip-waiter programs.
+ */
+
+/**
+ * \defgroup manip-waiter_applications manip-waiter Applications (Collections of Programs)
+ *
+ * @brief manip-waiter applications (collections of programs).
+ */
+
+/**
+ * \defgroup manip-waiter_examples manip-waiter Examples
+ *
+ * @brief manip-waiter examples.
+ */
+
+
+
