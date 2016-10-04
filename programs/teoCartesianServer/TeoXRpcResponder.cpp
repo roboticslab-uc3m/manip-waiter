@@ -10,6 +10,9 @@ namespace teo
 bool TeoXRpcResponder::read(yarp::os::ConnectionReader& connection) {
     yarp::os::Bottle in, out;
     in.read(connection);
+
+    printf("[xRpcResponder] in.size() %d\n", in.size());
+
     printf("[xRpcResponder] Got %s\n", in.toString().c_str());
     out.clear();
     yarp::os::ConnectionWriter *returnToSender = connection.getWriter();
@@ -48,6 +51,8 @@ bool TeoXRpcResponder::read(yarp::os::ConnectionReader& connection) {
     }
     else if  ((in.get(0).asString() == "inv")||(in.get(0).asVocab() == VOCAB_INV))  // inv //
     {
+        printf("[xRpcResponder] hello inv \n");
+
         std::vector<double> xd, q;
         for(int i=1;i<in.size();i++)
             xd.push_back(in.get(i).asDouble());
@@ -60,6 +65,8 @@ bool TeoXRpcResponder::read(yarp::os::ConnectionReader& connection) {
     }
     else if  ((in.get(0).asString() == "movj")||(in.get(0).asVocab() == VOCAB_MOVJ))  // movj //
     {
+        printf("[xRpcResponder] hello movj \n");
+
         std::vector<double> xd, q;
         for(int i=1;i<in.size();i++)
             xd.push_back(in.get(i).asDouble());

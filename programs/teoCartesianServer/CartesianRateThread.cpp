@@ -118,7 +118,12 @@ bool CartesianRateThread::stat(std::vector<double>& stat)
     //-- qReal from encoders
     ok &= iEncoders->getEncoders( qReal.data() );
 
+    printf("[xRpcResponder] hello stat1 \n");
+
     ok &= solver->fwdKin(qReal, stat);
+
+    printf("[xRpcResponder] hello stat2 \n");
+
     return ok;
 }
 
@@ -126,11 +131,16 @@ bool CartesianRateThread::stat(std::vector<double>& stat)
 
 bool CartesianRateThread::inv(std::vector<double> &xd, std::vector<double> &q)
 {
+    printf("[xRpcResponder] hello inv1 \n");
+
     bool ok = true;
     //-- qReal from encoders
     ok &= iEncoders->getEncoders( qReal.data() );
 
     ok &= solver->invKin(xd, qReal, q);
+
+    printf("[xRpcResponder] hello inv2 \n");
+
     return ok;
 }
 
@@ -138,12 +148,16 @@ bool CartesianRateThread::inv(std::vector<double> &xd, std::vector<double> &q)
 
 bool CartesianRateThread::movj(std::vector<double> &xd)
 {
+    printf("[xRpcResponder] hello movj1 \n");
+
     bool ok = true;
     //-- qReal from encoders
     ok &= iEncoders->getEncoders( qReal.data() );
 
     std::vector<double> q;
     ok &= solver->invKin(xd, qReal, q);
+
+    printf("[xRpcResponder] hello movj2 \n");
 
     // Find out the maximum time to move
     double max_time = 0;

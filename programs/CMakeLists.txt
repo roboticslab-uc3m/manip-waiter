@@ -4,3 +4,7 @@
 add_subdirectory(teoCartesianServer)
 add_subdirectory(teoGravityCompensator)
 add_subdirectory(teoSim)
+add_subdirectory(waiterArmMov)
+add_subdirectory(waiterDialogueManager)
+add_subdirectory(waiterExecHead)
+add_subdirectory(waiterExecManip)

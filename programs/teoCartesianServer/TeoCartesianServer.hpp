@@ -19,8 +19,8 @@
 #include "CartesianRateThread.hpp"
 
 #define DEFAULT_SOLVER "KdlSolver"
-#define DEFAULT_KINEMATICS "leftLegKinematics.ini"
-#define DEFAULT_REMOTE "/teoSim/leftLeg"
+#define DEFAULT_KINEMATICS "leftArmKinematics.ini"
+#define DEFAULT_REMOTE "/teoSim/leftArm"
 #define DEFAULT_ANG_REPR "axisAngle"
 
 

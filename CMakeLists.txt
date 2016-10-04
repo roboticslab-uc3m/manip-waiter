@@ -14,13 +14,60 @@ endif(COMMAND cmake_policy)
 project(MANIP_WAITER)
 
 ### options: cpp libraries
-option(ENABLE_ExampleLibrary "Choose if you want to compile ExampleLibrary" TRUE)
+option(ENABLE_TeoYarp "Choose if you want to compile TeoYarp" TRUE)
 
 ### options: cpp programs
-option(ENABLE_exampleProgram "Choose if you want to compile exampleProgram" TRUE)
+option(ENABLE_teoCartesianServer "Choose if you want to compile teoCartesianServer" TRUE)
+option(ENABLE_teoGravityCompensator "Choose if you want to compile teoGravityCompensator" TRUE)
+option(ENABLE_teoSim "Choose if you want to compile teoSim" TRUE)
+
+### options: cpp programs
+option(ENABLE_waiterArmMov "Choose if you want to compile waiterArmMov" TRUE)
+option(ENABLE_waiterDialogueManager "Choose if you want to compile waiterDialogueManager" TRUE)
+option(ENABLE_waiterExecHead "Choose if you want to compile waiterExecHead" TRUE)
+option(ENABLE_waiterExecManip "Choose if you want to compile waiterExecManip" TRUE)
 
 ### options: force default
-option(ENABLE_exampleExtraOption "Enable/disable option exampleExtraOption" TRUE)
+option(ENABLE_TeoYarp_BasicCartesianControl "Enable/disable compilation of TeoYarp_BasicCartesianControl" TRUE)
+option(ENABLE_TeoYarp_CartesianControlServer "Enable/disable compilation of TeoYarp_CartesianControlServer" TRUE)
+option(ENABLE_TeoYarp_CartesianControlClient "Enable/disable compilation of TeoYarp_CartesianControlClient" TRUE)
+option(ENABLE_TeoYarp_KdlSolver "Enable/disable compilation of TeoYarp_KdlSolver" TRUE)
+option(ENABLE_TeoYarp_FakeControlboard "Enable/disable compilation of TeoYarp_FakeControlboard" TRUE)
+
+##### test and coverage options
+option(ENABLE_tests "Choose if you want to compile tests" TRUE)
+option(ENABLE_coverage "Choose if you want to enable coverage collection" FALSE)
+
+# ColorDebug options
+option(ColorDebug_FULL_FILE "Choose if you want to compile with CD_FULL_FILE" FALSE)
+if(ColorDebug_FULL_FILE)
+    add_definitions(-DCD_FULL_FILE)
+endif(ColorDebug_FULL_FILE)
+
+option(ColorDebug_HIDE_ERROR "Choose if you want to compile with CD_HIDE_ERROR" FALSE)
+if(ColorDebug_HIDE_ERROR)
+    add_definitions(-DCD_HIDE_ERROR)
+endif(ColorDebug_HIDE_ERROR)
+
+option(ColorDebug_HIDE_WARNING "Choose if you want to compile with CD_HIDE_WARNING" FALSE)
+if(ColorDebug_HIDE_WARNING)
+    add_definitions(-DCD_HIDE_WARNING)
+endif(ColorDebug_HIDE_WARNING)
+
+option(ColorDebug_HIDE_SUCCESS "Choose if you want to compile with CD_HIDE_SUCCESS" FALSE)
+if(ColorDebug_HIDE_SUCCESS)
+    add_definitions(-DCD_HIDE_SUCCESS)
+endif(ColorDebug_HIDE_SUCCESS)
+
+option(ColorDebug_HIDE_INFO "Choose if you want to compile with CD_HIDE_INFO" FALSE)
+if(ColorDebug_HIDE_INFO)
+    add_definitions(-DCD_HIDE_INFO)
+endif(ColorDebug_HIDE_INFO)
+
+option(ColorDebug_HIDE_DEBUG "Choose if you want to compile with CD_HIDE_DEBUG" FALSE)
+if(ColorDebug_HIDE_DEBUG)
+    add_definitions(-DCD_HIDE_DEBUG)
+endif(ColorDebug_HIDE_DEBUG)
 
 if(MSVC)
   MESSAGE(STATUS "Running on windows")    

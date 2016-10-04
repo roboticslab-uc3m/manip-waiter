@@ -66,6 +66,8 @@ bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<dou
         qGuessInRad(motor)=toRad(qGuess[motor]);
     KDL::JntArray kdlq = KDL::JntArray(numLinks);
 
+    printf("[xRpcResponder] numLinks %d\n", numLinks);
+
 #ifdef _USE_LMA_
 
     Eigen::Matrix<double,6,1> L;
