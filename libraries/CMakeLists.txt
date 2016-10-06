@@ -18,10 +18,9 @@ FOREACH(subdir ${SUBDIRS})
 ENDFOREACH()
 
 set(COLOR_DEBUG_PART_OF_PROJECT TRUE)
-add_subdirectory(ColorDebug)
 
+add_subdirectory(ColorDebug)
 add_subdirectory(KdlVectorConverterLib)
 add_subdirectory(TrajectoryLib)
-
 add_subdirectory(TeoYarp)
 

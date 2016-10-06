@@ -48,6 +48,8 @@ bool WaiterExecManip::configure(ResourceFinder &rf) {
     inSrPort.open("/waiterExecManip/DialogueManager/command:i");
     inCvPort.open("/waiterExecManip/cvBottle/state:i");
 
+    j.movj();
+
     return true;
 }
 

@@ -17,6 +17,8 @@
 #define VOCAB_WATER_PLEASE VOCAB4('w','p','l','e')
 #define VOCAB_STOP_TEO VOCAB4('s','t','e','o')
 
+#include "BasicCartesianControl.hpp"
+
 using namespace yarp::os;
 
 namespace teo
@@ -46,6 +48,9 @@ protected:
         virtual void onRead(Bottle& b);
 
         yarp::dev::IPositionControl *iPositionControl;
+
+        teo::BasicCartesianControl j;
+
 };
 
 }  // namespace teo

@@ -21,6 +21,8 @@ void InCvPort::onRead(Bottle& b) {
         }
         case 2: {//VOCAB_GO_TEO
 
+        j.movj()
+
             int a=0;
             if (a==0 && follow) {
                 printf("MOVE TO POSITION 01\n");
