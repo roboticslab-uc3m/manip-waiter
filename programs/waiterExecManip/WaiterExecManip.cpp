@@ -29,7 +29,7 @@ bool WaiterExecManip::configure(ResourceFinder &rf) {
     Property leftArmOptions;
     leftArmOptions.put("device","remote_controlboard");
     leftArmOptions.put("local","/waiterExecManip/teo/leftArm");
-    leftArmOptions.put("remote","/teo/leftArm");
+    leftArmOptions.put("remote","/teoSim/leftArm");
     leftArmDevice.open(leftArmOptions);
     if( ! leftArmDevice.isValid() ) {
         printf("leftArm remote_controlboard instantiation not worked.\n");
@@ -41,14 +41,17 @@ bool WaiterExecManip::configure(ResourceFinder &rf) {
     }
     inCvPort.setIPositionControl(iPositionControl);
 
+    inCvPort.setOutPort(&outPort);
+
+
     //-----------------OPEN LOCAL PORTS------------//
     inSrPort.setInCvPortPtr(&inCvPort);
     inCvPort.useCallback();
     inSrPort.useCallback();
     inSrPort.open("/waiterExecManip/DialogueManager/command:i");
     inCvPort.open("/waiterExecManip/cvBottle/state:i");
+    outPort.open("/cartesianManip/state:o");
 
-    j.movj();
 
     return true;
 }

@@ -37,6 +37,8 @@ class WaiterExecManip : public RFModule {
 
     protected:
 
+        yarp::os::Port outPort;
+
         InSrPort inSrPort;
         InCvPort inCvPort;
         yarp::dev::PolyDriver leftArmDevice;
