@@ -43,7 +43,6 @@ bool WaiterExecManip::configure(ResourceFinder &rf) {
 
     inCvPort.setOutPort(&outPort);
 
-
     //-----------------OPEN LOCAL PORTS------------//
     inSrPort.setInCvPortPtr(&inCvPort);
     inCvPort.useCallback();
@@ -51,7 +50,6 @@ bool WaiterExecManip::configure(ResourceFinder &rf) {
     inSrPort.open("/waiterExecManip/DialogueManager/command:i");
     inCvPort.open("/waiterExecManip/cvBottle/state:i");
     outPort.open("/cartesianManip/state:o");
-
 
     return true;
 }
@@ -77,6 +75,7 @@ bool WaiterExecManip::interruptModule() {
     inSrPort.interrupt();
     inCvPort.close();
     inSrPort.close();
+    outPort.close();
     return true;
 }
 

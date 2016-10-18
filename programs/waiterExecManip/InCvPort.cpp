@@ -7,7 +7,19 @@ namespace teo
 {
 
 /************************************************************************/
+void InCvPort::setFollow(int value)
+{
+    follow = value;
+}
 
+
+/************************************************************************/
+void InCvPort::setOutPort(yarp::os::Port * _pOutPort) {
+    pOutPort = _pOutPort;
+}
+
+
+/************************************************************************/
 void InCvPort::onRead(Bottle& b) {
 
     yarp::os::Bottle outputCartesian;
@@ -35,7 +47,7 @@ int i=0;
 */
     while(1){
     outputCartesian.addDouble( i );
-    printf("HOLA");
+    printf("HOLA\n");
     i++;
 
     if (outputCartesian.size() > 0)
@@ -316,16 +328,6 @@ int i=0;
 
 /************************************************************************/
 
-void InCvPort::setFollow(int value)
-{
-    follow = value;
-}
-
-
-/************************************************************************/
-void InCvPort::setOutPort(yarp::os::Port * _pOutPort) {
-    pOutPort = _pOutPort;
-}
 
 
 
