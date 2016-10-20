@@ -8,6 +8,10 @@ bool teo::CartesianControlServer::open(yarp::os::Searchable& config) {
 
     rpcServer.setReader(*this);
 
+//--------------PORT CREATED TO RECIBE THE INFO FROM THE WAITER EXEC MANIP--------------
+    CartesianInPut.setInputMode(&CartesianInPut);
+    CartesianInPut.open("/cartesianManip/state:i");
+
     yarp::os::Value *name;
     if (config.check("subdevice",name))
     {
@@ -57,6 +61,7 @@ bool teo::CartesianControlServer::close()
 {
     rpcServer.close();
     cartesianControlDevice.close();
+    CartesianInPut.close();
     return true;
 }
 

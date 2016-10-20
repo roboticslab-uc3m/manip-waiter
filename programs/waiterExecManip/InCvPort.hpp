@@ -49,9 +49,9 @@ class InCvPort : public BufferedPort<Bottle> {
 
 protected:
         int follow;
-        int a;
+        int a = 0;
         int c;
-        int iteration;
+        int iteration = 1;
         int i;
         /** Callback on incoming Bottle. **/
         virtual void onRead(Bottle& b);

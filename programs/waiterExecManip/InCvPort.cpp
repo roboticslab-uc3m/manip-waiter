@@ -20,12 +20,70 @@ void InCvPort::setOutPort(yarp::os::Port * _pOutPort) {
 
 
 /************************************************************************/
+
+
 void InCvPort::onRead(Bottle& b) {
 
     yarp::os::Bottle outputCartesian;
+    int a,iteration;
+//    a=0;
+//    iteration=1;
 
-int i=0;
+    if (a==0){
+        printf("MOVE TO START POSITION\n");
+        iPositionControl->positionMove(0, -30);
+        iPositionControl->positionMove(1, 0);
+        iPositionControl->positionMove(2, 0);
+        iPositionControl->positionMove(3, -90);
+        iPositionControl->positionMove(4, 0);
+        iPositionControl->positionMove(5, 30);
 
+        Time::delay(5);
+        a=1;
+    }
+
+    if (iteration==1){
+        outputCartesian.addString("movj");
+        outputCartesian.addDouble( 0.526 );
+        outputCartesian.addDouble( 0.3 );
+        outputCartesian.addDouble( 0.309 );
+        outputCartesian.addDouble( -1 );
+        outputCartesian.addDouble( 0 );
+        outputCartesian.addDouble( 0 );
+        outputCartesian.addDouble( 90 );
+
+        iteration =0;
+        Time::delay(5);
+    }
+    else{
+        outputCartesian.addString("movj");
+        outputCartesian.addDouble( 0.526 );
+        outputCartesian.addDouble( 0.5 );
+        outputCartesian.addDouble( 0.309 );
+        outputCartesian.addDouble( -1 );
+        outputCartesian.addDouble( 0 );
+        outputCartesian.addDouble( 0 );
+        outputCartesian.addDouble( 90 );
+
+        iteration =1;
+        Time::delay(5);
+    }
+
+    if (outputCartesian.size() > 0)
+        pOutPort->write(outputCartesian);
+/*
+//------------------------READING INPUT MESSAGES FROM HEAD------------------------
+    std::vector<double> info;
+
+    double x = b.get(0).asDouble();
+    double y = b.get(1).asDouble();
+    double z = b.get(2).asDouble();
+
+    for(size_t r=1; r<b.size();r++){
+        info.push_back(b.get(r).asDouble());
+        printf("The bottle is: %f \n", b.get(r).asDouble());
+    }
+    */
   /*
     iteration=1;
 
@@ -45,15 +103,27 @@ int i=0;
         outputCartesian();
     }
 */
-    while(1){
-    outputCartesian.addDouble( i );
-    printf("HOLA\n");
-    i++;
 
-    if (outputCartesian.size() > 0)
-        pOutPort->write(outputCartesian);
-    }
+//------------------------CREATING THE CORRECTION ORDER------------------------
 
+
+//------------------------OUTPUT MESSAGES------------------------
+/* int i=0;
+
+        outputCartesian.addString("movj");
+        outputCartesian.addDouble( i );
+        outputCartesian.addDouble( i+1 );
+        outputCartesian.addDouble( i+2 );
+        outputCartesian.addDouble( -1 );
+        outputCartesian.addDouble( 0 );
+        outputCartesian.addDouble( 0 );
+        outputCartesian.addDouble( 90 );
+        i++;
+
+        if (outputCartesian.size() > 0)
+            pOutPort->write(outputCartesian);
+
+*/
 
 
 /*
