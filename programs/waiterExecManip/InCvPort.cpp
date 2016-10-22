@@ -29,12 +29,14 @@ void InCvPort::onRead(Bottle& b) {
 //------------------------SET LEFT ARM INITIAL POSITION------------------------
    if (a==0){
         printf("MOVE TO START POSITION\n");
-        iPositionControl->positionMove(0, -30);
+        /*iPositionControl->positionMove(0, -30);
         iPositionControl->positionMove(1, 0);
         iPositionControl->positionMove(2, 0);
         iPositionControl->positionMove(3, -90);
         iPositionControl->positionMove(4, 0);
-        iPositionControl->positionMove(5, 30);
+        iPositionControl->positionMove(5, 30);*/
+        double initpos[7] = {-30,0,0,-90,0,30,0};
+        iPositionControl->positionMove(initpos);
         bool done = false;
         while( ! done )
         {
