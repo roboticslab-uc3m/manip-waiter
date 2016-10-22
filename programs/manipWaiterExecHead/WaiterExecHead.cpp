@@ -29,7 +29,7 @@ bool WaiterExecHead::configure(ResourceFinder &rf) {
     //
     Property headOptions;
     headOptions.put("device","remote_controlboard");
-    headOptions.put("local","/waiterExecHead/head");
+    headOptions.put("local","/manipWaiterExecHead/head");
     headOptions.put("remote","/teo/head");
     headDevice.open(headOptions);
     if( ! headDevice.isValid() ) {
@@ -49,8 +49,8 @@ bool WaiterExecHead::configure(ResourceFinder &rf) {
     inSrPort.setInCvPortPtr(&inCvPort);
     inCvPort.useCallback();
     inSrPort.useCallback();
-    inSrPort.open("/waiterExecHead/DialogueManager/command:i");
-    inCvPort.open("/waiterExecHead/cvBottle/state:i");
+    inSrPort.open("/manipWaiterExecHead/DialogueManager/command:i");
+    inCvPort.open("/manipWaiterExecHead/cvBottle/state:i");
 
     return true;
 }

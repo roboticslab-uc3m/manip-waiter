@@ -1,0 +1,71 @@
+    
+    <!-- Descrption for the Waiter Demostration -->
+    
+<application>
+<name>manip_waiter_english_App</name>
+
+    <module>
+        <name>manipWaiterDialogueManager</name>
+        <parameters>--language english</parameters>
+        <node>localhost</node>
+    </module>
+
+
+    <module>
+        <name>manipWaiterExecHead</name>
+        <node>/manipulation</node>
+    </module>
+    <connection>
+        <from>/manipWaiterDialMan/Head/command:o</from>
+        <to>/manipWaiterExecHead/DialogueManager/command:i</to>
+    </connection>
+    
+
+    <module>
+        <name>manipWaiterExecManip</name>
+        <node>/manipulation</node>
+    </module>
+    <connection>
+        <from>/manipWaiterDialMan/Manip/command:o</from>
+        <to>/manipWaiterExecManip/DialogueManager/command:i</to>
+    </connection>
+
+
+    <module>
+        <name>cvBottle</name>
+        <parameters>--kinectDevice OpenNI2DeviceClient --kinectLocal /cvBottle --algorithm redMinusGreen --maxNumBlobs 1 --outFeatures "(pxXpos pxYpos mmZ)" --outFeaturesFormat 1 --outImage 0 --seeBounding 1</parameters>
+        <node>/head</node>
+    </module>
+    <connection>
+        <from>/cvBottle/state:o</from>
+        <to>/manipWaiterExecHead/cvBottle/state:i</to>
+    </connection>
+    <connection>
+        <from>/cvBottle/state:o</from>
+        <to>/manipWaiterExecManip/cvBottle/state:i</to>
+    </connection>    
+
+
+    <module>
+        <name>yarpview</name>
+        <parameters>--name /yarpview/cvBottle/img:i</parameters>
+        <node>localhost</node>
+    </module>
+    <connection>
+        <from>/cvBottle/img:o</from>
+        <to>/yarpview/cvBottle/img:i</to>
+    </connection>
+
+
+    <connection>
+        <from>/speechRecognition:o</from>
+        <to>/manipWaiterDialMan/speechRecognition:i</to>
+    </connection>
+
+    <connection>
+        <from>/manipWaiterDialMan/tts/rpc:c</from>
+        <to>/tts/rpc:s</to>
+    </connection>
+
+</application>
+

@@ -17,15 +17,9 @@ project(MANIP_WAITER)
 option(ENABLE_TeoYarp "Choose if you want to compile TeoYarp" TRUE)
 
 ### options: cpp programs
-option(ENABLE_teoCartesianServer "Choose if you want to compile teoCartesianServer" TRUE)
-option(ENABLE_teoGravityCompensator "Choose if you want to compile teoGravityCompensator" TRUE)
-option(ENABLE_teoSim "Choose if you want to compile teoSim" TRUE)
-
-### options: cpp programs
-option(ENABLE_waiterArmMov "Choose if you want to compile waiterArmMov" TRUE)
-option(ENABLE_waiterDialogueManager "Choose if you want to compile waiterDialogueManager" TRUE)
-option(ENABLE_waiterExecHead "Choose if you want to compile waiterExecHead" TRUE)
-option(ENABLE_waiterExecManip "Choose if you want to compile waiterExecManip" TRUE)
+option(ENABLE_manipWaiterDialogueManager "Choose if you want to compile waiterDialogueManager" TRUE)
+option(ENABLE_manipWaiterExecHead "Choose if you want to compile waiterExecHead" TRUE)
+option(ENABLE_manipWaiterExecManip "Choose if you want to compile waiterExecManip" TRUE)
 
 ### options: force default
 option(ENABLE_TeoYarp_BasicCartesianControl "Enable/disable compilation of TeoYarp_BasicCartesianControl" TRUE)

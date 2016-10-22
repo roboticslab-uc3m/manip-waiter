@@ -25,17 +25,17 @@ bool WaiterDialogueManager::configure(yarp::os::ResourceFinder &rf) {
     }
 
     //-----------------OPEN LOCAL PORTS------------//
-    outCmdPortHead.open("/waiterDialMan/Manip/command:o");
-    outCmdPortManip.open("/waiterDialMan/Head/command:o");
-    outTtsPort.open("/waiterDialMan/tts-en:o");
-    inSrPort.open("/waiterDialMan/speechRecognition:i");
+    outCmdPortHead.open("/manipWaiterDialMan/Manip/command:o");
+    outCmdPortManip.open("/manipWaiterDialMan/Head/command:o");
+    outTtsPort.open("/manipWaiterDialMan/tts-en:o");
+    inSrPort.open("/manipWaiterDialMan/speechRecognition:i");
     stateMachine.setOutCmdPortHead(&outCmdPortHead);
     stateMachine.setOutCmdPortManip(&outCmdPortManip);
     stateMachine.setOutTtsPort(&outTtsPort);
     stateMachine.setInSrPort(&inSrPort);
     while(1){
         if(outTtsPort.getOutputCount() > 0) break;
-        printf("Waiting for \"/waiterDialogueManager/tts:o\" to be connected to something...\n");
+        printf("Waiting for \"/manipWaiterDialogueManager/tts:o\" to be connected to something...\n");
         yarp::os::Time::delay(0.5);
     }
     stateMachine.setLanguage(language);
