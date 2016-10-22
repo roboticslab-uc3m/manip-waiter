@@ -37,7 +37,12 @@ namespace teo
 class InCvPort : public BufferedPort<Bottle> {
     public:
 
-        InCvPort(): follow(0) {}
+        InCvPort()
+        {
+            follow = 0;
+            a = 0;
+            coordY = 0.347;
+        }
 
         void setIPositionControl(yarp::dev::IPositionControl *iPositionControl) {
             this->iPositionControl = iPositionControl;
@@ -49,10 +54,10 @@ class InCvPort : public BufferedPort<Bottle> {
 
 protected:
         int follow;
-        int a = 0;
+        int a;
         int c;
-        int iteration = 1;
         int i;
+        double coordY;
         /** Callback on incoming Bottle. **/
         virtual void onRead(Bottle& b);
 
