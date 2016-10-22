@@ -1,10 +1,6 @@
 # Copyright: Universidad Carlos III de Madrid (C) 2013
 # Authors: Juan G. Victores
 
-add_subdirectory(teoCartesianServer)
-add_subdirectory(teoGravityCompensator)
-add_subdirectory(teoSim)
-add_subdirectory(waiterArmMov)
-add_subdirectory(waiterDialogueManager)
-add_subdirectory(waiterExecHead)
-add_subdirectory(waiterExecManip)
+add_subdirectory(manipWaiterDialogueManager)
+add_subdirectory(manipWaiterExecHead)
+add_subdirectory(manipWaiterExecManip)
