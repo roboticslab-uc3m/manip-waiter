@@ -2,9 +2,9 @@
 
 cmake_minimum_required(VERSION 2.6)
 
-IF (ENABLE_waiterExecManip)
+IF (ENABLE_manipWaiterExecManip)
 
-set(KEYWORD "waiterExecManip")
+set(KEYWORD "manipWaiterExecManip")
 
 # Find YARP.  Point the YARP_DIR environment variable at your build.
 find_package(YARP REQUIRED)
@@ -36,5 +36,5 @@ else (folder_source)
   message(FATAL_ERROR "No source code files found. Please add something")
 endif (folder_source)
 
-ENDIF (ENABLE_waiterExecManip)
+ENDIF (ENABLE_manipWaiterExecManip)
 
