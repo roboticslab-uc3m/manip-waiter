@@ -27,7 +27,7 @@ bool WaiterExecManip::configure(ResourceFinder &rf) {
     //
     Property leftArmOptions;
     leftArmOptions.put("device","remote_controlboard");
-    std::string localStr("/waiterExecManip/");
+    std::string localStr("/manipWaiterExecManip/");
     localStr += remote;
     localStr += "/leftArm";
     leftArmOptions.put("local",localStr);
@@ -52,8 +52,8 @@ bool WaiterExecManip::configure(ResourceFinder &rf) {
     inSrPort.setInCvPortPtr(&inCvPort);
     inCvPort.useCallback();
     inSrPort.useCallback();
-    inSrPort.open("/waiterExecManip/DialogueManager/command:i");
-    inCvPort.open("/waiterExecManip/cvBottle/state:i");
+    inSrPort.open("/manipWaiterExecManip/DialogueManager/command:i");
+    inCvPort.open("/manipWaiterExecManip/cvBottle/state:i");
     outPort.open("/cartesianManip/state:o");
 
     return true;
