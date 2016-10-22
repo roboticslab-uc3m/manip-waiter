@@ -9,16 +9,15 @@ namespace teo
 
 bool WaiterExecManip::configure(ResourceFinder &rf) {
 
-    //ConstString fileName(DEFAULT_FILE_NAME);
-    
+    std::string remote = rf.check("remote",yarp::os::Value(DEFAULT_REMOTE),"remote robot to be used").asString();
+
     printf("--------------------------------------------------------------\n");
     if (rf.check("help")) {
         printf("WaiterExecManip options:\n");
         printf("\t--help (this help)\t--from [file.ini]\t--context [path]\n");
-        //printf("\t--file (default: \"%s\")\n",fileName.c_str());
+        printf("\t--remote ('teo' or 'teoSim')\n");
     }
-    //if (rf.check("file")) fileName = rf.find("file").asString();
-    //printf("WaiterExecManip using file: %s\n",fileName.c_str());
+    printf("WaiterExecManip using remote: %s [%s]\n",remote.c_str(),DEFAULT_REMOTE);
 
     printf("--------------------------------------------------------------\n");
     if(rf.check("help")) {
@@ -28,8 +27,14 @@ bool WaiterExecManip::configure(ResourceFinder &rf) {
     //
     Property leftArmOptions;
     leftArmOptions.put("device","remote_controlboard");
-    leftArmOptions.put("local","/waiterExecManip/teo/leftArm");
-    leftArmOptions.put("remote","/teo/leftArm");
+    std::string localStr("/waiterExecManip/");
+    localStr += remote;
+    localStr += "/leftArm";
+    leftArmOptions.put("local",localStr);
+    std::string remoteStr("/");
+    remoteStr += remote;
+    remoteStr += "/leftArm";
+    leftArmOptions.put("remote",remoteStr);
     leftArmDevice.open(leftArmOptions);
     if( ! leftArmDevice.isValid() ) {
         printf("leftArm remote_controlboard instantiation not worked.\n");
@@ -41,12 +46,15 @@ bool WaiterExecManip::configure(ResourceFinder &rf) {
     }
     inCvPort.setIPositionControl(iPositionControl);
 
+    inCvPort.setOutPort(&outPort);
+
     //-----------------OPEN LOCAL PORTS------------//
     inSrPort.setInCvPortPtr(&inCvPort);
     inCvPort.useCallback();
     inSrPort.useCallback();
     inSrPort.open("/waiterExecManip/DialogueManager/command:i");
     inCvPort.open("/waiterExecManip/cvBottle/state:i");
+    outPort.open("/cartesianManip/state:o");
 
     return true;
 }
@@ -72,6 +80,7 @@ bool WaiterExecManip::interruptModule() {
     inSrPort.interrupt();
     inCvPort.close();
     inSrPort.close();
+    outPort.close();
     return true;
 }
 

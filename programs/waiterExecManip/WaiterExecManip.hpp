@@ -10,6 +10,8 @@
 #include "InCvPort.hpp"
 #include "InSrPort.hpp"
 
+#define DEFAULT_REMOTE "teoSim"
+
 //instrucciones para el followme
 #define VOCAB_FOLLOW_ME VOCAB4('f','o','l','l')
 #define VOCAB_STOP_FOLLOWING VOCAB4('s','f','o','l')
@@ -36,6 +38,9 @@ class WaiterExecManip : public RFModule {
         bool configure(ResourceFinder &rf);
 
     protected:
+
+        yarp::os::Port outPort;
+
         InSrPort inSrPort;
         InCvPort inCvPort;
         yarp::dev::PolyDriver leftArmDevice;

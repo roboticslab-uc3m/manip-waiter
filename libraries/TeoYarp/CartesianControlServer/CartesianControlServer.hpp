@@ -63,7 +63,7 @@ class CartesianControlServer : public yarp::dev::DeviceDriver, public yarp::os::
         virtual bool read(yarp::os::ConnectionReader& connection);
 
     protected:
-
+        yarp::os::Port CartesianInPut;
         yarp::os::RpcServer rpcServer;
 
         yarp::dev::PolyDriver cartesianControlDevice;

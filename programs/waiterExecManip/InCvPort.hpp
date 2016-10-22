@@ -7,6 +7,9 @@
 #include <yarp/dev/all.h>
 #include <stdlib.h>
 
+#include <fstream>
+#include <stdio.h>
+
 //instrucciones para el followme
 #define VOCAB_FOLLOW_ME VOCAB4('f','o','l','l')
 #define VOCAB_STOP_FOLLOWING VOCAB4('s','f','o','l')
@@ -16,6 +19,9 @@
 #define VOCAB_GO_TEO VOCAB4('g','t','e','o')
 #define VOCAB_WATER_PLEASE VOCAB4('w','p','l','e')
 #define VOCAB_STOP_TEO VOCAB4('s','t','e','o')
+
+#include "BasicCartesianControl.hpp"
+#include "KdlSolver.hpp"
 
 using namespace yarp::os;
 
@@ -31,21 +37,66 @@ namespace teo
 class InCvPort : public BufferedPort<Bottle> {
     public:
 
-        InCvPort(): follow(0) {}
+        InCvPort()
+        {
+            follow = 0;
+            a = 0;
+            coordY = 0.347;
+        }
 
         void setIPositionControl(yarp::dev::IPositionControl *iPositionControl) {
             this->iPositionControl = iPositionControl;
         }
 
         void setFollow(int value);
+        void setOutPort(yarp::os::Port *_pOutPort);
+        yarp::os::Port *pOutPort;
 
 protected:
         int follow;
-
+        int a;
+        int c;
+        int i;
+        double coordY;
         /** Callback on incoming Bottle. **/
         virtual void onRead(Bottle& b);
 
         yarp::dev::IPositionControl *iPositionControl;
+
+        teo::BasicCartesianControl j;
+
+        yarp::dev::PolyDriver solverDevice;
+        teo::ICartesianSolver *iCartesianSolver;
+
+        yarp::dev::PolyDriver robotDevice;
+        yarp::dev::IEncoders *iEncoders;
+//        yarp::dev::IPositionControl *iPositionControl;
+        yarp::dev::IVelocityControl *iVelocityControl;
+        yarp::dev::IControlLimits *iControlLimits;
+        yarp::dev::ITorqueControl *iTorqueControl;
+
+        int numRobotJoints, numSolverLinks;
+
+        /** State encoded as a VOCAB which can be stored as an int */
+        int currentState;
+
+        int getCurrentState();
+        void setCurrentState(int value);
+        yarp::os::Semaphore currentStateReady;
+
+        /** MOVL keep track of movement start time to know at what time of trajectory movement we are */
+        double movementStartTime;
+
+        /** MOVL store Cartesian trajectory */
+        LineTrajectory trajectory;
+
+        /** MOVV desired Cartesian velocity */
+        std::vector<double> xdotd;
+
+        /** FORC desired Cartesian force */
+        std::vector<double> td;
+
+
 };
 
 }  // namespace teo

@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
     }
     Property options;
     options.put("device","remote_controlboard");
-    options.put("remote","/teo/leftArm");
+    options.put("remote","/teoSim/leftArm");
     options.put("local","/local");
     PolyDriver dd(options);
     if(!dd.isValid()) {
@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
     } else printf("[success] testAsibot acquired robot interface\n");
     pos->setPositionMode();
 
-    for(b=0; b<20; b++){
+    for(b=0; b<3; b++){
         a=0;
         if (a==0) {
             printf("MOVE TO POSITION 01\n");
@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
             Time::delay(5);
             a=1;
         }
-        
+
         if (a==1) {
             printf("MOVE TO POSITION 02\n");
             pos->positionMove(0, -10);
@@ -120,6 +120,13 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    pos->positionMove(0, 0);
+    pos->positionMove(1, 0);
+    pos->positionMove(2, 0);
+    pos->positionMove(3, 0);
+    pos->positionMove(4, 0);
+    pos->positionMove(5, 0);
+    pos->positionMove(6, 0);
 
   /*  b=5;
     a=0;
