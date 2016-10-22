@@ -20,9 +20,6 @@
 #define VOCAB_WATER_PLEASE VOCAB4('w','p','l','e')
 #define VOCAB_STOP_TEO VOCAB4('s','t','e','o')
 
-#include "BasicCartesianControl.hpp"
-#include "KdlSolver.hpp"
-
 using namespace yarp::os;
 
 namespace teo
@@ -63,11 +60,6 @@ protected:
 
         yarp::dev::IPositionControl *iPositionControl;
 
-        teo::BasicCartesianControl j;
-
-        yarp::dev::PolyDriver solverDevice;
-        teo::ICartesianSolver *iCartesianSolver;
-
         yarp::dev::PolyDriver robotDevice;
         yarp::dev::IEncoders *iEncoders;
 //        yarp::dev::IPositionControl *iPositionControl;
@@ -86,9 +78,6 @@ protected:
 
         /** MOVL keep track of movement start time to know at what time of trajectory movement we are */
         double movementStartTime;
-
-        /** MOVL store Cartesian trajectory */
-        LineTrajectory trajectory;
 
         /** MOVV desired Cartesian velocity */
         std::vector<double> xdotd;
