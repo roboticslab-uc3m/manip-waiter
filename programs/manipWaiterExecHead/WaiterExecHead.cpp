@@ -10,16 +10,15 @@ namespace teo
 
 bool WaiterExecHead::configure(ResourceFinder &rf) {
 
-    //ConstString fileName(DEFAULT_FILE_NAME);
-    
+    std::string remote = rf.check("remote",yarp::os::Value(DEFAULT_REMOTE),"remote robot to be used").asString();
+
     printf("--------------------------------------------------------------\n");
     if (rf.check("help")) {
         printf("WaiterExecHead options:\n");
         printf("\t--help (this help)\t--from [file.ini]\t--context [path]\n");
-        //printf("\t--file (default: \"%s\")\n",fileName.c_str());
+        printf("\t--remote ('teo' or 'teoSim')\n");
     }
-    //if (rf.check("file")) fileName = rf.find("file").asString();
-    //printf("WaiterExecHead using file: %s\n",fileName.c_str());
+    printf("WaiterExecManip using remote: %s [%s]\n",remote.c_str(),DEFAULT_REMOTE);
 
     printf("--------------------------------------------------------------\n");
     if(rf.check("help")) {
@@ -29,8 +28,14 @@ bool WaiterExecHead::configure(ResourceFinder &rf) {
     //
     Property headOptions;
     headOptions.put("device","remote_controlboard");
-    headOptions.put("local","/manipWaiterExecHead/head");
-    headOptions.put("remote","/teo/head");
+    std::string localStr("/manipWaiterExecHead/");
+    localStr += remote;
+    localStr += "/head";
+    headOptions.put("local",localStr);
+    std::string remoteStr("/");
+    remoteStr += remote;
+    remoteStr += "/head";
+    headOptions.put("remote",remoteStr);
     headDevice.open(headOptions);
     if( ! headDevice.isValid() ) {
         printf("head remote_controlboard instantiation not worked.\n");

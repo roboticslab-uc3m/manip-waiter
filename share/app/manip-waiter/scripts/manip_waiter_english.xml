@@ -13,6 +13,7 @@
 
     <module>
         <name>manipWaiterExecHead</name>
+        <parameters>--remote teo</parameters>
         <node>/manipulation</node>
     </module>
     <connection>
@@ -23,6 +24,7 @@
 
     <module>
         <name>manipWaiterExecManip</name>
+        <parameters>--remote teo</parameters>
         <node>/manipulation</node>
     </module>
     <connection>

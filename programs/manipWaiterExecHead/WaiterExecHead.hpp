@@ -10,6 +10,8 @@
 #include "InCvPort.hpp"
 #include "InSrPort.hpp"
 
+#define DEFAULT_REMOTE "teo"
+
 //instrucciones para el followme
 #define VOCAB_FOLLOW_ME VOCAB4('f','o','l','l')
 #define VOCAB_STOP_FOLLOWING VOCAB4('s','f','o','l')
