@@ -35,7 +35,7 @@
 
     <module>
         <name>cvBottle</name>
-        <parameters>--kinectDevice OpenNI2DeviceClient --kinectLocal /cvBottle --algorithm redMinusGreen --maxNumBlobs 1 --outFeatures "(pxXpos pxYpos mmZ)" --outFeaturesFormat 1 --outImage 0 --seeBounding 1</parameters>
+        <parameters>--kinectDevice OpenNI2DeviceClient --kinectLocal /cvBottle --algorithm redMinusGreen --maxNumBlobs 1 --outFeaturesFormat 1 --outFeatures "(pxXpos pxYpos angle)" --seeBounding 2 --outImage 0</parameters>
         <node>/head</node>
     </module>
     <connection>
