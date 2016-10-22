@@ -28,6 +28,10 @@
         <node>/manipulation</node>
     </module>
     <connection>
+        <from>/cartesianManip/state:o</from>
+        <to>/teoSim/leftArm/CartesianControlServer/rpc:s</to>
+    </connection>
+    <connection>
         <from>/manipWaiterDialMan/Manip/command:o</from>
         <to>/manipWaiterExecManip/DialogueManager/command:i</to>
     </connection>
