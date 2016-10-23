@@ -54,7 +54,7 @@ bool WaiterExecManip::configure(ResourceFinder &rf) {
     inSrPort.useCallback();
     inSrPort.open("/manipWaiterExecManip/DialogueManager/command:i");
     inCvPort.open("/manipWaiterExecManip/cvBottle/state:i");
-    outPort.open("/cartesianManip/state:o");
+    outPort.open("/manipWaiterExecManip/leftArm/CartesianControl/rpc:c");
 
     return true;
 }
