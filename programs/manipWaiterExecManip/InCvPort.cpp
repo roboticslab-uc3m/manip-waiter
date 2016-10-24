@@ -122,13 +122,13 @@ void InCvPort::onRead(Bottle& b) {
     ofstream out;
     if(iteration==1)
     {
-        out.open("data.txt",ios::trunc);
+        out.open("datawaiter.txt",ios::trunc);
     }
     else
     {
-        out.open("data.txt",ios::app);
+        out.open("datawaiter.txt",ios::app);
     }
-    out << x << " " << y << " " << angle << "" << coordY << " " << time << endl;
+    out << x << " " << y << " " << angle << "" << coordY << " " << endl;
     out.close();
 /*
 
