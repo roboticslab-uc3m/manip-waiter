@@ -58,7 +58,7 @@ void InCvPort::onRead(Bottle& b) {
 
 //------------------------CORRECTION OUTPUTS------------------------
     //double dist;
-    iteration=0;
+
     if(angle>92 && angle<=110)  //Correction 01. Move arm Y left.
     {
       //  dist = 0.05 * cos( angle );
@@ -128,8 +128,9 @@ void InCvPort::onRead(Bottle& b) {
     {
         out.open("datawaiter.txt",ios::app);
     }
-    out << x << " " << y << " " << angle << "" << coordY << " " << endl;
+    out << x << " " << y << " " << angle << " " << coordY << " " << endl;
     out.close();
+    iteration=0;
 /*
 
 //------------------------FIRST TRIAL------------------------
