@@ -22,7 +22,9 @@
 #define VOCAB_STOP_TEO VOCAB4('s','t','e','o')
 
 using namespace yarp::os;
-
+using namespace yarp::sig;
+using namespace std;
+using namespace yarp::dev;
 namespace teo
 {
 
@@ -54,7 +56,7 @@ protected:
         int follow;
         int a;
         int c;
-        int i;
+        int i, iteration;
         double coordY, angle, dist;
         /** Callback on incoming Bottle. **/
         virtual void onRead(Bottle& b);

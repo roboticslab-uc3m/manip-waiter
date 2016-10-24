@@ -2,7 +2,6 @@
 
 #include "InCvPort.hpp"
 
-
 namespace teo
 {
 
@@ -38,6 +37,7 @@ void InCvPort::onRead(Bottle& b) {
         double initpos[7] = {-30,0,0,-90,0,30,0};
         iPositionControl->positionMove(initpos);
         bool done = false;
+        iteration=1;
         while( ! done )
         {
             yarp::os::Time::delay(2);
@@ -52,30 +52,30 @@ void InCvPort::onRead(Bottle& b) {
 
 //------------------------READING INPUT MESSAGES FROM HEAD------------------------
 
-    //double x = b.get(0).asDouble(); //Data pxXpos
-    //double y = b.get(1).asDouble(); //Data pxYpos
+    double x = b.get(0).asDouble(); //Data pxXpos
+    double y = b.get(1).asDouble(); //Data pxYpos
     double angle = b.get(2).asDouble(); //Angle
 
 //------------------------CORRECTION OUTPUTS------------------------
     //double dist;
-
+    iteration=0;
     if(angle>92 && angle<=110)  //Correction 01. Move arm Y left.
     {
       //  dist = 0.05 * cos( angle );
-        if(( coordY + 0.02 ) <= 0.45 )
+        if(( coordY + 0.01 ) <= 0.45 )
         {
             outputCartesian.addString("movj");
             outputCartesian.addDouble( 0.526 );
-            outputCartesian.addDouble( coordY + 0.02);
+            outputCartesian.addDouble( coordY + 0.01);
             outputCartesian.addDouble( 0.309 );
             outputCartesian.addDouble( -1 );
             outputCartesian.addDouble( 0 );
             outputCartesian.addDouble( 0 );
             outputCartesian.addDouble( 90 );
             //Time::delay(0.1);
-            coordY += 0.02;
+            coordY += 0.01;
         }
-        else if(( coordY + 0.02 ) > 0.45 )
+        else if(( coordY + 0.01 ) > 0.45 )
         {
             printf("BOTTLE FALL right!! \n");
         }
@@ -85,20 +85,20 @@ void InCvPort::onRead(Bottle& b) {
     {
         //dist = 0.05 * cos( angle );
         //printf("value coordYleft: %f", coordY);
-        if(( coordY - 0.02 ) >= 0.25 )
+        if(( coordY - 0.01 ) >= 0.25 )
         {
             outputCartesian.addString("movj");
             outputCartesian.addDouble( 0.526 );
-            outputCartesian.addDouble( coordY - 0.02);
+            outputCartesian.addDouble( coordY - 0.01);
             outputCartesian.addDouble( 0.309 );
             outputCartesian.addDouble( -1 );
             outputCartesian.addDouble( 0 );
             outputCartesian.addDouble( 0 );
             outputCartesian.addDouble( 90 );
             //Time::delay(1);
-            coordY -= 0.02;
+            coordY -= 0.01;
         }
-        else if(( coordY - 0.02 ) < 0.25 )
+        else if(( coordY - 0.01 ) < 0.25 )
         {
             printf("BOTTLE FALL left!! \n");
         }
@@ -119,6 +119,17 @@ void InCvPort::onRead(Bottle& b) {
     if (outputCartesian.size() > 0)
         pOutPort->write(outputCartesian);
 
+    ofstream out;
+    if(iteration==1)
+    {
+        out.open("data.txt",ios::trunc);
+    }
+    else
+    {
+        out.open("data.txt",ios::app);
+    }
+    out << x << " " << y << " " << angle << "" << coordY << " " << time << endl;
+    out.close();
 /*
 
 //------------------------FIRST TRIAL------------------------
