@@ -57,54 +57,63 @@ void InCvPort::onRead(Bottle& b) {
     double angle = b.get(2).asDouble(); //Angle
 
 //------------------------CORRECTION OUTPUTS------------------------
+    //double dist;
 
-    if(angle>=70 && angle<88)  //Correction 01. Move arm Y left.
+    if(angle>92 && angle<=110)  //Correction 01. Move arm Y left.
     {
-        //if((coordY+0.05)<=0.55)
-        //{
-            outputCartesian.addString("movv");
+      //  dist = 0.05 * cos( angle );
+        if(( coordY + 0.05 ) <= 0.45 )
+        {
+            outputCartesian.addString("movj");
+            outputCartesian.addDouble( 0.526 );
+            outputCartesian.addDouble( coordY + 0.05);
+            outputCartesian.addDouble( 0.309 );
+            outputCartesian.addDouble( -1 );
             outputCartesian.addDouble( 0 );
-            outputCartesian.addDouble( 0.05);
             outputCartesian.addDouble( 0 );
-            outputCartesian.addDouble( 0 );
-            outputCartesian.addDouble( 0 );
-            outputCartesian.addDouble( 0 );
+            outputCartesian.addDouble( 90 );
             //Time::delay(0.1);
-        /*}
-        else if((coordY+0.05)>0.55)
+            coordY += 0.05;
+        }
+        else if(( coordY + 0.05 ) > 0.45 )
         {
             printf("BOTTLE FALL right!! \n");
-        }*/
+        }
 
     }
-    else if(angle>92 && angle<=110)  //Correction 02. Move arm Y right.
+    else if(angle>=70 && angle<88)  //Correction 02. Move arm Y right.
     {
+        //dist = 0.05 * cos( angle );
         //printf("value coordYleft: %f", coordY);
-        //if((coordY-0.05)>=0.25)
-        //{
-            outputCartesian.addString("movv");
+        if(( coordY - 0.05 ) >= 0.25 )
+        {
+            outputCartesian.addString("movj");
+            outputCartesian.addDouble( 0.526 );
+            outputCartesian.addDouble( coordY - 0.05);
+            outputCartesian.addDouble( 0.309 );
+            outputCartesian.addDouble( -1 );
             outputCartesian.addDouble( 0 );
-            outputCartesian.addDouble( -0.05);
             outputCartesian.addDouble( 0 );
-            outputCartesian.addDouble( 0 );
-            outputCartesian.addDouble( 0 );
-            outputCartesian.addDouble( 0 );
+            outputCartesian.addDouble( 90 );
             //Time::delay(1);
-        /*}
-        else if((coordY-0.05)<0.05){
+            coordY -= 0.05;
+        }
+        else if(( coordY - 0.05 ) < 0.25 )
+        {
             printf("BOTTLE FALL left!! \n");
-        }*/
+        }
     }
-    else //if(z>=88 && z<=92)
+    else if( angle >= 88 && angle <= 92 )
     {
         printf("THE BOTTLE IS IN EQUILIBRIUM \n");
-        outputCartesian.addString("movv");
+        outputCartesian.addString("movj");
+        outputCartesian.addDouble( 0.526 );
+        outputCartesian.addDouble( coordY );
+        outputCartesian.addDouble( 0.309 );
+        outputCartesian.addDouble( -1 );
         outputCartesian.addDouble( 0 );
         outputCartesian.addDouble( 0 );
-        outputCartesian.addDouble( 0 );
-        outputCartesian.addDouble( 0 );
-        outputCartesian.addDouble( 0 );
-        outputCartesian.addDouble( 0 );
+        outputCartesian.addDouble( 90 );
     }
 
     if (outputCartesian.size() > 0)

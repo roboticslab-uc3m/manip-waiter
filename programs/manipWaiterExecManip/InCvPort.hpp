@@ -9,6 +9,7 @@
 
 #include <fstream>
 #include <stdio.h>
+#include <math.h>
 
 //instrucciones para el followme
 #define VOCAB_FOLLOW_ME VOCAB4('f','o','l','l')
@@ -54,7 +55,7 @@ protected:
         int a;
         int c;
         int i;
-        double coordY;
+        double coordY, angle, dist;
         /** Callback on incoming Bottle. **/
         virtual void onRead(Bottle& b);
 
