@@ -61,6 +61,8 @@ protected:
         /** Callback on incoming Bottle. **/
         virtual void onRead(Bottle& b);
 
+        ofstream out;
+
         yarp::dev::IPositionControl *iPositionControl;
 
         yarp::dev::PolyDriver robotDevice;

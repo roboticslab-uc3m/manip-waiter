@@ -27,6 +27,11 @@ void InCvPort::onRead(Bottle& b) {
 
 //------------------------SET LEFT ARM INITIAL POSITION------------------------
    if (a==0){
+
+        //out.open("datawaiter.txt",ios::trunc);
+
+        out.open("datawaiter.txt",ios::app);
+
         printf("MOVE TO START POSITION\n");
         /*iPositionControl->positionMove(0, -30);
         iPositionControl->positionMove(1, 0);
@@ -119,18 +124,9 @@ void InCvPort::onRead(Bottle& b) {
     if (outputCartesian.size() > 0)
         pOutPort->write(outputCartesian);
 
-    ofstream out;
-    if(iteration==1)
-    {
-        out.open("datawaiter.txt",ios::trunc);
-    }
-    else
-    {
-        out.open("datawaiter.txt",ios::app);
-    }
     out << x << " " << y << " " << angle << " " << coordY << " " << endl;
-    out.close();
-    iteration=0;
+    //out.close();
+
 /*
 
 //------------------------FIRST TRIAL------------------------
