@@ -8,11 +8,13 @@ namespace teo
 /************************************************************************/
 
 void InCvPort::onRead(Bottle& b) {
-    if ( ! follow ){
+
+/*    if ( ! follow ){
 	iVelocityControl->velocityMove(0, 0.0);
 	iVelocityControl->velocityMove(1, 0.0); 
 	return;
-    }
+    }*/
+
     if (b.size() < 3) return;
 
     double x = b.get(0).asDouble();
