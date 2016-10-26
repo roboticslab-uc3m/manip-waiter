@@ -41,14 +41,14 @@ bool WaiterExecHead::configure(ResourceFinder &rf) {
         printf("head remote_controlboard instantiation not worked.\n");
         return false;
     }
-/*
+
     if( ! headDevice.view(iPositionControl) ) {
         printf("view(iPositionControl) not worked.\n");
         return false;
     }
     inCvPort.setIPositionControl(iPositionControl);
-*/
-
+    iPositionControl->setPositionMode();
+/*
     if( ! headDevice.view(iVelocityControl) ) {
         printf("view(iVelocityControl) not worked.\n");
         return false;
@@ -56,7 +56,7 @@ bool WaiterExecHead::configure(ResourceFinder &rf) {
     inCvPort.setIVelocityControl(iVelocityControl);
 
     iVelocityControl->setVelocityMode();
-
+*/
 
 
     //-----------------OPEN LOCAL PORTS------------//
