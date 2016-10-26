@@ -24,11 +24,11 @@ void InCvPort::onRead(Bottle& b) {
 
     printf("%f %f %f\n",x,y,z);
 
-    if( x > 325 ) iPositionControl->relativeMove(0, 2);
-    if( x < 315 ) iPositionControl->relativeMove(0, -2);
+    if( x > 325 ) iPositionControl->relativeMove(0, -1);
+    if( x < 315 ) iPositionControl->relativeMove(0, 1);
     //
-    if( y > 145 ) iPositionControl->relativeMove(1, 2);
-    if( y < 135 ) iPositionControl->relativeMove(1, -2);
+    if( y > 145 ) iPositionControl->relativeMove(1, 1);
+    if( y < 135 ) iPositionControl->relativeMove(1, -1);
 
 
 /*
