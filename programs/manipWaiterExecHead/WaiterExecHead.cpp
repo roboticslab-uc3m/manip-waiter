@@ -41,15 +41,24 @@ bool WaiterExecHead::configure(ResourceFinder &rf) {
         printf("head remote_controlboard instantiation not worked.\n");
         return false;
     }
+/*
+    if( ! headDevice.view(iPositionControl) ) {
+        printf("view(iPositionControl) not worked.\n");
+        return false;
+    }
+    inCvPort.setIPositionControl(iPositionControl);
+*/
 
-//    yarp::dev::IVelocityControl *iVelocityControl;
     if( ! headDevice.view(iVelocityControl) ) {
         printf("view(iVelocityControl) not worked.\n");
         return false;
     }
     inCvPort.setIVelocityControl(iVelocityControl);
+
     iVelocityControl->setVelocityMode();
-    inCvPort.setIVelocityControl(iVelocityControl);
+
+
+
     //-----------------OPEN LOCAL PORTS------------//
     inSrPort.setInCvPortPtr(&inCvPort);
     inCvPort.useCallback();

@@ -24,6 +24,14 @@ void InCvPort::onRead(Bottle& b) {
 
     printf("%f %f %f\n",x,y,z);
 
+    if( x > 325 ) iPositionControl->relativeMove(0, 2);
+    if( x < 315 ) iPositionControl->relativeMove(0, -2);
+    //
+    if( y > 145 ) iPositionControl->relativeMove(1, 2);
+    if( y < 135 ) iPositionControl->relativeMove(1, -2);
+
+
+/*
     if( x >= 385 ) {
         iVelocityControl->velocityMove(0, -6); //Id motor. Velocity [deg/s].
     }
@@ -51,9 +59,9 @@ void InCvPort::onRead(Bottle& b) {
     else if( x <= 255 ) {
         iVelocityControl->velocityMove(0, 6);
     }
+*/
 
-
-
+/*
     if( y >= 185 ) {
         iVelocityControl->velocityMove(1, 3); //Id motor. Velocity [deg/s].
     }
@@ -75,6 +83,7 @@ void InCvPort::onRead(Bottle& b) {
     else if( y <= 95 ) {
         iVelocityControl->velocityMove(1, -3);
     }
+*/
 
 }
 
