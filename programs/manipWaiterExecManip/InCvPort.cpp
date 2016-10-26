@@ -43,13 +43,15 @@ void InCvPort::onRead(Bottle& b) {
         iPositionControl->positionMove(initpos);
         bool done = false;
         iteration=1;
-        while( ! done )
+        yarp::os::Time::delay(2);
+
+/*        while( ! done )
         {
             yarp::os::Time::delay(2);
-            iPositionControl->checkMotionDone(&done);
+//            iPositionControl->checkMotionDone(&done);
             printf(".");
             fflush(stdout);
-        }
+        }*/
 
         a=1;
     }
