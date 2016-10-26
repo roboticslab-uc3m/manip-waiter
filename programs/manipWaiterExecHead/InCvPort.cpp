@@ -55,25 +55,25 @@ void InCvPort::onRead(Bottle& b) {
 
 
     if( y > 185 ) {
-        iVelocityControl->velocityMove(1, -5.0); //Id motor. Velocity [deg/s].
+        iVelocityControl->velocityMove(1, 3.0); //Id motor. Velocity [deg/s].
     }
     else if( y > 165 && y < 185) {
-        iVelocityControl->velocityMove(1, -3.0);
+        iVelocityControl->velocityMove(1, 2.0);
     }
     else if( y > 145 && y < 165 ) {
-        iVelocityControl->velocityMove(1, -1.0);
+        iVelocityControl->velocityMove(1, 1.0);
     }
     else if( y > 135 && y < 145 ) {
         iVelocityControl->velocityMove(1, 0.0);
     }
     else if( y < 135 && y > 115 ) {
-        iVelocityControl->velocityMove(1, 1.0);
+        iVelocityControl->velocityMove(1, -1.0);
     }
     else if( y < 115 && y > 95 ) {
-        iVelocityControl->velocityMove(1, 3.0);
+        iVelocityControl->velocityMove(1, -2.0);
     }
     else if( y < 95 ) {
-        iVelocityControl->velocityMove(1, 5.0);
+        iVelocityControl->velocityMove(1, -3.0);
     }
 
 }
