@@ -62,6 +62,7 @@ void InCvPort::onRead(Bottle& b) {
     double x = b.get(0).asDouble(); //Data pxXpos
     double y = b.get(1).asDouble(); //Data pxYpos
     double angle = b.get(2).asDouble(); //Angle
+    printf("%f %f %f\n",x,y,angle);
 
 //------------------------CORRECTION OUTPUTS------------------------
     //double dist;
@@ -71,6 +72,7 @@ void InCvPort::onRead(Bottle& b) {
       //  dist = 0.05 * cos( angle );
         if(( coordY + 0.01 ) <= 0.45 )
         {
+            printf("THE BOTTLE GOES RIGHT \n");
             outputCartesian.addString("movj");
             outputCartesian.addDouble( 0.526 );
             outputCartesian.addDouble( coordY + 0.01);
@@ -94,6 +96,7 @@ void InCvPort::onRead(Bottle& b) {
         //printf("value coordYleft: %f", coordY);
         if(( coordY - 0.01 ) >= 0.25 )
         {
+            printf("THE BOTTLE GOES LEFT \n");
             outputCartesian.addString("movj");
             outputCartesian.addDouble( 0.526 );
             outputCartesian.addDouble( coordY - 0.01);
