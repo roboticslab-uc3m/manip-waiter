@@ -25,7 +25,7 @@ namespace teo
 {
 
 /**
- * @ingroup followMeExecutionCore
+ * @ingroup Jr3WristControl
  *
  * @brief Input port of speech recognition data.
  *

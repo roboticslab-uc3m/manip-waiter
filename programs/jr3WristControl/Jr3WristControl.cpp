@@ -24,7 +24,7 @@ bool Jr3WristControl::configure(ResourceFinder &rf) {
         ::exit(1);
     }
 
-    //
+    //-- Robot device
     Property leftArmOptions;
     leftArmOptions.put("device","remote_controlboard");
     std::string localStr("/jr3WristControl/");
@@ -36,17 +36,49 @@ bool Jr3WristControl::configure(ResourceFinder &rf) {
     remoteStr += "/leftArm";
     leftArmOptions.put("remote",remoteStr);
     leftArmDevice.open(leftArmOptions);
-    if( ! leftArmDevice.isValid() ) {
+
+    if( ! leftArmDevice.isValid() )    {
         printf("leftArm remote_controlboard instantiation not worked.\n");
         return false;
     }
-    if( ! leftArmDevice.view(iPositionControl) ) {
+    if( ! leftArmDevice.view(iEncoders) )    {
+        printf("view(iEncoders) not worked.\n");
+        return false;
+    }
+    if( ! leftArmDevice.view(iPositionControl) )    {
         printf("view(iPositionControl) not worked.\n");
         return false;
     }
-    inCvPort.setIPositionControl(iPositionControl);
+    if( ! leftArmDevice.view(iPositionDirect) )    {
+        printf("view(iPositionDirect) not worked.\n");
+        return false;
+    }
+    if( ! leftArmDevice.view(iVelocityControl) )    {
+        printf("view(iVelocityControl) not worked.\n");
+        return false;
+    }
 
-    inCvPort.setOutPort(&outPort);
+    inCvPort.setIEncodersControl(iEncoders);
+    inCvPort.setIPositionControl(iPositionControl);
+    inCvPort.setIPositionDirect(iPositionDirect);
+    inCvPort.setIVelocityControl(iVelocityControl);
+
+    //-- Solver device
+    yarp::os::Property solverOptions;
+    solverOptions.fromString( rf.toString() );
+    std::string solverStr = "KdlSolver";
+    solverOptions.put("device",solverStr);
+
+    solverDevice.open(solverOptions);
+    if( ! solverDevice.isValid() )    {
+        CD_ERROR("solver device not valid: %s.\n",solverStr.c_str());
+        return false;
+    }
+    if( ! solverDevice.view(iCartesianSolver) )    {
+        CD_ERROR("Could not view iCartesianSolver in: %s.\n",solverStr.c_str());
+        return false;
+    }
+    inCvPort.setICartesianSolver(iCartesianSolver);
 
     //-----------------OPEN LOCAL PORTS------------//
     inSrPort.setInCvPortPtr(&inCvPort);
@@ -54,7 +86,6 @@ bool Jr3WristControl::configure(ResourceFinder &rf) {
     inSrPort.useCallback();
     inSrPort.open("/jr3WristControl/DialogueManager/command:i");
     inCvPort.open("/jr3WristControl/cvBottle/state:i");
-    outPort.open("/jr3WristControl/leftArm/CartesianControl/rpc:c");
 
     return true;
 }
@@ -80,10 +111,12 @@ bool Jr3WristControl::interruptModule() {
     inSrPort.interrupt();
     inCvPort.close();
     inSrPort.close();
-    outPort.close();
+
+    solverDevice.close();
+    leftArmDevice.close();
     return true;
 }
 
 /************************************************************************/
 
-}  // namespace teo
+} // namespace teo

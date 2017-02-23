@@ -2,12 +2,12 @@
 
 /**
  *
- * @ingroup jr3WristControl_programs
- * \defgroup jr3WristControl jr3WristControl
+ * @ingroup Jr3WristControl_programs
+ * \defgroup Jr3WristControl Jr3WristControl
  *
- * @brief Creates an instance of teo::Jr3WristControl.
+ * @brief Creates an instance of teo::WaiterExecManip.
  *
- * @section jr3WristControl_legal Legal
+ * @section Jr3WristControl Legal
  *
  * Copyright: 2016 (C) Universidad Carlos III de Madrid
  *
@@ -18,7 +18,7 @@
  *
  * <hr>
  *
- * This file can be edited at waiterExecManip
+ * This file can be edited at jr3WristControl
  *
  */
 
@@ -28,20 +28,20 @@
 
 
 using namespace yarp::os;
-int a=0;
-int b=0;
-int iteration=1;
-float degrees;
+
+//YARP_DECLARE_DEVICES(Jr3WristControl)
 
 int main(int argc, char **argv) {
+
+    //YARP_REGISTER_DEVICES(Jr3WristControl);
 
     ResourceFinder rf;
     rf.setVerbose(true);
     rf.setDefaultContext("jr3WristControl");
-    rf.setDefaultConfigFile("jr3WristControl.ini");
+    rf.setDefaultConfigFile("/usr/local/share/teo/contexts/kinematics/leftArmKinematics.ini");
     rf.configure(argc, argv);
 
-    teo::WaiterExecManip mod;
+    teo::Jr3WristControl mod;
     if(rf.check("help")) {
         return mod.runModule(rf);
     }
@@ -57,4 +57,3 @@ int main(int argc, char **argv) {
 
     return mod.runModule(rf);
 }
-

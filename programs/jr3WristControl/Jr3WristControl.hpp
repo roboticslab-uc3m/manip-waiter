@@ -39,12 +39,19 @@ class Jr3WristControl : public RFModule {
 
     protected:
 
-        yarp::os::Port outPort;
-
         InSrPort inSrPort;
         InCvPort inCvPort;
+
+        //-- Robot device
         yarp::dev::PolyDriver leftArmDevice;
+        yarp::dev::IEncoders *iEncoders;
         yarp::dev::IPositionControl *iPositionControl;
+        yarp::dev::IPositionDirect *iPositionDirect;
+        yarp::dev::IVelocityControl *iVelocityControl;
+
+        //-- Solver device
+        yarp::dev::PolyDriver solverDevice;
+        teo::ICartesianSolver *iCartesianSolver;
 
         bool interruptModule();
         double getPeriod();
@@ -54,4 +61,4 @@ class Jr3WristControl : public RFModule {
 
 }  // namespace teo
 
-#endif  // __FM_JR3_WRIST_CONTROL_HPP__
+#endif // __FM_JR3_WRIST_CONTROL_HPP__

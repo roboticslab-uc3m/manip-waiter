@@ -9,7 +9,13 @@
 
 #include <fstream>
 #include <stdio.h>
-#include <math.h>
+
+#include <math.h>  //-- fabs
+
+#include "ICartesianSolver.h"
+
+#include "ColorDebug.hpp"
+#include <yarp/dev/IPositionDirect.h>
 
 //instrucciones para el followme
 #define VOCAB_FOLLOW_ME VOCAB4('f','o','l','l')
@@ -21,15 +27,19 @@
 #define VOCAB_WATER_PLEASE VOCAB4('w','p','l','e')
 #define VOCAB_STOP_TEO VOCAB4('s','t','e','o')
 
+#define DEFAULT_QDOT_LIMIT 10
+
+#define DEFAULT_STRATEGY "positionDirect"
+//#define DEFAULT_STRATEGY "velocity"
+
+
 using namespace yarp::os;
-using namespace yarp::sig;
-using namespace std;
-using namespace yarp::dev;
+
 namespace teo
 {
 
 /**
- * @ingroup followMeExecutionCore
+ * @ingroup Jr3WristControl
  *
  * @brief Input port of computer vision data.
  *
@@ -37,62 +47,64 @@ namespace teo
 class InCvPort : public BufferedPort<Bottle> {
     public:
 
-        InCvPort()
-        {
+        InCvPort()        {
             follow = 0;
             a = 0;
-            coordY = 0.347;
+            pepinito = 1;
         }
 
+        void setIEncodersControl(yarp::dev::IEncoders *iEncoders) {
+            this->iEncoders = iEncoders;
+        }
         void setIPositionControl(yarp::dev::IPositionControl *iPositionControl) {
             this->iPositionControl = iPositionControl;
         }
+        void setIPositionDirect(yarp::dev::IPositionDirect *iPositionDirect) {
+            this->iPositionDirect = iPositionDirect;
+        }
+        void setIVelocityControl(yarp::dev::IVelocityControl *iVelocityControl) {
+            this->iVelocityControl = iVelocityControl;
+        }
+        void setICartesianSolver(teo::ICartesianSolver *iCartesianSolver) {
+            this->iCartesianSolver = iCartesianSolver;
+        }
 
         void setFollow(int value);
-        void setOutPort(yarp::os::Port *_pOutPort);
-        yarp::os::Port *pOutPort;
 
-protected:
+    private:
+
         int follow;
         int a;
-        int c;
-        int i, iteration;
-        double coordY, angle, dist;
+        int numRobotJoints;
+        int pepinito;
+        double initpos;
+
+        std::vector<double> currentQ;
+        std::vector<double> beforeQ;
+
+        /** SET left ARM INITIAL POSITION **/
+        bool preprogrammedInitTrajectory();
+
+        /** left ARM CONTROL WITH A VELOCITY STRATEGY **/
+        void strategyVelocity(Bottle& b);
+
+        /** left ARM CONTROL WITH A POSITION STRATEGY **/
+        void strategyPositionDirect(Bottle& b);
+
         /** Callback on incoming Bottle. **/
         virtual void onRead(Bottle& b);
 
-        ofstream out;
-
-        yarp::dev::IPositionControl *iPositionControl;
-
-        yarp::dev::PolyDriver robotDevice;
+        //-- Robot device
         yarp::dev::IEncoders *iEncoders;
-//        yarp::dev::IPositionControl *iPositionControl;
+        yarp::dev::IPositionControl *iPositionControl;
+        yarp::dev::IPositionDirect *iPositionDirect;
         yarp::dev::IVelocityControl *iVelocityControl;
-        yarp::dev::IControlLimits *iControlLimits;
-        yarp::dev::ITorqueControl *iTorqueControl;
 
-        int numRobotJoints, numSolverLinks;
-
-        /** State encoded as a VOCAB which can be stored as an int */
-        int currentState;
-
-        int getCurrentState();
-        void setCurrentState(int value);
-        yarp::os::Semaphore currentStateReady;
-
-        /** MOVL keep track of movement start time to know at what time of trajectory movement we are */
-        double movementStartTime;
-
-        /** MOVV desired Cartesian velocity */
-        std::vector<double> xdotd;
-
-        /** FORC desired Cartesian force */
-        std::vector<double> td;
-
+        //-- Solver device
+        teo::ICartesianSolver *iCartesianSolver;
 
 };
 
 }  // namespace teo
 
-#endif  // __IN_CV_PORT_HPP__
+#endif // __IN_CV_PORT_HPP__
