@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+   <FileVersion major="1" minor="6" />
+   <Project>
+      <Option title="yarpy" />
+      <Option makefile_is_custom="1" />
+      <Option compiler="gcc" />
+      <Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\..\usr\;CMake Files\..\..\..\..\..\..\..\usr\local\;CMake Files\..\..\..\..\..\..\..\usr\local\lib\;CMake Files\..\..\..\..\..\..\..\usr\local\lib\YARP\;CMake Files\..\..\..\..\..\..\..\usr\local\share\;CMake Files\..\..\..\..\..\..\..\usr\local\share\yarp\;CMake Files\..\..\..\..\..\..\..\usr\local\share\yarp\cmake\;" />
+      <Build>
+      <Target title="all">
+         <Option working_dir="/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build/Makefile&quot;  VERBOSE=1 all" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="rebuild_cache">
+         <Option working_dir="/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build/Makefile&quot;  VERBOSE=1 rebuild_cache" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="yarpy">
+         <Option output="/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build/yarpy" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/include/c++/4.4" />
+            <Add directory="/usr/include/c++/4.4/backward" />
+            <Add directory="/usr/include/c++/4.4/i486-linux-gnu" />
+            <Add directory="/usr/lib/gcc/i486-linux-gnu/4.4.5/include" />
+            <Add directory="/usr/lib/gcc/i486-linux-gnu/4.4.5/include-fixed" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build/Makefile&quot;  VERBOSE=1 yarpy" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="yarpy/fast">
+         <Option output="/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build/yarpy" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/include/c++/4.4" />
+            <Add directory="/usr/include/c++/4.4/backward" />
+            <Add directory="/usr/include/c++/4.4/i486-linux-gnu" />
+            <Add directory="/usr/lib/gcc/i486-linux-gnu/4.4.5/include" />
+            <Add directory="/usr/lib/gcc/i486-linux-gnu/4.4.5/include-fixed" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build/Makefile&quot;  VERBOSE=1 yarpy/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      </Build>
+      <Unit filename="/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/LIPM2d.cpp">
+      </Unit>
+      <Unit filename="/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/main.cpp">
+      </Unit>
+      <Unit filename="/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/LIPM2d.h">
+      </Unit>
+      <Unit filename="/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/global.h">
+      </Unit>
+      <Unit filename="/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/ratethread.h">
+      </Unit>
+      <Unit filename="/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\" />
+      </Unit>
+      <Unit filename="/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/../../../../../../../usr/local/lib/YARP/YARPConfigVersion.cmake">
+          <Option virtualFolder="CMake Files\..\..\..\..\..\..\..\usr\local\lib\YARP\" />
+      </Unit>
+      <Unit filename="/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/../../../../../../../usr/local/lib/YARP/YARPConfig.cmake">
+          <Option virtualFolder="CMake Files\..\..\..\..\..\..\..\usr\local\lib\YARP\" />
+      </Unit>
+      <Unit filename="/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/../../../../../../../usr/local/lib/YARP/YARPTargets.cmake">
+          <Option virtualFolder="CMake Files\..\..\..\..\..\..\..\usr\local\lib\YARP\" />
+      </Unit>
+      <Unit filename="/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/../../../../../../../usr/local/lib/YARP/YARPTargets-release.cmake">
+          <Option virtualFolder="CMake Files\..\..\..\..\..\..\..\usr\local\lib\YARP\" />
+      </Unit>
+      <Unit filename="/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/../../../../../../../usr/local/share/yarp/cmake/YarpIDL.cmake">
+          <Option virtualFolder="CMake Files\..\..\..\..\..\..\..\usr\local\share\yarp\cmake\" />
+      </Unit>
+   </Project>
+</CodeBlocks_project_file>
