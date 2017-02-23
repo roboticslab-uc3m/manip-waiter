@@ -17,9 +17,9 @@ project(MANIP_WAITER)
 option(ENABLE_TeoYarp "Choose if you want to compile TeoYarp" TRUE)
 
 ### options: cpp programs
-option(ENABLE_manipWaiterDialogueManager "Choose if you want to compile waiterDialogueManager" TRUE)
-option(ENABLE_manipWaiterExecHead "Choose if you want to compile waiterExecHead" TRUE)
-option(ENABLE_manipWaiterExecManip "Choose if you want to compile waiterExecManip" TRUE)
+option(ENABLE_ankle_strategy_sagittal "Choose if you want to compile ankle_strategy_sagittal" TRUE)
+option(ENABLE_zmpTEOwrist "Choose if you want to compile zmpTEOwrist" TRUE)
+option(ENABLE_jr3WristControl "Choose if you want to compile jr3WristControl" TRUE)
 
 ### options: force default
 option(ENABLE_TeoYarp_BasicCartesianControl "Enable/disable compilation of TeoYarp_BasicCartesianControl" TRUE)
