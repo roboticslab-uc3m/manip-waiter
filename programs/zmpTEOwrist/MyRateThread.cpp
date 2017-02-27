@@ -13,6 +13,8 @@ void MyRateThread::ReadFTSensor(){ //recogida de informacion de los sensores de 
     port2.read(_sensor2.bottle);
     port3.read(_sensor3.bottle);
 
+//    printf("Got: %s | %s\n",_sensor2.bottle.toString().c_str(),_sensor3.bottle.toString().c_str());
+
     _sensor2.fx = _sensor2.bottle.get(0).asDouble();
     _sensor2.fy = _sensor2.bottle.get(1).asDouble();
     _sensor2.fz = _sensor2.bottle.get(2).asDouble();
@@ -31,12 +33,12 @@ void MyRateThread::ReadFTSensor(){ //recogida de informacion de los sensores de 
 /************************************************************************/
 void MyRateThread::AxesTransform(){
     //Transformation matrix between TEO_body_axes (world) and Jr3_axes with horizontal tray (waiter)
-    _tray.fx = + _sensor2.fz;
-    _tray.fy = - _sensor2.fy;
-    _tray.fz = + _sensor2.fx;
-    _tray.mx = + _sensor2.mz;
-    _tray.my = - _sensor2.my;
-    _tray.mz = + _sensor2.mx;
+    _tray.fx = + _sensor3.fz;
+    _tray.fy = - _sensor3.fy;
+    _tray.fz = + _sensor3.fx;
+    _tray.mx = + _sensor3.mz;
+    _tray.my = - _sensor3.my;
+    _tray.mz = + _sensor3.mx;
 }
 
 /************************************************************************/
