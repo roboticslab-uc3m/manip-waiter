@@ -12,7 +12,6 @@ void InCvPort::setFollow(int value)
 }
 
 /************************************************************************/
-
 void InCvPort::onRead(Bottle& b) {
 
     std::string strategy = DEFAULT_STRATEGY;
@@ -27,7 +26,6 @@ void InCvPort::onRead(Bottle& b) {
 }
 
 /************************************************************************/
-
 void InCvPort::strategyPositionDirect(Bottle& b)
 {
     if (a==0)    {
@@ -220,7 +218,6 @@ void InCvPort::strategyPositionDirect(Bottle& b)
 }
 
 /************************************************************************/
-
 void InCvPort::strategyVelocity(Bottle& b)
 {
 
@@ -336,7 +333,6 @@ void InCvPort::strategyVelocity(Bottle& b)
 }
 
 /************************************************************************/
-
 bool InCvPort::preprogrammedInitTrajectory()
 {
     iEncoders->getAxes(&numRobotJoints);
@@ -386,5 +382,7 @@ bool InCvPort::preprogrammedInitTrajectory()
 }
 
 /************************************************************************/
-
 }  // namespace teo
+
+
+//                 outCmdPortManip->write(cmd);  para enviar la info

@@ -30,14 +30,14 @@ int main(void) {
 
     MyRateThread jr3Thread;
     /** Opening YARP ports**/
-    jr3Thread.port2.open("/jr3ch2:i"); //Opening port associated to jr3 channel 2 (RIGHT ARM)
-    jr3Thread.port3.open("/jr3ch3:i"); //Opening port associated to jr3 channel 3 (LEFT ARM)
+    jr3Thread.port2.open("/jr3/ch2:i"); //Opening port associated to jr3 channel 2 (RIGHT ARM)
+    jr3Thread.port3.open("/jr3/ch3:i"); //Opening port associated to jr3 channel 3 (LEFT ARM)
 
     /** Connecting I/O YARP ports**/
     yarp::os::Time::delay(0.5);
-    yarp.connect("/jr3ch2:o","/jr3ch2:i");
+    yarp.connect("/jr3/ch2:o","/jr3/ch2:i");
     yarp::os::Time::delay(0.5);
-    yarp.connect("/jr3ch3:o","/jr3ch3:i");
+    yarp.connect("/jr3/ch3:o","/jr3/ch3:i");
 
     jr3Thread.start();
 

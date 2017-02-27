@@ -6,7 +6,6 @@ namespace teo
 {
 
 /************************************************************************/
-
 bool Jr3WristControl::configure(ResourceFinder &rf) {
 
     std::string remote = rf.check("remote",yarp::os::Value(DEFAULT_REMOTE),"remote robot to be used").asString();
@@ -102,7 +101,6 @@ bool Jr3WristControl::updateModule() {
 }
 
 /************************************************************************/
-
 bool Jr3WristControl::interruptModule() {
     printf("Jr3WristControl closing...\n");
     inCvPort.disableCallback();
@@ -118,5 +116,4 @@ bool Jr3WristControl::interruptModule() {
 }
 
 /************************************************************************/
-
 } // namespace teo
