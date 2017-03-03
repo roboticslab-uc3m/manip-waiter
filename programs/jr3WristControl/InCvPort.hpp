@@ -71,6 +71,9 @@ class InCvPort : public BufferedPort<Bottle> {
 
         void setFollow(int value);
 
+        yarp::os::Port port2;
+        yarp::os::Port port3;
+
     private:
 
         int follow;
@@ -79,20 +82,46 @@ class InCvPort : public BufferedPort<Bottle> {
         int pepinito;
         double initpos;
 
+        struct SensorData {
+            double fx, fy, fz;
+            double mx, my, mz;
+        } _sensor3;
+
+        struct TrayData {
+            double fx, fy, fz;
+            double mx, my, mz;
+            double xzmp, yzmp;
+        } _tray;
+
+        double _rzmp;
+        float _d;  //distance in mm between the plate center and the sensor center in the X axis
+
         std::vector<double> currentQ;
         std::vector<double> beforeQ;
 
-        /** SET left ARM INITIAL POSITION **/
+        /** Set left ARM INITIAL POSITION **/
         bool preprogrammedInitTrajectory();
 
         /** left ARM CONTROL WITH A VELOCITY STRATEGY **/
-        void strategyVelocity(Bottle& b);
+        void strategyVelocity(Bottle& FTsensor);
 
         /** left ARM CONTROL WITH A POSITION STRATEGY **/
-        void strategyPositionDirect(Bottle& b);
+        void strategyPositionDirect(Bottle& FTsensor);
 
         /** Callback on incoming Bottle. **/
-        virtual void onRead(Bottle& b);
+        virtual void onRead(Bottle& FTsensor);
+
+        /** Reading from the FT_JR3_sensor. **/
+        void ReadFTSensor(Bottle& FTsensor);
+
+        /** Transformation matrix between TEO_body_axes (world) and Jr3_axes with horizontal tray (waiter). **/
+        void AxesTransform();
+
+        /** Calculating ZMP of the bottle. **/
+        void ZMPcomp();
+
+        /** Control based on the 3D-LIMP. **/
+        void LIPM3d();
 
         //-- Robot device
         yarp::dev::IEncoders *iEncoders;
