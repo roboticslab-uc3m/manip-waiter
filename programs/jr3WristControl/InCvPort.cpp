@@ -12,22 +12,38 @@ void InCvPort::setFollow(int value)
 }
 
 /************************************************************************/
-void InCvPort::onRead(Bottle& b) {
+void InCvPort::onRead(Bottle& FTsensor) {
 
-    std::string strategy = DEFAULT_STRATEGY;
 
-    if(strategy == "velocity")
-        strategyVelocity(b);
-    else if(strategy == "positionDirect")
-        strategyPositionDirect(b);
-    else
-        CD_ERROR("Unknown strategy!!!\n");
+    if (a==0)    {
+        preprogrammedInitTrajectory();
+        iPositionControl->setPositionMode();
+        a=1;
+    }
+
+    //poseRefCalculate();      // aun por desarrollar
+
+    ReadFTSensor(FTsensor);
+    AxesTransform();
+    ZMPcomp();
+    LIPM3d();
+    /*
+     * if (umbral>rzmp)
+     *      LIPM3d(_tray.xzmp, _tray.yzmp);
+     *      pepinito = 0;
+     * else                     // aun por desarrollar
+     *      pepinito ++;
+     *      if (pepinito>25)
+     *          poseRefReturn();
+     *
+    */
 
 }
 
 /************************************************************************/
-void InCvPort::strategyPositionDirect(Bottle& b)
+void InCvPort::strategyPositionDirect(Bottle& FTsensor)
 {
+
     if (a==0)    {
         preprogrammedInitTrajectory();
         //iPositionDirect->setPositionDirectMode();
@@ -38,7 +54,7 @@ void InCvPort::strategyPositionDirect(Bottle& b)
 /** -------------------READING INPUT MESSAGES FROM VISION SENSOR-------------------**/
     //double x = b.get(0).asDouble(); //Data pxXpos
     //double y = b.get(1).asDouble(); //Data pxYpos
-    double angle = b.get(2).asDouble(); //Angle
+    double angle = FTsensor.get(2).asDouble(); //Angle
     /** --------------------------------------------------- **/
 
 
@@ -218,7 +234,7 @@ void InCvPort::strategyPositionDirect(Bottle& b)
 }
 
 /************************************************************************/
-void InCvPort::strategyVelocity(Bottle& b)
+void InCvPort::strategyVelocity(Bottle& FTsensor)
 {
 
     if (a==0)    {
@@ -231,7 +247,7 @@ void InCvPort::strategyVelocity(Bottle& b)
 
     //double x = b.get(0).asDouble(); //Data pxXpos
     //double y = b.get(1).asDouble(); //Data pxYpos
-    double angle = b.get(2).asDouble(); //Angle
+    double angle = FTsensor.get(2).asDouble(); //Angle
 
 //------------------------CONTROL------------------------
 
@@ -382,7 +398,99 @@ bool InCvPort::preprogrammedInitTrajectory()
 }
 
 /************************************************************************/
+void InCvPort::ReadFTSensor(Bottle& FTsensor){
+    /**
+     * Reading input messages from JR3 SENSOR
+    **/
+
+    _sensor3.fx = FTsensor.get(0).asDouble();
+    _sensor3.fy = FTsensor.get(1).asDouble();
+    _sensor3.fz = FTsensor.get(2).asDouble();
+    _sensor3.mx = FTsensor.get(3).asDouble();
+    _sensor3.my = FTsensor.get(4).asDouble();
+    _sensor3.mz = FTsensor.get(5).asDouble();
+}
+
+/************************************************************************/
+void InCvPort::AxesTransform(){
+    /**
+     * Transformation matrix between TEO_body_axes (world) and Jr3_axes
+     * with horizontal tray (waiter)
+    **/
+
+    _tray.fx = + _sensor3.fz;
+    _tray.fy = - _sensor3.fy;
+    _tray.fz = + _sensor3.fx;
+    _tray.mx = + _sensor3.mz;
+    _tray.my = - _sensor3.my;
+    _tray.mz = + _sensor3.mx;
+}
+
+/************************************************************************/
+void InCvPort::ZMPcomp(){
+    /**
+     * Bottle ZMP measurements
+    **/
+
+    if (_tray.fz==0)    {
+        _tray.xzmp = _tray.xzmp; // Milimetros
+        _tray.yzmp = _tray.yzmp; // Milimetros
+    }else{
+        _tray.xzmp = -((- (_tray.my) / (_tray.fz)) + _d)*1000.0; // Milimetros
+        _tray.yzmp = ((_tray.mx) / _tray.fz)*1000.0; // Milimetros
+    }
+    _rzmp = sqrt(pow(_tray.xzmp,2) + pow(_tray.yzmp,2));
+
+    //cout << "ZMP: [" << _tray.xzmp << ", " << _tray.yzmp << "]" << endl;
+}
+
+/************************************************************************/
+void InCvPort::LIPM3d(){
+    //Generacion de la actuacion a los motores (CONTROL)
+
+
+    std::vector<double> currentQ(numRobotJoints), desireQ(numRobotJoints);
+    if ( ! iEncoders->getEncoders( currentQ.data() ) )    { //obtencion de los valores articulares (encoders absolutos)
+        CD_WARNING("getEncoders failed, not updating control this iteration.\n");
+        return;
+    }
+
+    std::vector<double> currentX, desireX;
+    if ( ! iCartesianSolver->fwdKin(currentQ,currentX) )    {
+        CD_ERROR("fwdKin failed.\n");
+    }
+
+    desireX = currentX; // 6 = 6
+
+    if (_rzmp>50)   { // será necesario programar los limites en los ejes X e Y.
+        desireX[0] = currentX[0] + _tray.xzmp; // new X position
+        desireX[1] = currentX[1] + _tray.yzmp; // new Y position
+    }
+
+    desireX[2] = 0.312769; // Z position
+
+    desireX[3] = -1;    //
+    desireX[4] = 0;     //
+    desireX[5] = 0;     //  Orientation
+    desireX[6] = 90;    //
+
+    if ( ! iCartesianSolver->invKin(desireX,currentQ,desireQ) )    {
+        CD_ERROR("invKin failed.\n");
+    }
+
+    CD_DEBUG_NO_HEADER("[desireX]");
+    for(int i=0;i<numRobotJoints;i++)
+        CD_DEBUG_NO_HEADER("%f ",desireX[i]);
+    CD_DEBUG_NO_HEADER("\n ");
+
+    if( ! iPositionControl->positionMove( desireQ.data() ))        {
+        CD_WARNING("setPositions failed, not updating control this iteration.\n");
+    }
+
+    return;
+
+}
+
+/************************************************************************/
 }  // namespace teo
 
-
-//                 outCmdPortManip->write(cmd);  para enviar la info
