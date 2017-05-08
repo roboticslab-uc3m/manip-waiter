@@ -45,8 +45,22 @@ void MyRateThread::AxesTransform(){
 void MyRateThread::ZMPcomp(){ // Cálculo del ZMP de la botella
     /** ZMP Equations **/
 
-    _tray.xzmp = -((- (_tray.my) / (_tray.fz)) + _d)*1000.0; // Milimetros
-    _tray.yzmp = ((_tray.mx) / _tray.fz)*1000.0; // Milimetros
+    _tray.xzmp = -((- (_tray.my) / (_tray.fz)) + _d); // Milimetros
+    _tray.yzmp = ((_tray.mx) / _tray.fz); // Milimetros
+
+    if (_tray.xzmp>0.075)    { //limitando el maximo ZMP en X positivo
+        _tray.xzmp = 0.075;
+    }
+    if (_tray.xzmp<-0.075)    {//limitando el maximo ZMP en X negativo
+        _tray.xzmp = -0.075;
+    }
+
+    if (_tray.yzmp>0.075)    {//limitando el maximo ZMP en Y positivo
+        _tray.yzmp = 0.075;
+    }
+    if (_tray.yzmp<-0.075)    {//limitando el maximo ZMP en Y negativo
+        _tray.yzmp = -0.075;
+    }
 
     cout << "ZMP: [" << _tray.xzmp << ", " << _tray.yzmp << "]" << endl;
 }

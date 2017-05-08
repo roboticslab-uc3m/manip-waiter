@@ -67,8 +67,8 @@ bool Jr3WristControl::configure(ResourceFinder &rf) {
     solverOptions.fromString( rf.toString() );
     std::string solverStr = "KdlSolver";
     solverOptions.put("device",solverStr);
-
     solverDevice.open(solverOptions);
+
     if( ! solverDevice.isValid() )    {
         CD_ERROR("solver device not valid: %s.\n",solverStr.c_str());
         return false;
@@ -80,18 +80,18 @@ bool Jr3WristControl::configure(ResourceFinder &rf) {
     inCvPort.setICartesianSolver(iCartesianSolver);
 
     //-----------------OPEN LOCAL PORTS------------//
-    inSrPort.setInCvPortPtr(&inCvPort);
+    //inSrPort.setInCvPortPtr(&inCvPort);
     inCvPort.useCallback();
-    inSrPort.useCallback();
-    inSrPort.open("/jr3WristControl/DialogueManager/command:i");
-    inCvPort.open("/jr3WristControl/cvBottle/state:i");
+    //inSrPort.useCallback();
+    //inSrPort.open("/jr3WristControl/DialogueManager/command:i");
+    inCvPort.open("/jr3WristControl/jr3/ch3:i");
 
     return true;
 }
 
 /************************************************************************/
 double Jr3WristControl::getPeriod() {
-    return 2.0;  // Fixed, in seconds, the slow thread that calls updateModule below
+    return 1.0;  // Fixed, in seconds, the slow thread that calls updateModule below
 }
 
 /************************************************************************/
@@ -104,11 +104,11 @@ bool Jr3WristControl::updateModule() {
 bool Jr3WristControl::interruptModule() {
     printf("Jr3WristControl closing...\n");
     inCvPort.disableCallback();
-    inSrPort.disableCallback();
+    //inSrPort.disableCallback();
     inCvPort.interrupt();
-    inSrPort.interrupt();
+    //inSrPort.interrupt();
     inCvPort.close();
-    inSrPort.close();
+    //inSrPort.close();
 
     solverDevice.close();
     leftArmDevice.close();

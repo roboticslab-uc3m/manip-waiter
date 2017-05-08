@@ -5,27 +5,16 @@
 
 #include <yarp/os/all.h>
 #include <yarp/dev/all.h>
-#include <stdlib.h>
 
+#include <stdlib.h>
 #include <fstream>
 #include <stdio.h>
-
 #include <math.h>  //-- fabs
 
 #include "ICartesianSolver.h"
 
 #include "ColorDebug.hpp"
 #include <yarp/dev/IPositionDirect.h>
-
-//instrucciones para el followme
-#define VOCAB_FOLLOW_ME VOCAB4('f','o','l','l')
-#define VOCAB_STOP_FOLLOWING VOCAB4('s','f','o','l')
-
-//insatrucciones para el waiterbot
-#define VOCAB_HELLO_TEO VOCAB4('e','l','o','t')
-#define VOCAB_GO_TEO VOCAB4('g','t','e','o')
-#define VOCAB_WATER_PLEASE VOCAB4('w','p','l','e')
-#define VOCAB_STOP_TEO VOCAB4('s','t','e','o')
 
 #define DEFAULT_QDOT_LIMIT 10
 
@@ -41,7 +30,7 @@ namespace teo
 /**
  * @ingroup Jr3WristControl
  *
- * @brief Input port of computer vision data.
+ * @brief Input port of Force/Torque data.
  *
  */
 class InCvPort : public BufferedPort<Bottle> {
@@ -51,6 +40,8 @@ class InCvPort : public BufferedPort<Bottle> {
             follow = 0;
             a = 0;
             pepinito = 1;
+            _d = 0.025;
+            iteration=1;
         }
 
         void setIEncodersControl(yarp::dev::IEncoders *iEncoders) {
@@ -71,7 +62,7 @@ class InCvPort : public BufferedPort<Bottle> {
 
         void setFollow(int value);
 
-        yarp::os::Port port2;
+        //yarp::os::Port port2; posibilidad de usar la muñeca izquierda
         yarp::os::Port port3;
 
     private:
@@ -81,6 +72,7 @@ class InCvPort : public BufferedPort<Bottle> {
         int numRobotJoints;
         int pepinito;
         double initpos;
+        int iteration;
 
         struct SensorData {
             double fx, fy, fz;
@@ -93,7 +85,7 @@ class InCvPort : public BufferedPort<Bottle> {
             double xzmp, yzmp;
         } _tray;
 
-        double _rzmp;
+        double _rzmp, _rWorkSpace;
         float _d;  //distance in mm between the plate center and the sensor center in the X axis
 
         std::vector<double> currentQ;
@@ -122,6 +114,9 @@ class InCvPort : public BufferedPort<Bottle> {
 
         /** Control based on the 3D-LIMP. **/
         void LIPM3d();
+
+        /** Saving the ZMP measurements. **/
+        void saveToFile();
 
         //-- Robot device
         yarp::dev::IEncoders *iEncoders;

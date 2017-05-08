@@ -8,6 +8,7 @@ set(KEYWORD "jr3WristControl")
 
 # Find YARP.  Point the YARP_DIR environment variable at your build.
 find_package(YARP REQUIRED)
+# find_package(TEO REQUIRED)
 
 # Search for source code.
 file(GLOB folder_source *.cpp *.cc *.c)
