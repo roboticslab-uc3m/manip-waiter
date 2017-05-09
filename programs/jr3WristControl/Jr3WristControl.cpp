@@ -57,10 +57,15 @@ bool Jr3WristControl::configure(ResourceFinder &rf) {
         return false;
     }
 
-    inCvPort.setIEncodersControl(iEncoders);
+    /*inCvPort.setIEncodersControl(iEncoders);
     inCvPort.setIPositionControl(iPositionControl);
     inCvPort.setIPositionDirect(iPositionDirect);
-    inCvPort.setIVelocityControl(iVelocityControl);
+    inCvPort.setIVelocityControl(iVelocityControl);*/
+    
+    inSrPort.setIEncodersControl(iEncoders);
+    inSrPort.setIPositionControl(iPositionControl);
+    inSrPort.setIPositionDirect(iPositionDirect);
+    inSrPort.setIVelocityControl(iVelocityControl);
 
     //-- Solver device
     yarp::os::Property solverOptions;
@@ -77,14 +82,14 @@ bool Jr3WristControl::configure(ResourceFinder &rf) {
         CD_ERROR("Could not view iCartesianSolver in: %s.\n",solverStr.c_str());
         return false;
     }
-    inCvPort.setICartesianSolver(iCartesianSolver);
-
+    //inCvPort.setICartesianSolver(iCartesianSolver);
+    inSrPort.setICartesianSolver(iCartesianSolver);
+    
     //-----------------OPEN LOCAL PORTS------------//
-    //inSrPort.setInCvPortPtr(&inCvPort);
-    inCvPort.useCallback();
-    //inSrPort.useCallback();
-    //inSrPort.open("/jr3WristControl/DialogueManager/command:i");
-    inCvPort.open("/jr3WristControl/jr3/ch3:i");
+    //inCvPort.useCallback();
+    inSrPort.useCallback();
+    //inCvPort.open("/jr3WristControl/jr3/ch3:i");
+    inSrPort.open("/jr3WristControl/jr3/ch3:i");
 
     return true;
 }
@@ -103,12 +108,12 @@ bool Jr3WristControl::updateModule() {
 /************************************************************************/
 bool Jr3WristControl::interruptModule() {
     printf("Jr3WristControl closing...\n");
-    inCvPort.disableCallback();
-    //inSrPort.disableCallback();
-    inCvPort.interrupt();
-    //inSrPort.interrupt();
-    inCvPort.close();
-    //inSrPort.close();
+    //inCvPort.disableCallback();
+    inSrPort.disableCallback();
+    //inCvPort.interrupt();
+    inSrPort.interrupt();
+    //inCvPort.close();
+    inSrPort.close();
 
     solverDevice.close();
     leftArmDevice.close();
