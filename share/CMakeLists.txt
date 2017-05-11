@@ -11,4 +11,4 @@ yarp_configure_external_installation(manip-waiter)
 ### Go through single applications
 
 #add_subdirectory(prog)
-
+add_subdirectory(kinematics)
