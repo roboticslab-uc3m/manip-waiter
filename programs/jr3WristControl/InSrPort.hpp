@@ -75,17 +75,29 @@ class InSrPort : public BufferedPort<Bottle> {
         int iteration;
 
         struct SensorData {
-            double fx, fy, fz;
-            double mx, my, mz;
-        } _sensor3;
+            struct ForceVector {
+                double fx, fy, fz;
+            } _initF;
+            struct TorqueVector {
+                double mx, my, mz;
+            } _initT;
+        } _jr3;
 
         struct TrayData {
-            double fx, fy, fz;
-            double mx, my, mz;
-            double xzmp, yzmp;
+            struct ForceVector {
+                double fx, fy, fz;
+            } _F;
+            struct TorqueVector {
+                double mx, my, mz;
+            } _M;
+            struct ZMPVector {
+                double x_zmp, y_zmp;
+            } _zmp;
         } _tray;
 
-        double _rzmp, _rWorkSpace;
+        double _rzmp, _rWorkSpace, _normVector;
+        std::vector<double> quat, quatC, preFF, FF, preFM, FM; // quaternios
+
         float _d;  //distance in mm between the plate center and the sensor center in the X axis
 
         std::vector<double> currentQ;
@@ -106,8 +118,11 @@ class InSrPort : public BufferedPort<Bottle> {
         /** Reading from the FT_JR3_sensor. **/
         void ReadFTSensor(Bottle& FTsensor);
 
+        /** Force/torque Transformation depending on the TCP orientation. **/
+        void AxesTransform1();
+
         /** Transformation matrix between TEO_body_axes (world) and Jr3_axes with horizontal tray (waiter). **/
-        void AxesTransform();
+        void AxesTransform2();
 
         /** Calculating ZMP of the bottle. **/
         void ZMPcomp();

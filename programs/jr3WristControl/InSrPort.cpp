@@ -37,7 +37,7 @@ void InSrPort::onRead(Bottle& FTsensor) {
     //poseRefCalculate();      // aun por desarrollar
 
     ReadFTSensor(FTsensor);
-    AxesTransform();
+    AxesTransform1();
     ZMPcomp();
     LIPM3d();
     saveToFile();
@@ -424,27 +424,76 @@ void InSrPort::ReadFTSensor(Bottle& FTsensor){
      * Reading input messages from JR3 SENSOR
     **/
 
-    _sensor3.fx = FTsensor.get(0).asDouble();
-    _sensor3.fy = FTsensor.get(1).asDouble();
-    _sensor3.fz = FTsensor.get(2).asDouble();
-    _sensor3.mx = FTsensor.get(3).asDouble();
-    _sensor3.my = FTsensor.get(4).asDouble();
-    _sensor3.mz = FTsensor.get(5).asDouble();
+    _jr3._initF.fx = FTsensor.get(0).asDouble();
+    _jr3._initF.fy = FTsensor.get(1).asDouble();
+    _jr3._initF.fz = FTsensor.get(2).asDouble();
+    _jr3._initT.mx = FTsensor.get(3).asDouble();
+    _jr3._initT.my = FTsensor.get(4).asDouble();
+    _jr3._initT.mz = FTsensor.get(5).asDouble();
 }
 
 /************************************************************************/
-void InSrPort::AxesTransform(){
+void InSrPort::AxesTransform1(){
+    /**
+     * Force/torque Transformation depending on the TCP orientation.
+    **/
+
+    std::vector<double> currentX, desireX;
+    if ( ! iCartesianSolver->fwdKin(currentQ,currentX) )    {
+        CD_ERROR("fwdKin failed.\n");    }
+
+
+    //normalizando
+    _normVector = sqrt(pow((currentX[3]),2) + pow((currentX[4]),2));
+    currentX[3] = currentX[3] / _normVector;
+    currentX[4] = currentX[4] / _normVector;
+    //convirtiendo en quaternios
+    quat[0] = cos (currentX[6]/2);
+    quat[1] = sen (currentX[3]/2);
+    quat[2] = sen (currentX[4]/2);
+    quat[3] = 0;
+    //calculando quaternio conjugado
+    quatC = quat;
+    quatC[1] = - quat[1];
+    quatC[2] = - quat[2];
+
+    //transformada      preFinalForce   = quat              *   _initF
+    //                  Final_F     = preFF    *   quatC
+    preFF[0]=((-quat[1]*_jr3._initF.fx) - (quat[2]*_jr3._initF.fy) - (quat[3]*_jr3._initF.fz));
+    preFF[1]=((quat[0]*_jr3._initF.fx) + (quat[2]*_jr3._initF.fz) - (quat[3]*_jr3._initF.fy));
+    preFF[2]=((quat[0]*_jr3._initF.fy) - (quat[1]*_jr3._initF.fz) + (quat[3]*_jr3._initF.fx));
+    preFF[3]=((quat[0]*_jr3._initF.fz) + (quat[1]*_jr3._initF.fy) - (quat[2]*_jr3._initF.fx));
+    FF[0]=((preFF[0]*quatC[0]) - (preFF[1]*quatC[1]) - (preFF[2]*quatC[2])) - (preFF[3]*quatC[3]);
+    FF[1]=((preFF[0]*quatC[1]) + (preFF[1]*quatC[0]) + (preFF[2]*quatC[3])) - (preFF[3]*quatC[2]); //fx
+    FF[2]=((preFF[0]*quatC[2]) - (preFF[1]*quatC[3]) + (preFF[2]*quatC[0])) + (preFF[3]*quatC[1]); //fy
+    FF[3]=((preFF[0]*quatC[3]) + (preFF[1]*quatC[2]) - (preFF[2]*quatC[1])) + (preFF[3]*quatC[0]); //fz
+
+    //transformada      preFM   = quat              *   _initM
+    //                  FM     = _preFM    *   quatC
+    preFM[0]=((-quat[1]*_jr3._initT.mx) - (quat[2]*_jr3._initT.my) - (quat[3]*_jr3._initT.mz));
+    preFM[1]=((quat[0]*_jr3._initT.mx) + (quat[2]*_jr3._initT.mz) - (quat[3]*_jr3._initT.my));
+    preFM[2]=((quat[0]*_jr3._initT.my) - (quat[1]*_jr3._initT.mz) + (quat[3]*_jr3._initT.mx));
+    preFM[3]=((quat[0]*_jr3._initT.mz) + (quat[1]*_jr3._initT.my) - (quat[2]*_jr3._initT.mx));
+    FM[0]=((preFM[0]*quatC[0]) - (preFM[1]*quatC[1]) - (preFM[2]*quatC[2])) - (preFM[3]*quatC[3]);
+    FM[1]=((preFM[0]*quatC[1]) + (preFM[1]*quatC[0]) + (preFM[2]*quatC[3])) - (preFM[3]*quatC[2]); //mx
+    FM[2]=((preFM[0]*quatC[2]) - (preFM[1]*quatC[3]) + (preFM[2]*quatC[0])) + (preFM[3]*quatC[1]); //my
+    FM[3]=((preFM[0]*quatC[3]) + (preFM[1]*quatC[2]) - (preFM[2]*quatC[1])) + (preFM[3]*quatC[0]); //mz
+
+}
+
+/************************************************************************/
+void InSrPort::AxesTransform2(){
     /**
      * Transformation matrix between TEO_body_axes (world) and Jr3_axes
      * with horizontal tray (waiter)
     **/
 
-    _tray.fx = + _sensor3.fz;
-    _tray.fy = - _sensor3.fy;
-    _tray.fz = + _sensor3.fx;
-    _tray.mx = + _sensor3.mz;
-    _tray.my = - _sensor3.my;
-    _tray.mz = + _sensor3.mx;
+    _tray._F.fx = + FF[3];
+    _tray._F.fy = + FF[2];
+    _tray._F.fz = + FF[1];
+    _tray._M.mx = + FM[3];
+    _tray._M.my = + FM[2];
+    _tray._M.mz = + FM[1];
 }
 
 /************************************************************************/
@@ -453,29 +502,27 @@ void InSrPort::ZMPcomp(){
      * Bottle ZMP measurements
     **/
 
-    if (_tray.fz==0)    {
-        _tray.xzmp = _tray.xzmp; // Milimetros
-        _tray.yzmp = _tray.yzmp; // Milimetros
+    if (_tray._F.fz==0)    {
+        _tray._zmp.x_zmp = _tray._zmp.x_zmp; // Metros
+        _tray._zmp.y_zmp = _tray._zmp.y_zmp; // Metros
     }else{
-        _tray.xzmp = -((- (_tray.my) / (_tray.fz)) + _d); // Metros
-        _tray.yzmp = ((_tray.mx) / _tray.fz); // Metros
+        _tray._zmp.x_zmp = ((- (_tray._M.my) / (_tray._F.fz)) - _d); // Metros
+        _tray._zmp.y_zmp = ((_tray._M.mx) / _tray._F.fz); // Metros
     }
 
-    if (_tray.xzmp>0.075)    { //limitando el maximo ZMP en X positivo
-        _tray.xzmp = 0.075;
-    }
-    if (_tray.xzmp<-0.075)    {//limitando el maximo ZMP en X negativo
-        _tray.xzmp = -0.075;
-    }
-
-    if (_tray.yzmp>0.075)    {//limitando el maximo ZMP en Y positivo
-        _tray.yzmp = 0.075;
-    }
-    if (_tray.yzmp<-0.075)    {//limitando el maximo ZMP en Y negativo
-        _tray.yzmp = -0.075;
+    if (_tray._zmp.x_zmp>0.075)    { //limitando el maximo ZMP en X positivo
+        _tray._zmp.x_zmp = 0.075;
+    }    if (_tray._zmp.x_zmp<-0.075)    {//limitando el maximo ZMP en X negativo
+        _tray._zmp.x_zmp = -0.075;
     }
 
-    _rzmp = sqrt(pow(_tray.xzmp,2) + pow(_tray.yzmp,2));
+    if (_tray._zmp.y_zmp>0.075)    {//limitando el maximo ZMP en Y positivo
+        _tray._zmp.y_zmp = 0.075;
+    }    if (_tray._zmp.y_zmp<-0.075)    {//limitando el maximo ZMP en Y negativo
+        _tray._zmp.y_zmp = -0.075;
+    }
+
+    _rzmp = sqrt(pow(_tray._zmp.x_zmp,2) + pow(_tray._zmp.y_zmp,2));
 
     //cout << "ZMP: [" << _tray.xzmp << ", " << _tray.yzmp << "]" << endl;
 }
@@ -560,8 +607,8 @@ void InSrPort::LIPM3d(){
 **/
 
     if ((_rzmp>0.020) && (_rWorkSpace<0.075))   { // será necesario programar los limites en los ejes X e Y.
-        desireX[0] = currentX[0] + _tray.xzmp; // new X position
-        desireX[1] = currentX[1] + _tray.yzmp; // new Y position
+        desireX[0] = currentX[0] + _tray._zmp.x_zmp; // new X position
+        desireX[1] = currentX[1] + _tray._zmp.y_zmp; // new Y position
     }
     if ((_rzmp>0.020) && (_rWorkSpace>0.075))   { // será necesario programar los limites en los ejes X e Y.
         printf("¡¡¡ BOTTLE FALL !!! \n");
@@ -596,8 +643,8 @@ void InSrPort::LIPM3d(){
     CD_DEBUG_NO_HEADER("\n ");
 
     CD_DEBUG_NO_HEADER("[ZMP values]");
-    CD_DEBUG_NO_HEADER("%f ",_tray.xzmp);
-    CD_DEBUG_NO_HEADER("%f ",_tray.yzmp);
+    CD_DEBUG_NO_HEADER("%f ",_tray._zmp.x_zmp);
+    CD_DEBUG_NO_HEADER("%f ",_tray._zmp.y_zmp);
     CD_DEBUG_NO_HEADER("%f ",_rWorkSpace);
     CD_DEBUG_NO_HEADER("\n ");
 
@@ -621,7 +668,7 @@ void InSrPort::saveToFile()
     else {
         out.open("cabeza.txt",ios::app);
     }
-    out <<  _tray.xzmp << " " <<  _tray.yzmp << " " << endl;
+    out <<  _tray._zmp.x_zmp << " " <<  _tray._zmp.y_zmp << " " << endl;
     out.close();
     iteration ++;
 
