@@ -72,6 +72,24 @@
         <from>/manipWaiterDialMan/tts/rpc:c</from>
         <to>/tts/rpc:s</to>
     </connection>
+    
+    <module>
+        <name>launchTeoYarp</name>
+        <parameters>--device BasicCartesianControl --name /teo/leftArm/CartesianControl --from /usr/local/share/manip-waiter/contexts/kinematics/leftArmKinematics-waiter.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teo/leftArm --remote /teo/leftArm</parameters>
+        <node>localhost</node>
+    </module>
 
+    <module>
+        <name>gnome-terminal</name>
+        <parameters>-e "yarp rpc /teo/leftArm/rpc:i"</parameters>
+        <node>localhost</node>
+    </module>
+    
+    <module>
+        <name>gnome-terminal</name>
+        <parameters>-e "yarp rpc /teo/leftArm/CartesianControl/rpc:s"</parameters>
+        <node>localhost</node>
+    </module>
+    
 </application>
 
