@@ -599,7 +599,7 @@ void InSrPort::ZMPcomp(){
         _tray._zmp.x_zmp = _tray._zmp.x_zmp; // Metros
         _tray._zmp.y_zmp = _tray._zmp.y_zmp; // Metros
     }else{
-        _tray._zmp.x_zmp = ( - _tray._M.my / ((_tray._F.fz)*cos(_thetaX)) + (_l*sin(_thetaX)) - _d); // Metros
+        _tray._zmp.x_zmp = ( - _tray._M.my / ((_tray._F.fz)*cos(_thetaX)) - (_l*sin(_thetaX)) - _d); // Metros
         _tray._zmp.y_zmp = ( _tray._M.mx / ((_tray._F.fz)*cos(_thetaY)) - (_l*sin(_thetaY)) ); // Metros
     }
     _tray._zmp.x_zmp = _tray._zmp.x_zmp*cos(_thetaX);
