@@ -39,27 +39,37 @@ class InSrPort : public BufferedPort<Bottle> {
         InSrPort()        {
             follow = 0;
             a = 0;
+            b = 0;
             pepinito = 1;
             _d = 0.025;
+            _l = 0.05;
             iteration=1;
+            quat.resize(4);
+            quatC.resize(4);
+            preFF.resize(4);
+            FF.resize(4);
+            preFM.resize(4);
+            FM.resize(4); // quaternios
+            _off._F.fx = 0;
+            _off._F.fy = 0;
+            _off._F.fz = 0; // No interesa eliminar
+            _off._M.mx = 0;
+            _off._M.my = 0;
+            _off._M.mz = 0;
+            currentQ.resize(7);
+
         }
 
         void setIEncodersControl(yarp::dev::IEncoders *iEncoders) {
-            this->iEncoders = iEncoders;
-        }
+            this->iEncoders = iEncoders;        }
         void setIPositionControl(yarp::dev::IPositionControl *iPositionControl) {
-            this->iPositionControl = iPositionControl;
-        }
+            this->iPositionControl = iPositionControl;        }
         void setIPositionDirect(yarp::dev::IPositionDirect *iPositionDirect) {
-            this->iPositionDirect = iPositionDirect;
-        }
+            this->iPositionDirect = iPositionDirect;        }
         void setIVelocityControl(yarp::dev::IVelocityControl *iVelocityControl) {
-            this->iVelocityControl = iVelocityControl;
-        }
+            this->iVelocityControl = iVelocityControl;        }
         void setICartesianSolver(teo::ICartesianSolver *iCartesianSolver) {
-            this->iCartesianSolver = iCartesianSolver;
-        }
-
+            this->iCartesianSolver = iCartesianSolver;        }
         void setFollow(int value);
 
         //yarp::os::Port port2; posibilidad de usar la muñeca derecha
@@ -67,71 +77,51 @@ class InSrPort : public BufferedPort<Bottle> {
 
     private:
 
-        int follow;
-        int a;
-        int numRobotJoints;
-        int pepinito;
+        int follow, a, b, numRobotJoints, pepinito, iteration;
+        float _d, _l;  //distance in m between the SDC tray and the SDC jr3
         double initpos;
-        int iteration;
 
-        struct SensorData {
+        struct SensorData { // lectura F/T del sensor JR3
             struct ForceVector {
                 double fx, fy, fz;
-            } _initF;
+            } _initF; // vector de fuerza proporcionado por el JR3
             struct TorqueVector {
                 double mx, my, mz;
-            } _initT;
+            } _initT; // vector de momento proporcionado por el JR3
         } _jr3;
 
-        struct TrayData {
+        struct TrayData { // variable para el control con los valores finales en la bandeja
             struct ForceVector {
                 double fx, fy, fz;
-            } _F;
+            } _F; // vector de fuerza despues de la transformacion de orientacion
             struct TorqueVector {
                 double mx, my, mz;
-            } _M;
+            } _M; // vector de momento despues de la transformacion de orientacion
             struct ZMPVector {
                 double x_zmp, y_zmp;
-            } _zmp;
-        } _tray;
+            } _zmp; // vector ZMP con sus dos componentes X e Y
+        } _tray, _off;
 
-        double _rzmp, _rWorkSpace, _normVector;
+        double _rzmp, _rWorkSpace, _normVector, _modFS, _modFF, angle, _thetaX, _thetaY;
         std::vector<double> quat, quatC, preFF, FF, preFM, FM; // quaternios
 
-        float _d;  //distance in mm between the plate center and the sensor center in the X axis
 
         std::vector<double> currentQ;
         std::vector<double> beforeQ;
+        std::vector<double> currentX;
 
-        /** Set left ARM INITIAL POSITION **/
-        bool preprogrammedInitTrajectory();
-
-        /** left ARM CONTROL WITH A VELOCITY STRATEGY **/
-        void strategyVelocity(Bottle& FTsensor);
-
-        /** left ARM CONTROL WITH A POSITION STRATEGY **/
-        void strategyPositionDirect(Bottle& FTsensor);
-
-        /** Callback on incoming Bottle. **/
-        virtual void onRead(Bottle& FTsensor);
-
-        /** Reading from the FT_JR3_sensor. **/
-        void ReadFTSensor(Bottle& FTsensor);
-
-        /** Force/torque Transformation depending on the TCP orientation. **/
-        void AxesTransform1();
-
-        /** Transformation matrix between TEO_body_axes (world) and Jr3_axes with horizontal tray (waiter). **/
-        void AxesTransform2();
-
-        /** Calculating ZMP of the bottle. **/
-        void ZMPcomp();
-
-        /** Control based on the 3D-LIMP. **/
-        void LIPM3d();
-
-        /** Saving the ZMP measurements. **/
-        void saveToFile();
+        /** Set INITIAL POS-VEL-ACC **/                         bool preprogrammedInitTrajectory();
+        /** ARM CONTROL WITH A VELOCITY STRATEGY **/            void strategyVelocity(Bottle& FTsensor);
+        /** ARM CONTROL WITH A POSITION STRATEGY **/            void strategyPositionDirect(Bottle& FTsensor);
+        /** Callback on incoming Bottle. **/            virtual void onRead(Bottle& FTsensor);
+        /** Reading from the FT_JR3_sensor. **/                 void ReadFTSensor(Bottle& FTsensor);
+        /** Rotation Transformation matrix of JR3. **/          void AxesTransform1();
+        /** Transformation matrix between JR3 and tray. **/     void AxesTransform2();
+        /** Calculating ZMP of the bottle. **/                  void ZMPcomp();
+        /** Control based on the 3D-LIMP. **/                   void LIPM3d();
+        /** Saving the ZMP measurements. **/                    void saveToFile();
+        /** Configurating the pose and F/t references. **/      void poseRefCalculate(Bottle& FTsensor);
+        /** Offset JR3 measurements. **/                        void offSetJR3(Bottle& FTsensor);
 
         //-- Robot device
         yarp::dev::IEncoders *iEncoders;

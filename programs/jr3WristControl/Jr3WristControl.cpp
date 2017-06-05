@@ -96,7 +96,7 @@ bool Jr3WristControl::configure(ResourceFinder &rf) {
 
 /************************************************************************/
 double Jr3WristControl::getPeriod() {
-    return 1.0;  // Fixed, in seconds, the slow thread that calls updateModule below
+    return 100.0;  // Fixed, in seconds, the slow thread that calls updateModule below
 }
 
 /************************************************************************/

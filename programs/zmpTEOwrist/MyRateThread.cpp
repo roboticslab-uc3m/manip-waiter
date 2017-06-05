@@ -63,4 +63,6 @@ void MyRateThread::ZMPcomp(){ // Cálculo del ZMP de la botella
     }
 
     cout << "ZMP: [" << _tray.xzmp << ", " << _tray.yzmp << "]" << endl;
+    //cout << "ZMP: [" << _sensor3.fx << ", " << _sensor3.fy << ", " << _sensor3.fz << "]" << endl;
+
 }

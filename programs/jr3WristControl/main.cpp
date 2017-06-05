@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
     ResourceFinder rf;
     rf.setVerbose(true);
     rf.setDefaultContext("jr3WristControl");
-    rf.setDefaultConfigFile("/usr/local/share/teo-configuration-files/contexts/kinematics/leftArmKinematics.ini");
+    rf.setDefaultConfigFile("/usr/local/share/manip-waiter/contexts/kinematics/leftArmKinematics-waiter.ini");
     rf.configure(argc, argv);
 
     teo::Jr3WristControl mod;
