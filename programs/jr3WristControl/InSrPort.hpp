@@ -44,20 +44,22 @@ class InSrPort : public BufferedPort<Bottle> {
             _d = 0.025;
             _l = 0.05;
             iteration=1;
-            quat.resize(4);
-            quatC.resize(4);
-            preFF.resize(4);
-            FF.resize(4);
-            preFM.resize(4);
-            FM.resize(4); // quaternios
+            //quat.resize(4);
+            //quatC.resize(4);
+            //preFF.resize(4);
+            //FF.resize(4);
+            //preFM.resize(4);
+            //FM.resize(4); // quaternios
             _off._F.fx = 0;
             _off._F.fy = 0;
-            _off._F.fz = 0; // No interesa eliminar
+            _off._F.fz = 0;
             _off._M.mx = 0;
             _off._M.my = 0;
             _off._M.mz = 0;
             currentQ.resize(7);
-
+            currentX.resize(7);
+            desireX.resize(7);
+            desireQ.resize(7);
         }
 
         void setIEncodersControl(yarp::dev::IEncoders *iEncoders) {
@@ -73,7 +75,7 @@ class InSrPort : public BufferedPort<Bottle> {
         void setFollow(int value);
 
         //yarp::os::Port port2; posibilidad de usar la muñeca derecha
-        yarp::os::Port port3;
+        //yarp::os::Port port3;
 
     private:
 
@@ -102,26 +104,23 @@ class InSrPort : public BufferedPort<Bottle> {
             } _zmp; // vector ZMP con sus dos componentes X e Y
         } _tray, _off;
 
-        double _rzmp, _rWorkSpace, _normVector, _modFS, _modFF, angle, _thetaX, _thetaY;
+        double _rzmp, _rWorkSpace, _rFxy, _modFS, _modFF, angle, _thetaX, _thetaY;
         std::vector<double> quat, quatC, preFF, FF, preFM, FM; // quaternios
+        std::vector<double> currentQ, beforeQ, desireQ;
+        std::vector<double> currentX, desireX;
 
-
-        std::vector<double> currentQ;
-        std::vector<double> beforeQ;
-        std::vector<double> currentX;
-
-        /** Set INITIAL POS-VEL-ACC **/                         bool preprogrammedInitTrajectory();
-        /** ARM CONTROL WITH A VELOCITY STRATEGY **/            void strategyVelocity(Bottle& FTsensor);
-        /** ARM CONTROL WITH A POSITION STRATEGY **/            void strategyPositionDirect(Bottle& FTsensor);
-        /** Callback on incoming Bottle. **/            virtual void onRead(Bottle& FTsensor);
-        /** Reading from the FT_JR3_sensor. **/                 void ReadFTSensor(Bottle& FTsensor);
-        /** Rotation Transformation matrix of JR3. **/          void AxesTransform1();
-        /** Transformation matrix between JR3 and tray. **/     void AxesTransform2();
-        /** Calculating ZMP of the bottle. **/                  void ZMPcomp();
-        /** Control based on the 3D-LIMP. **/                   void LIPM3d();
-        /** Saving the ZMP measurements. **/                    void saveToFile();
-        /** Configurating the pose and F/t references. **/      void poseRefCalculate(Bottle& FTsensor);
-        /** Offset JR3 measurements. **/                        void offSetJR3(Bottle& FTsensor);
+        //-- InSrPort Funtions
+        bool preprogrammedInitTrajectory();/** Set INITIAL POS-VEL-ACC **/
+        void strategyVelocity(Bottle& FTsensor);/** ARM CONTROL WITH A VELOCITY STRATEGY **/
+        void strategyPositionDirect(Bottle& FTsensor);/** ARM CONTROL WITH A POSITION STRATEGY **/
+        virtual void onRead(Bottle& FTsensor);/** Callback on incoming Bottle. **/
+        void ReadFTSensor(Bottle& FTsensor);/** Reading from the FT_JR3_sensor. **/
+        void AxesTransform1();/** Rotation Transformation matrix of JR3. **/
+//      void AxesTransform2();/** Transformation matrix between JR3 and tray. **/
+        void ZMPcomp();/** Calculating ZMP of the bottle. **/
+        void LIPM3d();/** Control based on the 3D-LIMP. **/
+        void saveToFile();/** Saving the ZMP measurements. **/
+        void offSetJR3(Bottle& FTsensor);/** Offset JR3 measurements. **/
 
         //-- Robot device
         yarp::dev::IEncoders *iEncoders;

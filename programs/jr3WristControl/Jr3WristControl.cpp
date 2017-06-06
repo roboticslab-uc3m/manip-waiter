@@ -38,24 +38,19 @@ bool Jr3WristControl::configure(ResourceFinder &rf) {
 
     if( ! leftArmDevice.isValid() )    {
         printf("leftArm remote_controlboard instantiation not worked.\n");
-        return false;
-    }
+        return false;    }
     if( ! leftArmDevice.view(iEncoders) )    {
         printf("view(iEncoders) not worked.\n");
-        return false;
-    }
+        return false;    }
     if( ! leftArmDevice.view(iPositionControl) )    {
         printf("view(iPositionControl) not worked.\n");
-        return false;
-    }
+        return false;    }
     if( ! leftArmDevice.view(iPositionDirect) )    {
         printf("view(iPositionDirect) not worked.\n");
-        return false;
-    }
+        return false;    }
     if( ! leftArmDevice.view(iVelocityControl) )    {
         printf("view(iVelocityControl) not worked.\n");
-        return false;
-    }
+        return false;    }
 
     /*inCvPort.setIEncodersControl(iEncoders);
     inCvPort.setIPositionControl(iPositionControl);
@@ -76,12 +71,10 @@ bool Jr3WristControl::configure(ResourceFinder &rf) {
 
     if( ! solverDevice.isValid() )    {
         CD_ERROR("solver device not valid: %s.\n",solverStr.c_str());
-        return false;
-    }
+        return false;    }
     if( ! solverDevice.view(iCartesianSolver) )    {
         CD_ERROR("Could not view iCartesianSolver in: %s.\n",solverStr.c_str());
-        return false;
-    }
+        return false;    }
     //inCvPort.setICartesianSolver(iCartesianSolver);
     inSrPort.setICartesianSolver(iCartesianSolver);
     
@@ -96,12 +89,13 @@ bool Jr3WristControl::configure(ResourceFinder &rf) {
 
 /************************************************************************/
 double Jr3WristControl::getPeriod() {
-    return 100.0;  // Fixed, in seconds, the slow thread that calls updateModule below
+    return 2.0;  // Fixed, in seconds, the slow thread that calls updateModule below
 }
 
 /************************************************************************/
 bool Jr3WristControl::updateModule() {
     //printf("StateMachine in state [%d]. Jr3WristControl alive...\n", stateMachine.getMachineState());
+    //printf("StateMachine in alive.\n");
     return true;
 }
 

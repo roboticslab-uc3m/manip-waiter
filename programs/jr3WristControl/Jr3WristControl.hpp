@@ -7,7 +7,7 @@
 #include <yarp/dev/all.h>
 #include <stdlib.h>
 
-#include "InCvPort.hpp"
+//#include "InCvPort.hpp"
 #include "InSrPort.hpp"
 
 #define DEFAULT_REMOTE "teo"
@@ -40,7 +40,7 @@ class Jr3WristControl : public RFModule {
     protected:
 
         InSrPort inSrPort;
-        InCvPort inCvPort;
+        //InCvPort inCvPort;
 
         //-- Robot device
         yarp::dev::PolyDriver leftArmDevice;
