@@ -44,10 +44,14 @@ class InSrPort : public BufferedPort<Bottle> {
             _d = 0.025;
             _l = 0.05;
             iteration=1;
-            //quat.resize(4);
-            //quatC.resize(4);
-            //preFF.resize(4);
-            //FF.resize(4);
+            quat.resize(4);
+            quatC.resize(4);
+            preFF.resize(4);
+            FF.resize(4);
+            _rzmp = 0;
+            _rzmp_b = 0;
+            x_zmp_b = 0;
+            y_zmp_b = 0;
             //preFM.resize(4);
             //FM.resize(4); // quaternios
             _off._F.fx = 0;
@@ -104,7 +108,8 @@ class InSrPort : public BufferedPort<Bottle> {
             } _zmp; // vector ZMP con sus dos componentes X e Y
         } _tray, _off;
 
-        double _rzmp, _rWorkSpace, _rFxy, _modFS, _modFF, angle, _thetaX, _thetaY;
+        double _rzmp, _rzmp_b, _rWorkSpace, _rFxy, _modFS, _modFF, x_zmp_b, y_zmp_b;
+        double angle, _thetaX, _thetaY, _thetaXX, _thetaYY;
         std::vector<double> quat, quatC, preFF, FF, preFM, FM; // quaternios
         std::vector<double> currentQ, beforeQ, desireQ;
         std::vector<double> currentX, desireX;
@@ -116,7 +121,7 @@ class InSrPort : public BufferedPort<Bottle> {
         virtual void onRead(Bottle& FTsensor);/** Callback on incoming Bottle. **/
         void ReadFTSensor(Bottle& FTsensor);/** Reading from the FT_JR3_sensor. **/
         void AxesTransform1();/** Rotation Transformation matrix of JR3. **/
-//      void AxesTransform2();/** Transformation matrix between JR3 and tray. **/
+        void AxesTransform2();/** Transformation matrix between JR3 and tray. **/
         void ZMPcomp();/** Calculating ZMP of the bottle. **/
         void LIPM3d();/** Control based on the 3D-LIMP. **/
         void saveToFile();/** Saving the ZMP measurements. **/

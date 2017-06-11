@@ -28,13 +28,13 @@ void InSrPort::setFollow(int value)
 /************************************************************************/
 void InSrPort::onRead(Bottle& FTsensor) {
 
-/*
+
     if (a==0)    {
         preprogrammedInitTrajectory();
         iPositionControl->setPositionMode();
         a=1;
     }
-*/
+
 
     if (b!=250)    {
         offSetJR3(FTsensor);
@@ -44,7 +44,7 @@ void InSrPort::onRead(Bottle& FTsensor) {
     if (b==250)   {
         ReadFTSensor(FTsensor);
         AxesTransform1();
-//        AxesTransform2();
+        AxesTransform2();
         ZMPcomp();
         LIPM3d();
         saveToFile();
@@ -379,19 +379,19 @@ bool InSrPort::preprogrammedInitTrajectory()
 
 
 /** ----- generate initial movement --------------- **/
-    iPositionControl->setPositionMode();
-    printf("begin MOVE TO START POSITION\n");
-    double initpos[7] = {-30,0,0,-90,0,30,0};
+    //iPositionControl->setPositionMode();
+    //printf("begin MOVE TO START POSITION\n");
+    //double initpos[7] = {-30,0,0,-90,0,30,0};
     //iPositionControl->positionMove(initpos);
     //posicionamiento temporal hasta arreglar set poss
-    iPositionControl->positionMove(0,-30);
-    iPositionControl->positionMove(1,0);
-    iPositionControl->positionMove(2,0);
-    iPositionControl->positionMove(3,-90);
-    iPositionControl->positionMove(4,0);
-    iPositionControl->positionMove(5,30);
+    //iPositionControl->positionMove(0,-30);
+    //iPositionControl->positionMove(1,0);
+    //iPositionControl->positionMove(2,0);
+    //iPositionControl->positionMove(3,-90);
+    //iPositionControl->positionMove(4,0);
+    //iPositionControl->positionMove(5,30);
 
-    yarp::os::Time::delay(10);  // provisional !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //yarp::os::Time::delay(10);  // provisional !!!!!!!!!!!!!!!!!!!!!!!!!!!!
     /*bool done = false;
     while( ! done )    {
         yarp::os::Time::delay(0.5);
@@ -405,13 +405,12 @@ bool InSrPort::preprogrammedInitTrajectory()
     std::vector<double> beforeQ(numRobotJoints);
     if ( ! iEncoders->getEncoders( beforeQ.data() ) )    {
         CD_WARNING("getEncoders failed, not updating control this iteration.\n");
-        return false;
-    }
+        return false;    }
     /** --------------------------------------------------- **/
 
 
 /** ----- set NEW ref speed --------------- **/
-    double initspe[7] = {100.0,100.0,100.0,100.0,100.0,100.0,0.0};
+    double initspe[7] = {50.0,50.0,50.0,50.0,50.0,50.0,0.0};
     iPositionControl->setRefSpeeds(initspe);
     /** --------------------------------------------------- **/
 
@@ -448,7 +447,7 @@ void InSrPort::AxesTransform1(){
     _tray._F.fy = + _jr3._initF.fy - _off._F.fy;
     _tray._F.fz = + _jr3._initF.fx + _off._F.fx;
     _tray._M.mx = + _jr3._initT.mz - _off._M.mz;
-    _tray._M.my = + _jr3._initT.my + _off._M.my;
+    _tray._M.my = + _jr3._initT.my - _off._M.my; // cambiando el segundo signo - por el +
     _tray._M.mz = + _jr3._initT.mx - _off._M.mx;
 /*
     _tray._F.fx = std::setprecision(2) << std::fixed << _tray._F.fx;
@@ -466,15 +465,15 @@ void InSrPort::AxesTransform1(){
 }
 
 /************************************************************************/
-/*void InSrPort::AxesTransform2(){
+void InSrPort::AxesTransform2(){
    //     Force/torque Transformation depending on the TCP orientation.
 
-    //if ( ! iEncoders->getEncoders( currentQ.data() ) )    { //obtencion de los valores articulares (encoders absolutos)
-    //    CD_WARNING("getEncoders failed, not updating control this iteration.\n");
-    //    return;    }
+    if ( ! iEncoders->getEncoders( currentQ.data() ) )    { //obtencion de los valores articulares (encoders absolutos)
+        CD_WARNING("getEncoders failed, not updating control this iteration.\n");
+        return;    }
 
-    //if ( ! iCartesianSolver->fwdKin(currentQ,currentX) )    {
-    //    CD_ERROR("fwdKin failed.\n");    }
+    if ( ! iCartesianSolver->fwdKin(currentQ,currentX) )    {
+        CD_ERROR("fwdKin failed.\n");    }
 
     //normalizando (no hace falta xq ya esta predefinido)
     //_normVector = sqrt(pow((currentX[3]),2) + pow((currentX[4]),2) + pow((currentX[5]),2));
@@ -491,32 +490,38 @@ void InSrPort::AxesTransform1(){
 
     //convirtiendo de grados a radianes
     //angle= currentX[6];
-    //currentX[6]=(currentX[6]/180)*3.1415926;
-    //convirtiendo en quaternios
-    //quat[0] = cos(currentX[6]/2); // angulo theta
-    //quat[1] = currentX[3] * sin(currentX[6]/2); // eje X
-    //quat[2] = currentX[4] * sin(currentX[6]/2); // eje Y
-    //quat[3] = currentX[5] * sin(currentX[6]/2); // eje Z, siempre a cero
 
-    //if (quat[0]==0 && quat[1]==0 && quat[2]==0 && quat[3]==0) {
-    //    quat[1]=1;    }
+    currentX[6]=(currentX[6]/180)*3.1415926;
+    if ((currentX[6]<0.015))     {
+        currentX[3] = 0;
+        currentX[4] = 0;
+        currentX[5] = 0;    }
+    //convirtiendo en quaternios
+    quat[0] = cos(currentX[6]/2); // angulo theta
+    quat[1] = currentX[3] * sin(currentX[6]/2); // eje X
+    quat[2] = currentX[4] * sin(currentX[6]/2); // eje Y
+    quat[3] = currentX[5] * sin(currentX[6]/2); // eje Z, siempre a cero
+
+    if (quat[0]==0 && quat[1]==0 && quat[2]==0 && quat[3]==0) {
+        quat[1]=1;    }
+
 
     //calculando quaternio conjugado
-    //quatC = quat;
-    //quatC[1] = - quat[1];
-    //quatC[2] = - quat[2];
-    //quatC[2] = - quat[3];
+    quatC = quat;
+    quatC[1] = - quat[1];
+    quatC[2] = - quat[2];
+    quatC[2] = - quat[3];
 
     //transformada      preFinalForce   = quat              *   _initF
     //                  Final_F     = preFF    *   quatC
-    //preFF[0]=((-quat[1]*_tray._F.fx) - (quat[2]*_tray._F.fy) - (quat[3]*_tray._F.fz));
-    //preFF[1]=((quat[0]*_tray._F.fx) + (quat[2]*_tray._F.fz) - (quat[3]*_tray._F.fy));
-    //preFF[2]=((quat[0]*_tray._F.fy) - (quat[1]*_tray._F.fz) + (quat[3]*_tray._F.fx));
-    //preFF[3]=((quat[0]*_tray._F.fz) + (quat[1]*_tray._F.fy) - (quat[2]*_tray._F.fx));
-    //FF[0]=((preFF[0]*quatC[0]) - (preFF[1]*quatC[1]) - (preFF[2]*quatC[2])) - (preFF[3]*quatC[3]);
-    //FF[1]=((preFF[0]*quatC[1]) + (preFF[1]*quatC[0]) + (preFF[2]*quatC[3])) - (preFF[3]*quatC[2]); //fx
-    //FF[2]=((preFF[0]*quatC[2]) - (preFF[1]*quatC[3]) + (preFF[2]*quatC[0])) + (preFF[3]*quatC[1]); //fy
-    //FF[3]=((preFF[0]*quatC[3]) + (preFF[1]*quatC[2]) - (preFF[2]*quatC[1])) + (preFF[3]*quatC[0]); //fz
+    preFF[0]=( - (quat[1]*_tray._F.fx) - (quat[2]*_tray._F.fy) - (quat[3]*_tray._F.fz));
+    preFF[1]=((quat[0]*_tray._F.fx) + (quat[2]*_tray._F.fz) - (quat[3]*_tray._F.fy));
+    preFF[2]=((quat[0]*_tray._F.fy) - (quat[1]*_tray._F.fz) + (quat[3]*_tray._F.fx));
+    preFF[3]=((quat[0]*_tray._F.fz) + (quat[1]*_tray._F.fy) - (quat[2]*_tray._F.fx));
+    FF[0]=((preFF[0]*quatC[0]) - (preFF[1]*quatC[1]) - (preFF[2]*quatC[2])) - (preFF[3]*quatC[3]);
+    FF[1]=((preFF[0]*quatC[1]) + (preFF[1]*quatC[0]) + (preFF[2]*quatC[3])) - (preFF[3]*quatC[2]); //fx
+    FF[2]=((preFF[0]*quatC[2]) - (preFF[1]*quatC[3]) + (preFF[2]*quatC[0])) + (preFF[3]*quatC[1]); //fy
+    FF[3]=((preFF[0]*quatC[3]) + (preFF[1]*quatC[2]) - (preFF[2]*quatC[1])) + (preFF[3]*quatC[0]); //fz
 
     //transformada      preFM   = quat              *   _initM
     //                  FM     = _preFM    *   quatC
@@ -529,24 +534,24 @@ void InSrPort::AxesTransform1(){
     //FM[2]=((preFM[0]*quatC[2]) - (preFM[1]*quatC[3]) + (preFM[2]*quatC[0])) + (preFM[3]*quatC[1]); //my
     //FM[3]=((preFM[0]*quatC[3]) + (preFM[1]*quatC[2]) - (preFM[2]*quatC[1])) + (preFM[3]*quatC[0]); //mz
 
-}*/
+}
 
 /************************************************************************/
-void InSrPort::ZMPcomp(){
+void InSrPort::ZMPcomp()    {
     /**     * Bottle ZMP measurements    **/
-
+/*
     if ( ! iEncoders->getEncoders( currentQ.data() ) )    { //obtencion de los valores articulares (encoders absolutos)
         CD_WARNING("getEncoders failed, not updating control this iteration.\n");
         std::cout << "ZMP: [dentro]" << endl;
         return;    }
-
+*/
     if ( ! iCartesianSolver->fwdKin(currentQ,currentX) )    {
         CD_ERROR("fwdKin failed.\n");    }
 
     //angle=(currentX[6]/180)*3.1415926; // transformando a rad
-
-    _thetaX = -(atan((fabs(_tray._F.fz)/_tray._F.fx))); //sobre el plano YZ en rad
-    _thetaY = (atan((fabs(_tray._F.fz)/_tray._F.fy))); //sobre el plano XZ en rad
+/*
+    _thetaX = -(atan((fabs(FF[3])/FF[1]))); //sobre el plano YZ en rad
+    _thetaY = (atan((fabs(FF[3])/FF[2]))); //sobre el plano XZ en rad
     if (_thetaX < 0)    {
         _thetaX += + 3.1415926/2;}
     else    {
@@ -555,14 +560,52 @@ void InSrPort::ZMPcomp(){
         _thetaY += + 3.1415926/2;}
     else    {
         _thetaY -= + 3.1415926/2;}
+ */
+    _thetaXX = (atan(_tray._F.fx/(fabs(_tray._F.fz)))); //sobre el plano YZ en rad
+    _thetaYY = -(atan(_tray._F.fy/(fabs(_tray._F.fz)))); //sobre el plano XZ en rad
 
-    if (_tray._F.fz==0)    {
+    _thetaX = (((atan(FF[1]/fabs(FF[3])))*180)/3.1415926); //sobre el plano YZ en rad
+    _thetaY = -(((atan(FF[2]/fabs(FF[3])))*180)/3.1415926); //sobre el plano XZ en rad
+/*    if (_thetaX < 0)    {
+        _thetaX += + 90;}
+    else    {
+        _thetaX -= + 90;}
+    if (_thetaY < 0)    {
+        _thetaY += + 90;}
+    else    {
+        _thetaY -= + 90;}*/
+
+/*    _thetaX = -(atan((fabs(_tray._F.fz)/_tray._F.fx))); //sobre el plano YZ en rad
+    _thetaY = (atan((fabs(_tray._F.fz)/_tray._F.fy))); //sobre el plano XZ en rad
+    if (_thetaX < 0)    {
+        _thetaX += + 3.1415926/2;}
+    else    {
+        _thetaX -= + 3.1415926/2;}
+    if (_thetaY < 0)    {
+        _thetaY += + 3.1415926/2;}
+    else    {
+        _thetaY -= + 3.1415926/2;}*/
+
+/*    if (_tray._F.fz==0)    {
         _tray._zmp.x_zmp = _tray._zmp.x_zmp; // Metros
         _tray._zmp.y_zmp = _tray._zmp.y_zmp; // Metros
     }else{
         _tray._zmp.x_zmp = ( - _tray._M.my / ((_tray._F.fz)*cos(_thetaX)) - (_l*sin(_thetaX)) - _d); // Metros
-        _tray._zmp.y_zmp = ( _tray._M.mx / ((_tray._F.fz)*cos(_thetaY)) - (_l*sin(_thetaY)) ); // Metros
+        _tray._zmp.y_zmp = ( _tray._M.mx / ((_tray._F.fz)*cos(_thetaY)) - (_l*sin(_thetaY)) );}*/ // Metros
+
+    // testeando****************************************************
+    if (_tray._F.fz==0)    {
+        _tray._zmp.x_zmp = _tray._zmp.x_zmp; // Metros
+        _tray._zmp.y_zmp = _tray._zmp.y_zmp; // Metros
+    }else{
+        _tray._zmp.x_zmp = ((- _tray._M.my / (-9.72*cos(_thetaXX))) - (_l*FF[1]/(-9.72*cos(_thetaXX)) )); // Metros
+        _tray._zmp.y_zmp = ((_tray._M.mx / (-9.72*cos(_thetaYY)))   - (_l*FF[2]/(-9.72*cos(_thetaYY)) )); // Metros
+
+       // _tray._zmp.x_zmp = ( - _tray._M.my / ((FF[3])*cos(_thetaX)) - ((_l*FF[1]*tan(_thetaX))/FF[3]) ); // Metros
+       // _tray._zmp.y_zmp = ( _tray._M.mx / ((FF[3])*cos(_thetaY)) - ((_l*FF[1]*tan(_thetaY))/FF[3]) ); // Metros
     }
+    //**************************************************************
+
 /*    _tray._zmp.x_zmp = _tray._zmp.x_zmp*cos(_thetaX);
     _tray._zmp.y_zmp = _tray._zmp.y_zmp*cos(_thetaY);*/
 
@@ -588,36 +631,54 @@ void InSrPort::ZMPcomp(){
 void InSrPort::LIPM3d()
 {
     //Generacion de la actuacion a los motores (CONTROL)
-
-    if (_rzmp>0.005)   { // será necesario programar los limites en los ejes X e Y.
-        if (currentX[6]>1)  {
-            desireX[3] = currentX[3];
-            desireX[4] = currentX[4];
-            desireX[5] = currentX[5];
-            desireX[6] = -currentX[6]/2;
+    if (fabs(_rzmp-_rzmp_b<0.02))   {
+        if ((_rzmp>0.005) && (currentX[6]<10))  { // será necesario programar los limites en los ejes X e Y.
+                //rotVector();
+                // calculo del angulo de rotacion
+                _rFxy = sqrt(pow(_tray._F.fx,2) + pow(_tray._F.fy,2)); // quizas se deberia cambiar por zmp_x y zmp_y .
+                desireX[6] = (((atan(_rFxy/(fabs(_tray._F.fz))))*180)/(3.1415926));
+                desireX[6] = desireX[6] - currentX[6];
+                // calculo del vector unitario de rotacion
+                desireX[3] = 1 / ( sqrt( 1 + pow((_tray._zmp.x_zmp/_tray._zmp.y_zmp),2) ) );
+                desireX[4] = -_tray._zmp.x_zmp / (_tray._zmp.y_zmp * ( sqrt( 1 + pow((_tray._zmp.x_zmp/_tray._zmp.y_zmp),2) ) ) );
+                desireX[5] = 0;
+                _rzmp_b=_rzmp;
         }
-        if (currentX[6]<1)  {
-            //rotVector();
-            // calculo del angulo de rotacion
-            _rFxy = sqrt(pow(_tray._F.fx,2) + pow(_tray._F.fx,2));
-            desireX[6] = -(((atan(_rFxy/(fabs(_tray._F.fz))))*180)/(3.1415926)*2);
-            // calculo del eje de rotacion unitario
-            desireX[3] = 1 / ( sqrt( 1 + pow((_tray._zmp.x_zmp/_tray._zmp.y_zmp),2) ) );
-            desireX[4] = -_tray._zmp.x_zmp / (_tray._zmp.y_zmp * ( sqrt( 1 + pow((_tray._zmp.x_zmp/_tray._zmp.y_zmp),2) ) ) );
-            desireX[5] = 0;
+/*
+        if ((_rzmp>0.005) && (_rWorkSpace>0.100))   { // será necesario programar los limites en los ejes X e Y.
+            desireX[3] = 0;    //
+            desireX[4] = 0;     //
+            desireX[5] = 0;     //  Orientation
+            desireX[6] = 0;
+            printf("¡¡¡ BOTTLE FALL !!! \n");
+            //return;
+            _rzmp_b=_rzmp;
+        }*/
+        if (_rzmp<0.005)   { // será necesario programar los limites en los ejes X e Y.
+            desireX[3] = 0;    //
+            desireX[4] = 0;     //
+            desireX[5] = 0;     //  Orientation
+            desireX[6] = 0;    //
+            printf("THE BOTTLE IS IN EQUILIBRIUM \n");
+            //return;
+            _rzmp_b=_rzmp;
         }
     }
-    if ((_rzmp>0.005) && (_rWorkSpace>0.100))   { // será necesario programar los limites en los ejes X e Y.
+    if (fabs(_rzmp-_rzmp_b>0.02))   {
+        desireX[3] = desireX[3];    //
+        desireX[4] = desireX[4];     //
+        desireX[5] = desireX[5];     //  Orientation
+        desireX[6] = desireX[6];    //
+    }
+/*
+    if (currentX[6]>10)   { // será necesario programar los limites en los ejes X e Y.
+        desireX[3] = desireX[3];    //
+        desireX[4] = desireX[4];     //
+        desireX[5] = desireX[5];     //  Orientation
+        desireX[6] = desireX[6];    //
         printf("¡¡¡ BOTTLE FALL !!! \n");
-        //return;
-    }
-    if (_rzmp<0.005)   { // será necesario programar los limites en los ejes X e Y.
-        desireX[3] = 0;    //
-        desireX[4] = 0;     //
-        desireX[5] = 0;     //  Orientation
-        desireX[6] = 0;    //
-        printf("THE BOTTLE IS IN EQUILIBRIUM \n");
-    }
+        _rzmp_b=_rzmp;
+    }*/
 
     // ref[x,y,z]: 0.302982 0.34692 0.247723
     desireX[0] = 0.302982; // new X position
@@ -646,14 +707,17 @@ void InSrPort::LIPM3d()
     if( ! iPositionControl->positionMove( desireQ.data() )) {
         CD_WARNING("setPositions failed, not updating control this iteration.\n");    }
 
+//    x_zmp_b = _tray._zmp.x_zmp; // de momento esto no sirve para nada
+//    y_zmp_b = _tray._zmp.y_zmp;
+
     return;
 
 }
 
 /************************************************************************/
 void InSrPort::saveToFile(){
-//    _modFS = sqrt(pow((_tray._F.fx),2) + pow((_tray._F.fy),2) + pow((_tray._F.fz),2));
-//    _modFF = sqrt(pow((FF[1]),2) + pow((FF[2]),2) + pow((FF[3]),2));
+    _modFS = sqrt(pow((_tray._F.fx),2) + pow((_tray._F.fy),2) + pow((_tray._F.fz),2));
+    _modFF = sqrt(pow((FF[1]),2) + pow((FF[2]),2) + pow((FF[3]),2));
 
 //    cout << "CurX: [" << currentX[3] << "\t, " << currentX[4] << "\t, " << currentX[5] << "\t, " << currentX[6] << "]" << endl;
 //    cout << "Quat: [" << quatC[0] << "\t, " << quatC[1] << "\t, " << quatC[2] << "\t, " << quatC[3] << "]" << endl;
@@ -666,11 +730,13 @@ void InSrPort::saveToFile(){
 //    cout << "F_Z: [" << _tray._F.fz << "\t, " << FF[3] << "]" << endl;//<< FF[3] << "]" << endl;
     cout << "ZMP: [" << _tray._zmp.x_zmp << "\t, " << _tray._zmp.y_zmp << "]" << endl;
 //    cout << "mod: [" << _modFS << "\t, " << _modFF << "]" << endl;
+//    cout << "the: [" << _thetaXX << "\t, " << _thetaYY << "]" << endl;
 //    cout << "the: [" << _thetaX << "\t, " << _thetaY << "]" << endl;
 
-    cout << "CurX: [" << currentX[0] << "\t, " << currentX[1] << "\t, " << currentX[2] << "\t, " << currentX[3] << "\t, " << currentX[4] << "\t, " << currentX[5] << "\t, " << currentX[6] << "]" << endl;
-    cout << "DesX: [" << desireX[0] << "\t, " << desireX[1] << "\t, " << desireX[2] << "\t, " << desireX[3] << "\t, " << desireX[4] << "\t, " << desireX[5] << "\t, " << desireX[6] << "]" << endl;
-
+    cout << "CurX: [" << currentX[3] << "\t, " << currentX[4] << "\t, " << currentX[5] << "\t, " << currentX[6] << "]" << endl;
+    cout << "DesX: [" << desireX[3] << "\t, " << desireX[4] << "\t, " << desireX[5] << "\t, " << desireX[6] << "]" << endl;
+//    cout << "CurX: [" << currentX[0] << "\t, " << currentX[1] << "\t, " << currentX[2] << "\t, " << currentX[3] << "\t, " << currentX[4] << "\t, " << currentX[5] << "\t, " << currentX[6] << "]" << endl;
+//    cout << "DesX: [" << desireX[0] << "\t, " << desireX[1] << "\t, " << desireX[2] << "\t, " << desireX[3] << "\t, " << desireX[4] << "\t, " << desireX[5] << "\t, " << desireX[6] << "]" << endl;
 
     /*CD_DEBUG_NO_HEADER("F_init:[");
     CD_DEBUG_NO_HEADER("%f \t",_tray._F.fx);
@@ -685,8 +751,7 @@ void InSrPort::saveToFile(){
     CD_DEBUG_NO_HEADER("%f \t",_modFF);
     CD_DEBUG_NO_HEADER("\n ");*/
 
-/*
-    ofstream out;
+    /*ofstream out;
     if(iteration==1) {
         out.open("cabeza.txt",ios::trunc);
     }
@@ -697,7 +762,8 @@ void InSrPort::saveToFile(){
     out.close();
     iteration ++;
 */
-//    fprintf(fp,"\n%d", n);
+
+    //    fprintf(fp,"\n%d", n);
 //    fprintf(fp,",%.4f", _dt);
 //    fprintf(fp,",%.15f", X);
 //    fprintf(fp,",%.15f", _eval_x.y);
@@ -721,11 +787,12 @@ void InSrPort::offSetJR3(Bottle& FTsensor){
     /**     * Offset JR3 measurements    **/
 
     ReadFTSensor(FTsensor);
-    _off._F.fx += -9.72 - _jr3._initF.fx;
+    _off._F.fx += -9.72 - _jr3._initF.fx; //9.72N = 0.99kg * 9.81mm/s2
     _off._F.fy += + _jr3._initF.fy;
     _off._F.fz += + _jr3._initF.fz;
     _off._M.mx += + _jr3._initT.mx;
-    _off._M.my += 0.243 - _jr3._initT.my;
+//    _off._M.my += 0.243 - _jr3._initT.my; //0.243Nm = 9.72N * 0.025m
+    _off._M.my += + _jr3._initT.my; //testeando *************
     _off._M.mz += + _jr3._initT.mz;
 
     b++;
@@ -734,7 +801,7 @@ void InSrPort::offSetJR3(Bottle& FTsensor){
     if (b==250) {
         _off._F.fx = _off._F.fx / b;
         _off._F.fy = _off._F.fy / b;
-        _off._F.fz = _off._F.fz / b; // No interesa eliminar
+        _off._F.fz = _off._F.fz / b;
         _off._M.mx = _off._M.mx / b;
         _off._M.my = _off._M.my / b;
         _off._M.mz = _off._M.mz / b;
@@ -742,5 +809,5 @@ void InSrPort::offSetJR3(Bottle& FTsensor){
 
 }
 
-/************************************************************************/
+    /************************************************************************/
 }   // namespace teo
