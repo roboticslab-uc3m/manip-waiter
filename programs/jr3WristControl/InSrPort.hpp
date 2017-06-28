@@ -21,6 +21,7 @@
 #define DEFAULT_STRATEGY "positionDirect"
 //#define DEFAULT_STRATEGY "velocity"
 
+static FILE *fp;
 
 using namespace yarp::os;
 
@@ -40,10 +41,11 @@ class InSrPort : public BufferedPort<Bottle> {
             follow = 0;
             a = 0;
             b = 0;
-            pepinito = 1;
+            pepinito = 0;
             _d = 0.025;
             _l = 0.05;
             iteration=1;
+            _diff_time=0;
             quat.resize(4);
             quatC.resize(4);
             preFF.resize(4);
@@ -64,6 +66,16 @@ class InSrPort : public BufferedPort<Bottle> {
             currentX.resize(7);
             desireX.resize(7);
             desireQ.resize(7);
+            beforeQ.resize(7);
+            _jr3._initF.fx = 0;
+            _jr3._initF.fy = 0;
+            _jr3._initF.fz = 0;
+            _jr3._initT.mx = 0;
+            _jr3._initT.my = 0;
+            _jr3._initT.mz = 0;
+
+
+
         }
 
         void setIEncodersControl(yarp::dev::IEncoders *iEncoders) {
@@ -94,7 +106,7 @@ class InSrPort : public BufferedPort<Bottle> {
             struct TorqueVector {
                 double mx, my, mz;
             } _initT; // vector de momento proporcionado por el JR3
-        } _jr3;
+        } _jr3, _med;
 
         struct TrayData { // variable para el control con los valores finales en la bandeja
             struct ForceVector {
@@ -114,8 +126,11 @@ class InSrPort : public BufferedPort<Bottle> {
         std::vector<double> currentQ, beforeQ, desireQ;
         std::vector<double> currentX, desireX;
 
+        double init_time, init_loop, curr_time, _diff_time, _dt;
+
+
         //-- InSrPort Funtions
-        bool preprogrammedInitTrajectory();/** Set INITIAL POS-VEL-ACC **/
+        void preprogrammedInitTrajectory();/** Set INITIAL POS-VEL-ACC **/
         void strategyVelocity(Bottle& FTsensor);/** ARM CONTROL WITH A VELOCITY STRATEGY **/
         void strategyPositionDirect(Bottle& FTsensor);/** ARM CONTROL WITH A POSITION STRATEGY **/
         virtual void onRead(Bottle& FTsensor);/** Callback on incoming Bottle. **/
@@ -126,6 +141,9 @@ class InSrPort : public BufferedPort<Bottle> {
         void LIPM3d();/** Control based on the 3D-LIMP. **/
         void saveToFile();/** Saving the ZMP measurements. **/
         void offSetJR3(Bottle& FTsensor);/** Offset JR3 measurements. **/
+        void mediumJR3(Bottle& FTsensor);
+        void getInitialTime();
+        void getCurrentTime();
 
         //-- Robot device
         yarp::dev::IEncoders *iEncoders;

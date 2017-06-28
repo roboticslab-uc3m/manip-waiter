@@ -22,6 +22,7 @@
 //#define VOCAB_WATER_PLEASE VOCAB4('w','p','l','e')
 //#define VOCAB_STOP_TEO VOCAB4('s','t','e','o')
 
+
 using namespace yarp::os;
 
 namespace teo
