@@ -433,7 +433,7 @@ void InSrPort::preprogrammedInitTrajectory()
     iPositionControl->setRefAccelerations(initacc);
     /** --------------------------------------------------- **/
 
-    fprintf(fp,"fx,fy,fz,Mx,My,Mz,Xzmp,Yzmp,CX3,CX4,CX5,CX6,DX3,DX4,DX5,DX6");
+    fprintf(fp,"fx,fy,fz,Mx,My,Mz,Xzmp,Yzmp,Rzmp,CX3,CX4,CX5,CX6,DX3,DX4,DX5,DX6,TX1,TY1,TX2,TY2,initT,currT,diffT");
 
     yarp::os::Time::delay(3);
     return;
@@ -827,7 +827,7 @@ void InSrPort::saveToFile(){
     out.close();
     iteration ++;
 */
-//    fprintf(fp,"fx,fy,fz,Mx,My,Mz,Xzmp,Yzmp,CX3,CX4,CX5,CX6,DX3,DX4,DX5,DX6");
+//    fprintf(fp,"fx,fy,fz,Mx,My,Mz,Xzmp,Yzmp,Rzmp,CX3,CX4,CX5,CX6,DX3,DX4,DX5,DX6,TX1,TY1,TX2,TY2,initT,currT,diffT");
 
     fprintf(fp,"\n%.2f", _tray._F.fx);
     fprintf(fp,",%.2f", _tray._F.fy);
@@ -837,6 +837,7 @@ void InSrPort::saveToFile(){
     fprintf(fp,",%.2f", _tray._M.mz);
     fprintf(fp,",%.2f", _tray._zmp.x_zmp);
     fprintf(fp,",%.2f", _tray._zmp.y_zmp);
+    fprintf(fp,",%.2f", _rzmp);
 
     fprintf(fp,",%.2f", currentX[3]);
     fprintf(fp,",%.2f", currentX[4]);
@@ -847,6 +848,15 @@ void InSrPort::saveToFile(){
     fprintf(fp,",%.2f", desireX[4]);
     fprintf(fp,",%.2f", desireX[5]);
     fprintf(fp,",%.2f", desireX[6]);
+
+    fprintf(fp,",%.2f", _thetaXX);
+    fprintf(fp,",%.2f", _thetaYY);
+    fprintf(fp,",%.2f", _thetaX);
+    fprintf(fp,",%.2f", _thetaY);
+
+    fprintf(fp,",%.2f", init_loop);
+    fprintf(fp,",%.2f", curr_time);
+    fprintf(fp,",%.2f", _diff_time);
 
 /*    fprintf(fp,",%.15f", _eval_x._zmp_error);
     fprintf(fp,",%.15f", _eval_x._zmp_ref);
