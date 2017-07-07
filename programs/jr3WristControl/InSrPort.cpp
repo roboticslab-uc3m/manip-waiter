@@ -423,13 +423,13 @@ void InSrPort::preprogrammedInitTrajectory()
 
 
 /** ----- set NEW ref speed --------------- **/
-    double initspe[7] = {50.0,50.0,50.0,50.0,50.0,50.0,0.0};
+    double initspe[7] = {10.0,10.0,10.0,10.0,10.0,10.0,0.0};
     iPositionControl->setRefSpeeds(initspe);
     /** --------------------------------------------------- **/
 
 
 /** ----- set NEW ref accelaration --------------- **/
-    double initacc[7] = {50.0,50.0,50.0,50.0,50.0,50,0.0};
+    double initacc[7] = {10.0,10.0,10.0,10.0,10.0,10,0.0};
     iPositionControl->setRefAccelerations(initacc);
     /** --------------------------------------------------- **/
 
@@ -691,7 +691,7 @@ void InSrPort::LIPM3d()
 //                _rFxy = sqrt(pow(_tray._F.fx,2) + pow(_tray._F.fy,2)); // usando Fx y Fy .
 //                _rFxy = sqrt(pow(_tray._zmp.x_zmp,2) + pow(_tray._zmp.y_zmp,2)); // usando zmp_x y zmp_y .
                 desireX[6] = (((atan(_rzmp/(fabs(_tray._F.fz))))*180)/(3.1415926));
-                desireX[6] = desireX[6] - currentX[6];
+                desireX[6] = (desireX[6] - currentX[6]) / 2;
                 // calculo del vector unitario de rotacion
                 desireX[3] = 1 / ( sqrt( 1 + pow((_tray._zmp.x_zmp/_tray._zmp.y_zmp),2) ) );
                 desireX[4] = -_tray._zmp.x_zmp / (_tray._zmp.y_zmp * ( sqrt( 1 + pow((_tray._zmp.x_zmp/_tray._zmp.y_zmp),2) ) ) );
