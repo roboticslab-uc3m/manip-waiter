@@ -14,7 +14,6 @@ endif(COMMAND cmake_policy)
 project(MANIP_WAITER)
 
 ### options: cpp libraries
-option(ENABLE_TeoYarp "Choose if you want to compile TeoYarp" TRUE)
 
 ### options: cpp programs
 option(ENABLE_ankle_strategy_sagittal "Choose if you want to compile ankle_strategy_sagittal" TRUE)
@@ -22,11 +21,6 @@ option(ENABLE_zmpTEOwrist "Choose if you want to compile zmpTEOwrist" TRUE)
 option(ENABLE_jr3WristControl "Choose if you want to compile jr3WristControl" TRUE)
 
 ### options: force default
-option(ENABLE_TeoYarp_BasicCartesianControl "Enable/disable compilation of TeoYarp_BasicCartesianControl" TRUE)
-option(ENABLE_TeoYarp_CartesianControlServer "Enable/disable compilation of TeoYarp_CartesianControlServer" TRUE)
-option(ENABLE_TeoYarp_CartesianControlClient "Enable/disable compilation of TeoYarp_CartesianControlClient" TRUE)
-option(ENABLE_TeoYarp_KdlSolver "Enable/disable compilation of TeoYarp_KdlSolver" TRUE)
-option(ENABLE_TeoYarp_FakeControlboard "Enable/disable compilation of TeoYarp_FakeControlboard" TRUE)
 
 ##### test and coverage options
 option(ENABLE_tests "Choose if you want to compile tests" TRUE)
