@@ -15,7 +15,7 @@ using namespace yarp::os;
 using namespace yarp::dev;
 using namespace std;
 
-namespace teo
+namespace roboticslab
 {
 
 /************************************************************************/
@@ -644,5 +644,5 @@ void InCvPort::saveToFile()
 }
 
 /************************************************************************/
-}  // namespace teo
+}  // namespace roboticslab
 

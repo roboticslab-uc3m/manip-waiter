@@ -25,7 +25,7 @@ static FILE *fp;
 
 using namespace yarp::os;
 
-namespace teo
+namespace roboticslab
 {
 
 /**
@@ -86,7 +86,7 @@ class InSrPort : public BufferedPort<Bottle> {
             this->iPositionDirect = iPositionDirect;        }
         void setIVelocityControl(yarp::dev::IVelocityControl *iVelocityControl) {
             this->iVelocityControl = iVelocityControl;        }
-        void setICartesianSolver(teo::ICartesianSolver *iCartesianSolver) {
+        void setICartesianSolver(roboticslab::ICartesianSolver *iCartesianSolver) {
             this->iCartesianSolver = iCartesianSolver;        }
         void setFollow(int value);
 
@@ -152,10 +152,10 @@ class InSrPort : public BufferedPort<Bottle> {
         yarp::dev::IVelocityControl *iVelocityControl;
 
         //-- Solver device
-        teo::ICartesianSolver *iCartesianSolver;
+        roboticslab::ICartesianSolver *iCartesianSolver;
 
 };
 
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif // __IN_SR_PORT_HPP__

@@ -24,7 +24,7 @@
 
 using namespace yarp::os;
 
-namespace teo
+namespace roboticslab
 {
 
 /**
@@ -56,7 +56,7 @@ class InCvPort : public BufferedPort<Bottle> {
         void setIVelocityControl(yarp::dev::IVelocityControl *iVelocityControl) {
             this->iVelocityControl = iVelocityControl;
         }
-        void setICartesianSolver(teo::ICartesianSolver *iCartesianSolver) {
+        void setICartesianSolver(roboticslab::ICartesianSolver *iCartesianSolver) {
             this->iCartesianSolver = iCartesianSolver;
         }
 
@@ -125,10 +125,10 @@ class InCvPort : public BufferedPort<Bottle> {
         yarp::dev::IVelocityControl *iVelocityControl;
 
         //-- Solver device
-        teo::ICartesianSolver *iCartesianSolver;
+        roboticslab::ICartesianSolver *iCartesianSolver;
 
 };
 
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif // __IN_CV_PORT_HPP__
