@@ -25,7 +25,7 @@
 
 using namespace yarp::os;
 
-namespace teo
+namespace roboticslab
 {
 
 /**
@@ -52,7 +52,7 @@ class Jr3WristControl : public RFModule {
 
         //-- Solver device
         yarp::dev::PolyDriver solverDevice;
-        teo::ICartesianSolver *iCartesianSolver;
+        roboticslab::ICartesianSolver *iCartesianSolver;
 
         bool interruptModule();
         double getPeriod();
@@ -60,6 +60,6 @@ class Jr3WristControl : public RFModule {
 
 };
 
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif // __FM_JR3_WRIST_CONTROL_HPP__

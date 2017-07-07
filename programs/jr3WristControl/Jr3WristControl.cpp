@@ -2,7 +2,7 @@
 
 #include "Jr3WristControl.hpp"
 
-namespace teo
+namespace roboticslab
 {
 
 /************************************************************************/
@@ -115,4 +115,4 @@ bool Jr3WristControl::interruptModule() {
 }
 
 /************************************************************************/
-} // namespace teo
+} // namespace roboticslab

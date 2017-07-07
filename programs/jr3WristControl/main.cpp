@@ -5,7 +5,7 @@
  * @ingroup Jr3WristControl_programs
  * \defgroup Jr3WristControl Jr3WristControl
  *
- * @brief Creates an instance of teo::WaiterExecManip.
+ * @brief Creates an instance of roboticslab::WaiterExecManip.
  *
  * @section Jr3WristControl Legal
  *
@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     rf.setDefaultConfigFile("/usr/local/share/manip-waiter/contexts/kinematics/leftArmKinematics-waiter.ini");
     rf.configure(argc, argv);
 
-    teo::Jr3WristControl mod;
+    roboticslab::Jr3WristControl mod;
     if(rf.check("help")) {
         return mod.runModule(rf);
     }

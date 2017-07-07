@@ -1,1 +1,0 @@
-/home/teo/repos/LoliRepo/TFM/control/ankle_strategy_sagittal/qtcreator-build/CMakeFiles/yarpy.dir

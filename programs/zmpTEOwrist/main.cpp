@@ -2,7 +2,7 @@
  * @ingroup zmpTEOwrist_programs
  * \defgroup zmpTEOwrist waiterExecManip
  *
- * @brief Creates an instance of teo::zmpTEOwrist.
+ * @brief Creates an instance of roboticslab::zmpTEOwrist.
  *
  * @section zmpTEOwrist_legal Legal
  *
