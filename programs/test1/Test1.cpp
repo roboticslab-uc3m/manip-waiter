@@ -1,5 +1,15 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
+/*
+el test 1 está asociado para el journal SENSORS en el que el topic del paper es el modelo de
+control de la botella basado en rampas variables usando sensores de fuerza/par
+
+el test 1 consiste en observar y comprobar si el ZMP se calcula correctamente en funcion del
+angulo de inclinacion de la bandeja. Este test se debe dividir a mano en otros tres, en el que
+se medirá el ZMP, tanto en el plano frontal (0,1,0), como en el plano sagital (1,0,0), como en un plano combiancion
+de los dos anteriores (1,1,0).
+*/
+
 #include "Test1.hpp"
 
 namespace roboticslab

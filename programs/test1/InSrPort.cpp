@@ -35,7 +35,7 @@ void InSrPort::onRead(Bottle& FTsensor) {
         iPositionControl->setPositionMode();
         a=1;    }
 
-    if (b==250 && a==1 && pepinito<10)   {
+    if (b==250 && a==1 && pepinito<12)   {
         getInitialTime();
         ReadFTSensor(FTsensor);
         AxesTransform1();
@@ -384,10 +384,10 @@ void InSrPort::preprogrammedInitTrajectory()
     desireX[0] = 0.303928; // new X position
     desireX[1] = 0.347326; // new Y position
     desireX[2] = 0.248109; // new Z position
-    desireX[3]= 0;
-    desireX[4]= -1;
+    desireX[3]= 1;
+    desireX[4]= 0;
     desireX[5]= 0;
-    desireX[6]= 10;
+    desireX[6]= -10;
 
     if ( ! iCartesianSolver->invKin(desireX,currentQ,desireQ) )    {
         CD_ERROR("invKin failed.\n");    }
@@ -413,14 +413,14 @@ void InSrPort::preprogrammedInitTrajectory()
     /** --------------------------------------------------- **/
 
 
-    double initspe[7] = {10.0,10.0,10.0,10.0,10.0,10.0,0.0}; // --set NEW ref speed
+    double initspe[7] = {3.0,3.0,3.0,3.0,3.0,3.0,0.0}; // --set NEW ref speed
     iPositionControl->setRefSpeeds(initspe);
-    double initacc[7] = {10.0,10.0,10.0,10.0,10.0,10,0.0}; // --set NEW ref accelaration
+    double initacc[7] = {3.0,3.0,3.0,3.0,3.0,3,0.0}; // --set NEW ref accelaration
     iPositionControl->setRefAccelerations(initacc);
 
 
 fprintf(fp,"fx,fy,fz,Mx,My,Mz,Xzmp,Yzmp,CX3,CX4,CX5,CX6,TX1,TY1,TX2,TY2,initT,currT,diffT");
-    yarp::os::Time::delay(3);
+    yarp::os::Time::delay(10);
     return;
 }
 
@@ -681,8 +681,8 @@ void InSrPort::LIPM3d()
     }
     else    {
         w=0;
-        desireX[3]= 0;
-        desireX[4]= 1;
+        desireX[3]= 1;
+        desireX[4]= 0;
         desireX[5]= 0;
         desireX[6]= pepinito;
         pepinito++;
