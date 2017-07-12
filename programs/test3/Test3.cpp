@@ -86,7 +86,10 @@ bool Test3::configure(ResourceFinder &rf) {
     myRateThread.setICartesianSolver(iCartesianSolver);
     
     //-----------------OPEN LOCAL PORTS------------//
-    //inSrPort.open("/test3/jr3/ch3:i");
+    jr3.open("/test3/jr3/ch3:i");
+    inertial.open("/test3/inertial:i");
+
+    //--- start rateThread
     myRateThread.start();
 
     return true;
@@ -107,12 +110,10 @@ bool Test3::updateModule() {
 /************************************************************************/
 bool Test3::interruptModule() {
     printf("Test1 closing...\n");
-    //inCvPort.disableCallback();
-    //inSrPort.disableCallback();
-    //inCvPort.interrupt();
-    //inSrPort.interrupt();
-    //inCvPort.close();
-    //inSrPort.close();
+    jr3.interrupt();
+    inertial.interrupt();
+    jr3.close();
+    inertial.close();
 
     solverDevice.close();
     leftArmDevice.close();

@@ -41,6 +41,8 @@ class Test3 : public RFModule {
     protected:
 
         InSrPort myRateThread;
+        BufferedPort<Bottle> inertial;
+        BufferedPort<Bottle> jr3;
 
         //-- Robot device
         yarp::dev::PolyDriver leftArmDevice;
