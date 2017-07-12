@@ -24,7 +24,9 @@ void InSrPort::setFollow(int value)
 }
 
 /************************************************************************/
-void InSrPort::onRead(Bottle& FTsensor) {
+void InSrPort::run() {
+
+    Bottle FTsensor;
 
     if (b!=250)    {
         offSetJR3(FTsensor);

@@ -86,8 +86,8 @@ bool Test3::configure(ResourceFinder &rf) {
     inSrPort.setICartesianSolver(iCartesianSolver);
     
     //-----------------OPEN LOCAL PORTS------------//
-    inSrPort.useCallback();
-    inSrPort.open("/test3/jr3/ch3:i");
+    //inSrPort.open("/test3/jr3/ch3:i");
+    inSrPort.start();
 
     return true;
 }
@@ -108,11 +108,11 @@ bool Test3::updateModule() {
 bool Test3::interruptModule() {
     printf("Test1 closing...\n");
     //inCvPort.disableCallback();
-    inSrPort.disableCallback();
+    //inSrPort.disableCallback();
     //inCvPort.interrupt();
-    inSrPort.interrupt();
+    //inSrPort.interrupt();
     //inCvPort.close();
-    inSrPort.close();
+    //inSrPort.close();
 
     solverDevice.close();
     leftArmDevice.close();
