@@ -93,6 +93,9 @@ class InSrPort : public RateThread {
             this->iCartesianSolver = iCartesianSolver;        }
         void setFollow(int value);
 
+        BufferedPort<Bottle> inertial;
+        BufferedPort<Bottle> jr3;
+
         //yarp::os::Port port2; posibilidad de usar la muñeca derecha
         //yarp::os::Port port3;
 
