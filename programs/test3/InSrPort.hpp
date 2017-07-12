@@ -137,8 +137,6 @@ class InSrPort : public RateThread {
 
         //-- InSrPort Funtions
         void preprogrammedInitTrajectory();/** Set INITIAL POS-VEL-ACC **/
-        void strategyVelocity(Bottle& FTsensor);/** ARM CONTROL WITH A VELOCITY STRATEGY **/
-        void strategyPositionDirect(Bottle& FTsensor);/** ARM CONTROL WITH A POSITION STRATEGY **/
         virtual void run();/** Periodic thread. **/
         void ReadFTSensor(Bottle& FTsensor);/** Reading from the FT_JR3_sensor. **/
         void AxesTransform1();/** Rotation Transformation matrix of JR3. **/
