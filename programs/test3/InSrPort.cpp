@@ -24,10 +24,26 @@ void InSrPort::setFollow(int value)
 }
 
 /************************************************************************/
-void InSrPort::onRead(Bottle& FTsensor) {
+void InSrPort::run() {
+
+    Bottle* fromJr3 = jr3.read(false);  // Read from the port. false -> NO Wait until data arrives.
+    if(fromJr3 == YARP_NULLPTR)
+    {
+        CD_DEBUG("No jr3 data yet...\n");
+        yarp::os::Time::delay(0.1);
+        return;
+    }
+    Bottle* fromInertial = inertial.read(false);
+    if(fromInertial == YARP_NULLPTR)
+    {
+        CD_DEBUG("No inertial data yet...\n");
+        yarp::os::Time::delay(0.1);
+        return;
+    }
+
 
     if (b!=250)    {
-        offSetJR3(FTsensor);
+        offSetJR3(*fromJr3);
         //iPositionControl->setPositionMode();
     }
     if (a==0 && b==250)    {
@@ -37,7 +53,7 @@ void InSrPort::onRead(Bottle& FTsensor) {
 
     if (b==250 && a==1 && pepinito<10)   {
         getInitialTime();
-        ReadFTSensor(FTsensor);
+        ReadFTSensor(*fromJr3);
         AxesTransform1();
         AxesTransform2();
         ZMPcomp();

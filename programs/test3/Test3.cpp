@@ -64,15 +64,10 @@ bool Test3::configure(ResourceFinder &rf) {
         printf("view(iVelocityControl) not worked.\n");
         return false;    }
 
-    /*inCvPort.setIEncodersControl(iEncoders);
-    inCvPort.setIPositionControl(iPositionControl);
-    inCvPort.setIPositionDirect(iPositionDirect);
-    inCvPort.setIVelocityControl(iVelocityControl);*/
-    
-    inSrPort.setIEncodersControl(iEncoders);
-    inSrPort.setIPositionControl(iPositionControl);
-    inSrPort.setIPositionDirect(iPositionDirect);
-    inSrPort.setIVelocityControl(iVelocityControl);
+    myRateThread.setIEncodersControl(iEncoders);
+    myRateThread.setIPositionControl(iPositionControl);
+    myRateThread.setIPositionDirect(iPositionDirect);
+    myRateThread.setIVelocityControl(iVelocityControl);
 
     //-- Solver device
     yarp::os::Property solverOptions;
@@ -88,13 +83,14 @@ bool Test3::configure(ResourceFinder &rf) {
         CD_ERROR("Could not view iCartesianSolver in: %s.\n",solverStr.c_str());
         return false;    }
     //inCvPort.setICartesianSolver(iCartesianSolver);
-    inSrPort.setICartesianSolver(iCartesianSolver);
+    myRateThread.setICartesianSolver(iCartesianSolver);
     
     //-----------------OPEN LOCAL PORTS------------//
-    //inCvPort.useCallback();
-    inSrPort.useCallback();
-    //inCvPort.open("/test3/jr3/ch3:i");
-    inSrPort.open("/test3/jr3/ch3:i");
+    myRateThread.jr3.open("/test3/jr3/ch3:i");
+    myRateThread.inertial.open("/test3/inertial:i");
+
+    //--- start rateThread
+    myRateThread.start();
 
     return true;
 }
@@ -114,12 +110,10 @@ bool Test3::updateModule() {
 /************************************************************************/
 bool Test3::interruptModule() {
     printf("Test1 closing...\n");
-    //inCvPort.disableCallback();
-    inSrPort.disableCallback();
-    //inCvPort.interrupt();
-    inSrPort.interrupt();
-    //inCvPort.close();
-    inSrPort.close();
+    myRateThread.jr3.interrupt();
+    myRateThread.inertial.interrupt();
+    myRateThread.jr3.close();
+    myRateThread.inertial.close();
 
     solverDevice.close();
     leftArmDevice.close();

@@ -16,6 +16,8 @@
 #include "ColorDebug.hpp"
 #include <yarp/dev/IPositionDirect.h>
 
+#define DEFAULT_RATE_MS 20
+
 #define DEFAULT_QDOT_LIMIT 10
 
 #define DEFAULT_STRATEGY "positionDirect"
@@ -34,10 +36,10 @@ namespace roboticslab
  * @brief Input port of Force/Torque data.
  *
  */
-class InSrPort : public BufferedPort<Bottle> {
+class InSrPort : public RateThread {
     public:
 
-        InSrPort()        {
+        InSrPort() : RateThread(DEFAULT_RATE_MS)       {
             follow = 0;
             a = 0;
             b = 0;
@@ -91,6 +93,9 @@ class InSrPort : public BufferedPort<Bottle> {
             this->iCartesianSolver = iCartesianSolver;        }
         void setFollow(int value);
 
+        BufferedPort<Bottle> inertial;
+        BufferedPort<Bottle> jr3;
+
         //yarp::os::Port port2; posibilidad de usar la muñeca derecha
         //yarp::os::Port port3;
 
@@ -134,7 +139,7 @@ class InSrPort : public BufferedPort<Bottle> {
         void preprogrammedInitTrajectory();/** Set INITIAL POS-VEL-ACC **/
         void strategyVelocity(Bottle& FTsensor);/** ARM CONTROL WITH A VELOCITY STRATEGY **/
         void strategyPositionDirect(Bottle& FTsensor);/** ARM CONTROL WITH A POSITION STRATEGY **/
-        virtual void onRead(Bottle& FTsensor);/** Callback on incoming Bottle. **/
+        virtual void run();/** Periodic thread. **/
         void ReadFTSensor(Bottle& FTsensor);/** Reading from the FT_JR3_sensor. **/
         void AxesTransform1();/** Rotation Transformation matrix of JR3. **/
         void AxesTransform2();/** Transformation matrix between JR3 and tray. **/

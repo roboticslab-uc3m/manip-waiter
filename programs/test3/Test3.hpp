@@ -40,8 +40,7 @@ class Test3 : public RFModule {
 
     protected:
 
-        InSrPort inSrPort;
-        //InCvPort inCvPort;
+        InSrPort myRateThread;
 
         //-- Robot device
         yarp::dev::PolyDriver leftArmDevice;
