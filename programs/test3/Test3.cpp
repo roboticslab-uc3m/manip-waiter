@@ -64,11 +64,6 @@ bool Test3::configure(ResourceFinder &rf) {
         printf("view(iVelocityControl) not worked.\n");
         return false;    }
 
-    /*inCvPort.setIEncodersControl(iEncoders);
-    inCvPort.setIPositionControl(iPositionControl);
-    inCvPort.setIPositionDirect(iPositionDirect);
-    inCvPort.setIVelocityControl(iVelocityControl);*/
-    
     inSrPort.setIEncodersControl(iEncoders);
     inSrPort.setIPositionControl(iPositionControl);
     inSrPort.setIPositionDirect(iPositionDirect);
@@ -91,9 +86,7 @@ bool Test3::configure(ResourceFinder &rf) {
     inSrPort.setICartesianSolver(iCartesianSolver);
     
     //-----------------OPEN LOCAL PORTS------------//
-    //inCvPort.useCallback();
     inSrPort.useCallback();
-    //inCvPort.open("/test3/jr3/ch3:i");
     inSrPort.open("/test3/jr3/ch3:i");
 
     return true;
