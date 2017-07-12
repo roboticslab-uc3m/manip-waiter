@@ -64,10 +64,10 @@ bool Test3::configure(ResourceFinder &rf) {
         printf("view(iVelocityControl) not worked.\n");
         return false;    }
 
-    inSrPort.setIEncodersControl(iEncoders);
-    inSrPort.setIPositionControl(iPositionControl);
-    inSrPort.setIPositionDirect(iPositionDirect);
-    inSrPort.setIVelocityControl(iVelocityControl);
+    myRateThread.setIEncodersControl(iEncoders);
+    myRateThread.setIPositionControl(iPositionControl);
+    myRateThread.setIPositionDirect(iPositionDirect);
+    myRateThread.setIVelocityControl(iVelocityControl);
 
     //-- Solver device
     yarp::os::Property solverOptions;
@@ -83,11 +83,11 @@ bool Test3::configure(ResourceFinder &rf) {
         CD_ERROR("Could not view iCartesianSolver in: %s.\n",solverStr.c_str());
         return false;    }
     //inCvPort.setICartesianSolver(iCartesianSolver);
-    inSrPort.setICartesianSolver(iCartesianSolver);
+    myRateThread.setICartesianSolver(iCartesianSolver);
     
     //-----------------OPEN LOCAL PORTS------------//
     //inSrPort.open("/test3/jr3/ch3:i");
-    inSrPort.start();
+    myRateThread.start();
 
     return true;
 }
