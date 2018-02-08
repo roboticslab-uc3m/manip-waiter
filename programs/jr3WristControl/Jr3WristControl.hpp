@@ -10,7 +10,7 @@
 //#include "InCvPort.hpp"
 #include "InSrPort.hpp"
 
-#define DEFAULT_REMOTE "teo"
+#define DEFAULT_ROBOT "teo"
 
 //instrucciones para el followme
 //#define VOCAB_FOLLOW_ME VOCAB4('f','o','l','l')
@@ -43,8 +43,13 @@ class Jr3WristControl : public RFModule {
         InSrPort inSrPort;
         //InCvPort inCvPort;
 
-        //-- Robot device
+        /** Left Arm Device */
         yarp::dev::PolyDriver leftArmDevice;
+        /** Left Arm ControlMode2 Interface */
+        yarp::dev::IControlMode2 *leftArmIControlMode2;
+       /** Left Arm PositionControl2 Interface */
+        yarp::dev::IPositionControl2 *leftArmIPositionControl2;
+
         yarp::dev::IEncoders *iEncoders;
         yarp::dev::IPositionControl *iPositionControl;
         yarp::dev::IPositionDirect *iPositionDirect;

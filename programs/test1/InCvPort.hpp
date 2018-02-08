@@ -94,12 +94,6 @@ class InCvPort : public BufferedPort<Bottle> {
         /** Set left ARM INITIAL POSITION **/
         bool preprogrammedInitTrajectory();
 
-        /** left ARM CONTROL WITH A VELOCITY STRATEGY **/
-        void strategyVelocity(Bottle& FTsensor);
-
-        /** left ARM CONTROL WITH A POSITION STRATEGY **/
-        void strategyPositionDirect(Bottle& FTsensor);
-
         /** Callback on incoming Bottle. **/
         virtual void onRead(Bottle& FTsensor);
 

@@ -131,8 +131,6 @@ class InSrPort : public BufferedPort<Bottle> {
 
         //-- InSrPort Funtions
         void preprogrammedInitTrajectory();/** Set INITIAL POS-VEL-ACC **/
-        void strategyVelocity(Bottle& FTsensor);/** ARM CONTROL WITH A VELOCITY STRATEGY **/
-        void strategyPositionDirect(Bottle& FTsensor);/** ARM CONTROL WITH A POSITION STRATEGY **/
         virtual void onRead(Bottle& FTsensor);/** Callback on incoming Bottle. **/
         void ReadFTSensor(Bottle& FTsensor);/** Reading from the FT_JR3_sensor. **/
         void AxesTransform1();/** Rotation Transformation matrix of JR3. **/

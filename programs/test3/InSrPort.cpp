@@ -44,7 +44,7 @@ void InSrPort::run() {
     }
     if (a==0 && b==250)    {
         preprogrammedInitTrajectory();
-        iPositionControl->setPositionMode();
+        //iPositionControl->setPositionMode();
         a=1;    }
 
     if (b==250 && a==1 && pepinito<10)   {
