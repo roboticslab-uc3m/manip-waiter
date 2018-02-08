@@ -23,7 +23,10 @@ foreach(header_file ${folder_header})
   include_directories(${p})
 endforeach(header_file ${folder_header})
 
-include_directories(${YARP_INCLUDE_DIRS})
+# Inclue any directories needed for YARP, COLOR_DEBUG AND KINEMATICS_DYNAMICS
+include_directories(${YARP_INCLUDE_DIRS}
+                    ${COLOR_DEBUG_INCLUDE_DIRS}
+                    ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS})
 
 # Set up our main executable.
 if (folder_source)
