@@ -15,6 +15,8 @@ project(${KEYWORD})
 # Find YARP.  Point the YARP_DIR environment variable at your build.
 find_package(YARP REQUIRED)
 list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
+find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)
+find_package(COLOR_DEBUG REQUIRED)
 
 # Search for source code.
 file(GLOB folder_source *.cpp *.cc *.c)

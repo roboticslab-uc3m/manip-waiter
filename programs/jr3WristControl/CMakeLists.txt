@@ -8,6 +8,8 @@ set(KEYWORD "jr3WristControl")
 
 # Find YARP.  Point the YARP_DIR environment variable at your build.
 find_package(YARP REQUIRED)
+find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)
+find_package(COLOR_DEBUG REQUIRED)
 
 # Search for source code.
 file(GLOB folder_source *.cpp *.cc *.c)
@@ -22,7 +24,9 @@ foreach(header_file ${folder_header})
 endforeach(header_file ${folder_header})
 
 # Inclue any directories needed for YARP
-include_directories(${YARP_INCLUDE_DIRS})
+include_directories(${YARP_INCLUDE_DIRS}
+                    ${COLOR_DEBUG_INCLUDE_DIRS}
+                    ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS})
 
 # Set up our main executable.
 if (folder_source)

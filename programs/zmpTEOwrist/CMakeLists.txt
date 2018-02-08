@@ -8,6 +8,8 @@ set(KEYWORD "zmpTEOwrist")
 
 # Find YARP.
 find_package(YARP REQUIRED)
+find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)
+find_package(COLOR_DEBUG REQUIRED)
 
 # Search for source code.
 file(GLOB folder_source *.cpp *.cc *.c)
