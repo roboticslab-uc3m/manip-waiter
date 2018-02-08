@@ -84,10 +84,10 @@ int main(void) {
 
     /** SET MODE **/
     /** Position Mode **/
-    printf("Set position mode Left Leg\n");
+/*    printf("Set position mode Left Leg\n");
     posLeftLeg->setPositionMode();
     printf("Set position mode Right Leg\n");
-    posRightLeg->setPositionMode();
+    posRightLeg->setPositionMode();*/
     /** Velocity Mode **/
 /**    printf("Set velocity mode Left Leg\n");
     velLeftLeg->setVelocityMode();
