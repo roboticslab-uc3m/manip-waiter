@@ -116,13 +116,13 @@ void InSrPort::preprogrammedInitTrajectory()
 
 /** ----- set NEW ref speed --------------- **/
     double initspe[7] = {10.0,10.0,10.0,10.0,10.0,10.0,0.0};
-    iPositionControl->setRefSpeeds(initspe);
+    leftArmIPositionControl2->setRefSpeeds(initspe);
     /** --------------------------------------------------- **/
 
-
+printf("llega a setRefSpeeds\n");
 /** ----- set NEW ref accelaration --------------- **/
     double initacc[7] = {10.0,10.0,10.0,10.0,10.0,10,0.0};
-    iPositionControl->setRefAccelerations(initacc);
+    leftArmIPositionControl2->setRefAccelerations(initacc);
     /** --------------------------------------------------- **/
 
     fprintf(fp,"fx,fy,fz,Mx,My,Mz,Xzmp,Yzmp,Rzmp,CX3,CX4,CX5,CX6,DX3,DX4,DX5,DX6,TX1,TY1,TX2,TY2,initT,currT,diffT");
@@ -462,7 +462,7 @@ void InSrPort::LIPM3d()
     CD_DEBUG_NO_HEADER("%f ",_rWorkSpace);
     CD_DEBUG_NO_HEADER("\n ");*/
 
-    if( ! iPositionControl->positionMove( desireQ.data() )) {
+    if( ! leftArmIPositionControl2->positionMove( desireQ.data() )) {
         CD_WARNING("setPositions failed, not updating control this iteration.\n");    }
 
     return;
