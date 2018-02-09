@@ -80,14 +80,17 @@ class InSrPort : public BufferedPort<Bottle> {
 
         void setIEncodersControl(yarp::dev::IEncoders *iEncoders) {
             this->iEncoders = iEncoders;        }
-        void setIPositionControl(yarp::dev::IPositionControl *iPositionControl) {
-            this->iPositionControl = iPositionControl;        }
+
+        void setIPositionControl(yarp::dev::IPositionControl2 *iPositionControl2) {
+            this->leftArmIPositionControl2 = iPositionControl2;        }
+        /*
         void setIPositionDirect(yarp::dev::IPositionDirect *iPositionDirect) {
             this->iPositionDirect = iPositionDirect;        }
         void setIVelocityControl(yarp::dev::IVelocityControl *iVelocityControl) {
             this->iVelocityControl = iVelocityControl;        }
         void setICartesianSolver(roboticslab::ICartesianSolver *iCartesianSolver) {
             this->iCartesianSolver = iCartesianSolver;        }
+            */
         void setFollow(int value);
 
         //yarp::os::Port port2; posibilidad de usar la muñeca derecha
@@ -143,11 +146,16 @@ class InSrPort : public BufferedPort<Bottle> {
         void getInitialTime();
         void getCurrentTime();
 
+
+        /** Left Arm Device */
+        yarp::dev::PolyDriver leftArmDevice;
+        /** Left Arm ControlMode2 Interface */
+        yarp::dev::IControlMode2 *leftArmIControlMode2;
+       /** Left Arm PositionControl2 Interface */
+        yarp::dev::IPositionControl2 *leftArmIPositionControl2;
+
         //-- Robot device
         yarp::dev::IEncoders *iEncoders;
-        yarp::dev::IPositionControl *iPositionControl;
-        yarp::dev::IPositionDirect *iPositionDirect;
-        yarp::dev::IVelocityControl *iVelocityControl;
 
         //-- Solver device
         roboticslab::ICartesianSolver *iCartesianSolver;
