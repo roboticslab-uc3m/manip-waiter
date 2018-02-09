@@ -59,13 +59,10 @@ bool Jr3WristControl::configure(ResourceFinder &rf) {
         printf("[warning] Problems setting position control mode of: left-arm\n");
         return false;
     }
-    /*inCvPort.setIEncodersControl(iEncoders);
-    inCvPort.setIPositionControl(iPositionControl);
-    inCvPort.setIPositionDirect(iPositionDirect);
-    inCvPort.setIVelocityControl(iVelocityControl);*/
     
+    //-- Conection between Jr3WristControl & inSrPort
     inSrPort.setIEncodersControl(iEncoders);
-    inSrPort.setIPositionControl(leftArmIPositionControl2);
+    inSrPort.setIPositionControl2(leftArmIPositionControl2);
     //inSrPort.setIPositionDirect(iPositionDirect);
     //inSrPort.setIVelocityControl(iVelocityControl);
 
@@ -82,13 +79,10 @@ bool Jr3WristControl::configure(ResourceFinder &rf) {
     if( ! solverDevice.view(iCartesianSolver) )    {
         CD_ERROR("Could not view iCartesianSolver in: %s.\n",solverStr.c_str());
         return false;    }
-    //inCvPort.setICartesianSolver(iCartesianSolver);
-    //inSrPort.setICartesianSolver(iCartesianSolver);
+    inSrPort.setICartesianSolver(iCartesianSolver);
     
     //-----------------OPEN LOCAL PORTS------------//
-    //inCvPort.useCallback();
     inSrPort.useCallback();
-    //inCvPort.open("/jr3WristControl/jr3/ch3:i");
     inSrPort.open("/jr3WristControl/jr3/ch2:i"); //ch2:i rightArm - ch3:i leftArm
 
     return true;
@@ -109,11 +103,8 @@ bool Jr3WristControl::updateModule() {
 /************************************************************************/
 bool Jr3WristControl::interruptModule() {
     printf("Jr3WristControl closing...\n");
-    //inCvPort.disableCallback();
     inSrPort.disableCallback();
-    //inCvPort.interrupt();
     inSrPort.interrupt();
-    //inCvPort.close();
     inSrPort.close();
 
     solverDevice.close();

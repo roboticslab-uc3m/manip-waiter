@@ -18,12 +18,6 @@ namespace roboticslab
 {
 
 /************************************************************************/
-void InSrPort::setFollow(int value)
-{
-    follow = value;
-}
-
-/************************************************************************/
 void InSrPort::onRead(Bottle& FTsensor) {
 
 
@@ -76,29 +70,31 @@ void InSrPort::onRead(Bottle& FTsensor) {
 }
 
 /************************************************************************/
-void InSrPort::preprogrammedInitTrajectory()
-{
+void InSrPort::preprogrammedInitTrajectory(){
+    /**     * Generating Initial Trajectory - Waiter Pose *    **/
+
     fp = fopen("../data_zmp_bottle.csv","w+");
 
-    iEncoders->getAxes(&numRobotJoints);
+    iEncoders->getAxes(&numRobotJoints); // getting the number of joint on left-arm
     CD_INFO("numRobotJoints: %d.\n",numRobotJoints);
 
-
-/** ----- generate initial movement --------------- **/
-    //iPositionControl->setPositionMode();
+    /** ----- generate initial movement --------------- **/
+    //leftArmIPositionControl2->setPositionMode();
     //printf("begin MOVE TO START POSITION\n");
     //double initpos[7] = {-30,0,0,-90,0,30,0};
-    //iPositionControl->positionMove(initpos);
-    //posicionamiento temporal hasta arreglar set poss
-    //iPositionControl->positionMove(0,-30);
-    //iPositionControl->positionMove(1,0);
-    //iPositionControl->positionMove(2,0);
-    //iPositionControl->positionMove(3,-90);
-    //iPositionControl->positionMove(4,0);
-    //iPositionControl->positionMove(5,30);
+    //leftArmIPositionControl2->positionMove(initpos);
 
+    /*
+    //posicionamiento temporal hasta arreglar set poss
+    iPositionControl->positionMove(0,-30);
+    iPositionControl->positionMove(1,0);
+    iPositionControl->positionMove(2,0);
+    iPositionControl->positionMove(3,-90);
+    iPositionControl->positionMove(4,0);
+    iPositionControl->positionMove(5,30);*/
+    /*
     //yarp::os::Time::delay(10);  // provisional !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    /*bool done = false;
+    bool done = false;
     while( ! done )    {
         yarp::os::Time::delay(0.5);
         iPositionControl->checkMotionDone(&done);
@@ -107,22 +103,26 @@ void InSrPort::preprogrammedInitTrajectory()
     }*/
     printf("end MOVE TO START POSITION\n");
 
-/** ---- designate initial position --------------- **/ //comprobar funcionalidad
+    /** ---- designate initial position --------------- **/
     if ( ! iEncoders->getEncoders( beforeQ.data() ) )    {
-        CD_WARNING("getEncoders failed, not updating control this iteration.\n");
+        CD_WARNING("[Error] getEncoders failed, not updating control this iteration.\n");
         return;    }
     /** --------------------------------------------------- **/
 
-
-/** ----- set NEW ref speed --------------- **/
+    /** ----- set NEW ref speed --------------- **/
     double initspe[7] = {10.0,10.0,10.0,10.0,10.0,10.0,0.0};
-    leftArmIPositionControl2->setRefSpeeds(initspe);
+    if(!leftArmIPositionControl2->setRefSpeeds(initspe)){
+        CD_WARNING("[Error] Problems setting reference speed on left-arm joints.\n");
+        return;
+    }
     /** --------------------------------------------------- **/
 
-printf("llega a setRefSpeeds\n");
-/** ----- set NEW ref accelaration --------------- **/
+    /** ----- set NEW ref accelaration --------------- **/
     double initacc[7] = {10.0,10.0,10.0,10.0,10.0,10,0.0};
-    leftArmIPositionControl2->setRefAccelerations(initacc);
+    if(!leftArmIPositionControl2->setRefAccelerations(initacc)){
+        CD_WARNING("[Error] Problems setting reference acceleration on left-arm joints.\n");
+        return;
+    }
     /** --------------------------------------------------- **/
 
     fprintf(fp,"fx,fy,fz,Mx,My,Mz,Xzmp,Yzmp,Rzmp,CX3,CX4,CX5,CX6,DX3,DX4,DX5,DX6,TX1,TY1,TX2,TY2,initT,currT,diffT");

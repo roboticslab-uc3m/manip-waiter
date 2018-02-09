@@ -38,7 +38,6 @@ class InSrPort : public BufferedPort<Bottle> {
     public:
 
         InSrPort()        {
-            follow = 0;
             a = 0;
             b = 0;
             pepinito = 0;
@@ -81,24 +80,22 @@ class InSrPort : public BufferedPort<Bottle> {
         void setIEncodersControl(yarp::dev::IEncoders *iEncoders) {
             this->iEncoders = iEncoders;        }
 
-        void setIPositionControl(yarp::dev::IPositionControl2 *iPositionControl2) {
+        void setIPositionControl2(yarp::dev::IPositionControl2 *iPositionControl2) {
             this->leftArmIPositionControl2 = iPositionControl2;        }
+
+        void setICartesianSolver(roboticslab::ICartesianSolver *iCartesianSolver) {
+            this->iCartesianSolver = iCartesianSolver;        }
         /*
         void setIPositionDirect(yarp::dev::IPositionDirect *iPositionDirect) {
             this->iPositionDirect = iPositionDirect;        }
         void setIVelocityControl(yarp::dev::IVelocityControl *iVelocityControl) {
             this->iVelocityControl = iVelocityControl;        }
-        void setICartesianSolver(roboticslab::ICartesianSolver *iCartesianSolver) {
-            this->iCartesianSolver = iCartesianSolver;        }
             */
-        void setFollow(int value);
 
-        //yarp::os::Port port2; posibilidad de usar la muñeca derecha
-        //yarp::os::Port port3;
 
     private:
 
-        int follow, a, b, numRobotJoints, pepinito, iteration;
+        int a, b, numRobotJoints, pepinito, iteration;
         float _d, _l;  //distance in m between the SDC tray and the SDC jr3
         double initpos;
 
