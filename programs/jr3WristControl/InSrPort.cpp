@@ -80,9 +80,9 @@ void InSrPort::preprogrammedInitTrajectory(){
 
     /** ----- generate initial movement --------------- **/
     //leftArmIPositionControl2->setPositionMode();
-    //printf("begin MOVE TO START POSITION\n");
-    //double initpos[7] = {-30,0,0,-90,0,30,0};
-    //leftArmIPositionControl2->positionMove(initpos);
+    printf("begin MOVE TO START POSITION\n");
+    double initpos[7] = {-30,0,0,-90,0,30,0};
+    leftArmIPositionControl2->positionMove(initpos);
 
     /*
     //posicionamiento temporal hasta arreglar set poss
@@ -92,15 +92,14 @@ void InSrPort::preprogrammedInitTrajectory(){
     iPositionControl->positionMove(3,-90);
     iPositionControl->positionMove(4,0);
     iPositionControl->positionMove(5,30);*/
-    /*
-    //yarp::os::Time::delay(10);  // provisional !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    yarp::os::Time::delay(10);  // provisional !!!!!!!!!!!!!!!!!!!!!!!!!!!!
     bool done = false;
     while( ! done )    {
         yarp::os::Time::delay(0.5);
-        iPositionControl->checkMotionDone(&done);
+        leftArmIPositionControl2->checkMotionDone(&done);
         printf(".");
         fflush(stdout);
-    }*/
+    }
     printf("end MOVE TO START POSITION\n");
 
     /** ---- designate initial position --------------- **/
