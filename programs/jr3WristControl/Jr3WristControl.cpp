@@ -46,6 +46,11 @@ bool Jr3WristControl::configure(ResourceFinder &rf) {
         return false;
     } else printf("[success] Acquired leftArmIControlMode2 interface\n");
 
+    if (!leftArmDevice.view(iEncoders) ) {
+        printf("[warning] Problems acquiring iEncoders interface\n");
+        return false;
+    } else printf("[success] Acquired iEncoders interface\n");
+
      //-- Set control modes
     int leftArmAxes;
     leftArmIPositionControl2->getAxes(&leftArmAxes);
@@ -60,9 +65,9 @@ bool Jr3WristControl::configure(ResourceFinder &rf) {
     inCvPort.setIVelocityControl(iVelocityControl);*/
     
     inSrPort.setIEncodersControl(iEncoders);
-    inSrPort.setIPositionControl(iPositionControl);
-    inSrPort.setIPositionDirect(iPositionDirect);
-    inSrPort.setIVelocityControl(iVelocityControl);
+    inSrPort.setIPositionControl(leftArmIPositionControl2);
+    //inSrPort.setIPositionDirect(iPositionDirect);
+    //inSrPort.setIVelocityControl(iVelocityControl);
 
     //-- Solver device
     yarp::os::Property solverOptions;
@@ -78,13 +83,13 @@ bool Jr3WristControl::configure(ResourceFinder &rf) {
         CD_ERROR("Could not view iCartesianSolver in: %s.\n",solverStr.c_str());
         return false;    }
     //inCvPort.setICartesianSolver(iCartesianSolver);
-    inSrPort.setICartesianSolver(iCartesianSolver);
+    //inSrPort.setICartesianSolver(iCartesianSolver);
     
     //-----------------OPEN LOCAL PORTS------------//
     //inCvPort.useCallback();
     inSrPort.useCallback();
     //inCvPort.open("/jr3WristControl/jr3/ch3:i");
-    inSrPort.open("/jr3WristControl/jr3/ch3:i");
+    inSrPort.open("/jr3WristControl/jr3/ch2:i"); //ch2:i rightArm - ch3:i leftArm
 
     return true;
 }

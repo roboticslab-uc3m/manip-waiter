@@ -10,7 +10,7 @@
 //#include "InCvPort.hpp"
 #include "InSrPort.hpp"
 
-#define DEFAULT_ROBOT "teo"
+#define DEFAULT_ROBOT "/teo"
 
 //instrucciones para el followme
 //#define VOCAB_FOLLOW_ME VOCAB4('f','o','l','l')
@@ -51,10 +51,11 @@ class Jr3WristControl : public RFModule {
         yarp::dev::IPositionControl2 *leftArmIPositionControl2;
 
         yarp::dev::IEncoders *iEncoders;
+        /*
         yarp::dev::IPositionControl *iPositionControl;
         yarp::dev::IPositionDirect *iPositionDirect;
         yarp::dev::IVelocityControl *iVelocityControl;
-
+        */
         //-- Solver device
         yarp::dev::PolyDriver solverDevice;
         roboticslab::ICartesianSolver *iCartesianSolver;
