@@ -73,13 +73,12 @@ int main(void) {
         } else cout << "[success] Connected to IMU." << endl;
         yarp::os::Time::delay(0.5);
 
-    std::string waiterStr("/waiter");
 
     /** Configuring LEFT ARM **/
     yarp::os::Property leftArmOptions;
     leftArmOptions.put("device","remote_controlboard");
     leftArmOptions.put("remote","/teo/leftArm");
-    leftArmOptions.put("local",waiterStr+"/teo/leftArm");
+    leftArmOptions.put("local","/waiter/teo/leftArm");
     yarp::dev::PolyDriver leftArmDevice;
     yarp::dev::IControlMode2 *leftArmIControlMode2;
     yarp::dev::IPositionControl2 *leftArmIPositionControl2;
@@ -107,7 +106,7 @@ int main(void) {
         return false;
     } else printf("[success] Acquired iEncoders interface\n");
 
-     //-- Set control modes
+    /** Set control modes **/
     int leftArmAxes;
     leftArmIPositionControl2->getAxes(&leftArmAxes);
     std::vector<int> leftArmControlModes(leftArmAxes,VOCAB_CM_POSITION);
@@ -115,14 +114,14 @@ int main(void) {
         printf("[warning] Problems setting position control mode of: left-arm\n");
         return false;
     }
-    //-- Conection between Jr3WristControl & inSrPort
+    /** Conection between Jr3WristControl & inSrPort **/
     jr3Thread.setIEncodersControl(leftArmIEncoders);
     jr3Thread.setIPositionControl2(leftArmIPositionControl2);
     //jr3Thread.setIVelocityControl2(leftArmIVelocityControl2);
 
-    /*
-    //-- Solver device
-    yarp::dev::PolyDriver solverDevice;
+
+    /** Solver device */
+    /*yarp::dev::PolyDriver solverDevice;
     //roboticslab::ICartesianSolver *iCartesianSolver;
     yarp::os::Property solverOptions;
     //solverOptions.fromString( rf.toString() );

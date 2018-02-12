@@ -50,10 +50,8 @@ public:
 
     void setIEncodersControl(yarp::dev::IEncoders *iEncoders) {
         this->leftArmIEncoders = iEncoders;        }
-
     void setIPositionControl2(yarp::dev::IPositionControl2 *iPositionControl2) {
         this->leftArmIPositionControl2 = iPositionControl2;        }
-
     //void setICartesianSolver(roboticslab::ICartesianSolver *iCartesianSolver) {
     //    this->iCartesianSolver = iCartesianSolver;        }
 
@@ -74,7 +72,6 @@ private:
     } _imu;
 
     deque<double> x_sensor, y_sensor, z_sensor; // to filter the Linear acceleration
-
 
     struct TrayData {
         double fx, fy, fz;
