@@ -6,7 +6,7 @@ control de la botella basado en rampas variables usando sensores de fuerza/par
 
 el test 1 consiste en observar y comprobar si el ZMP se calcula correctamente en funcion del
 angulo de inclinacion de la bandeja. Este test se debe dividir a mano en otros tres, en el que
-se medirá el ZMP, tanto en el plano frontal (0,1,0), como en el plano sagital (1,0,0), como en un plano combiancion
+se medirá el ZMP, tanto en el plano frontal (0,1,0), como en el plano sagital (1,0,0), como en un plano que sea combinacion
 de los dos anteriores (1,1,0).
 */
 
@@ -18,59 +18,63 @@ namespace roboticslab
 /************************************************************************/
 bool Test1::configure(ResourceFinder &rf) {
 
-    std::string remote = rf.check("remote",yarp::os::Value(DEFAULT_REMOTE),"remote robot to be used").asString();
+    std::string robot = rf.check("robot",yarp::os::Value(DEFAULT_ROBOT),"name of /robot to be used").asString();
 
     printf("--------------------------------------------------------------\n");
     if (rf.check("help")) {
-        printf("Test1 options:\n");
+        printf("Jr3WristControl options:\n");
         printf("\t--help (this help)\t--from [file.ini]\t--context [path]\n");
-        printf("\t--remote ('teo' or 'teoSim')\n");
+        printf("\t--robot ('teo' or 'teoSim')\n");
+        printf("\t--robot: %s [%s]\n",robot.c_str(),DEFAULT_ROBOT);
     }
-    printf("Test1 using remote: %s [%s]\n",remote.c_str(),DEFAULT_REMOTE);
-
     printf("--------------------------------------------------------------\n");
     if(rf.check("help")) {
         ::exit(1);
     }
 
-    //-- Robot device
-    Property leftArmOptions;
+    std::string waiterStr("/waiter");
+
+    //-----------------LEFT ARM------------//
+    yarp::os::Property leftArmOptions;
     leftArmOptions.put("device","remote_controlboard");
-    std::string localStr("/test1/");
-    localStr += remote;
-    localStr += "/leftArm";
-    leftArmOptions.put("local",localStr);
-    std::string remoteStr("/");
-    remoteStr += remote;
-    remoteStr += "/leftArm";
-    leftArmOptions.put("remote",remoteStr);
+    leftArmOptions.put("remote",robot+"/leftArm");
+    leftArmOptions.put("local",waiterStr+robot+"/leftArm");
     leftArmDevice.open(leftArmOptions);
+    if(!leftArmDevice.isValid()) {
+        printf("robot leftArm device not available.\n");
+        leftArmDevice.close();
+        yarp::os::Network::fini();
+        return false;
+    }
 
-    if( ! leftArmDevice.isValid() )    {
-        printf("leftArm remote_controlboard instantiation not worked.\n");
-        return false;    }
-    if( ! leftArmDevice.view(iEncoders) )    {
-        printf("view(iEncoders) not worked.\n");
-        return false;    }
-    if( ! leftArmDevice.view(iPositionControl) )    {
-        printf("view(iPositionControl) not worked.\n");
-        return false;    }
-    if( ! leftArmDevice.view(iPositionDirect) )    {
-        printf("view(iPositionDirect) not worked.\n");
-        return false;    }
-    if( ! leftArmDevice.view(iVelocityControl) )    {
-        printf("view(iVelocityControl) not worked.\n");
-        return false;    }
+    if (!leftArmDevice.view(leftArmIControlMode2) ) { // connecting our device with "control mode 2" interface, initializing which control mode we want (position)
+        printf("[warning] Problems acquiring leftArmPos interface\n");
+        return false;
+    } else printf("[success] Acquired leftArmPos interface\n");
 
-    /*inCvPort.setIEncodersControl(iEncoders);
-    inCvPort.setIPositionControl(iPositionControl);
-    inCvPort.setIPositionDirect(iPositionDirect);
-    inCvPort.setIVelocityControl(iVelocityControl);*/
+    if (!leftArmDevice.view(leftArmIPositionControl2) ) { // connecting our device with "position control 2" interface (configuring our device: speed, acceleration... and sending joint positions)
+        printf("[warning] Problems acquiring leftArmIControlMode2 interface\n");
+        return false;
+    } else printf("[success] Acquired leftArmIControlMode2 interface\n");
+
+    if (!leftArmDevice.view(leftArmIEncoders) ) {
+        printf("[warning] Problems acquiring iEncoders interface\n");
+        return false;
+    } else printf("[success] Acquired iEncoders interface\n");
     
-    inSrPort.setIEncodersControl(iEncoders);
-    inSrPort.setIPositionControl(iPositionControl);
-    inSrPort.setIPositionDirect(iPositionDirect);
-    inSrPort.setIVelocityControl(iVelocityControl);
+    //-- Set control modes
+    int leftArmAxes;
+    leftArmIPositionControl2->getAxes(&leftArmAxes);
+    std::vector<int> leftArmControlModes(leftArmAxes,VOCAB_CM_POSITION);
+    if(! leftArmIControlMode2->setControlModes( leftArmControlModes.data() )){
+        printf("[warning] Problems setting position control mode of: left-arm\n");
+        return false;
+    }
+
+    //-- Conection between Jr3WristControl & inSrPort
+    inSrPort.setIEncodersControl(leftArmIEncoders);
+    inSrPort.setIPositionControl2(leftArmIPositionControl2);
+    inSrPort.setIVelocityControl2(leftArmIVelocityControl2);
 
     //-- Solver device
     yarp::os::Property solverOptions;

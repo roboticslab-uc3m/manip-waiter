@@ -38,7 +38,6 @@ class InSrPort : public BufferedPort<Bottle> {
     public:
 
         InSrPort()        {
-            follow = 0;
             a = 0;
             b = 0;
             w = 0;
@@ -80,23 +79,20 @@ class InSrPort : public BufferedPort<Bottle> {
         }
 
         void setIEncodersControl(yarp::dev::IEncoders *iEncoders) {
-            this->iEncoders = iEncoders;        }
-        void setIPositionControl(yarp::dev::IPositionControl *iPositionControl) {
-            this->iPositionControl = iPositionControl;        }
-        void setIPositionDirect(yarp::dev::IPositionDirect *iPositionDirect) {
-            this->iPositionDirect = iPositionDirect;        }
-        void setIVelocityControl(yarp::dev::IVelocityControl *iVelocityControl) {
-            this->iVelocityControl = iVelocityControl;        }
+            this->leftArmIEncoders = iEncoders;        }
+
+        void setIPositionControl2(yarp::dev::IPositionControl2 *iPositionControl2) {
+            this->leftArmIPositionControl2 = iPositionControl2;        }
+
+        void setIVelocityControl2(yarp::dev::IVelocityControl2 *iVelocityControl2) {
+            this->leftArmIVelocityControl2 = iVelocityControl2;        }
+
         void setICartesianSolver(roboticslab::ICartesianSolver *iCartesianSolver) {
             this->iCartesianSolver = iCartesianSolver;        }
-        void setFollow(int value);
-
-        //yarp::os::Port port2; posibilidad de usar la muñeca derecha
-        //yarp::os::Port port3;
 
     private:
 
-        int follow, a, b, w, numRobotJoints, pepinito, iteration;
+        int a, b, w, numRobotJoints, pepinito, iteration;
         float _d, _l;  //distance in m between the SDC tray and the SDC jr3
         double initpos;
 
@@ -145,10 +141,16 @@ class InSrPort : public BufferedPort<Bottle> {
         void getCurrentTime();
 
         //-- Robot device
-        yarp::dev::IEncoders *iEncoders;
-        yarp::dev::IPositionControl *iPositionControl;
-        yarp::dev::IPositionDirect *iPositionDirect;
-        yarp::dev::IVelocityControl *iVelocityControl;
+        /** Left Arm Device */
+        yarp::dev::PolyDriver leftArmDevice;
+        /** Left Arm ControlMode2 Interface */
+        yarp::dev::IControlMode2 *leftArmIControlMode2;
+       /** Left Arm PositionControl2 Interface */
+        yarp::dev::IPositionControl2 *leftArmIPositionControl2;
+        /** Left Arm PositionControl2 Interface */
+         yarp::dev::IVelocityControl2 *leftArmIVelocityControl2; // actualmente no se utilizado
+        /** Left Arm Encoders Interface */
+        yarp::dev::IEncoders *leftArmIEncoders;
 
         //-- Solver device
         roboticslab::ICartesianSolver *iCartesianSolver;

@@ -18,12 +18,6 @@ namespace roboticslab
 {
 
 /************************************************************************/
-void InSrPort::setFollow(int value)
-{
-    follow = value;
-}
-
-/************************************************************************/
 void InSrPort::onRead(Bottle& FTsensor) {
 
     if (b!=250)    {
@@ -67,7 +61,7 @@ void InSrPort::preprogrammedInitTrajectory()
 {
     fp = fopen("../data_zmp_bottle.csv","w+");
 
-    iEncoders->getAxes(&numRobotJoints);
+    leftArmIEncoders->getAxes(&numRobotJoints);
     CD_INFO("numRobotJoints: %d.\n",numRobotJoints);
 
 
@@ -84,7 +78,7 @@ void InSrPort::preprogrammedInitTrajectory()
     if ( ! iCartesianSolver->invKin(desireX,currentQ,desireQ) )    {
         CD_ERROR("invKin failed.\n");    }
 
-    if( ! iPositionControl->positionMove( desireQ.data() )) {
+    if( ! leftArmIPositionControl2->positionMove( desireQ.data() )) {
         CD_WARNING("setPositions failed, not updating control this iteration.\n");    }
 
     yarp::os::Time::delay(3);  // provisional !!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -99,16 +93,16 @@ void InSrPort::preprogrammedInitTrajectory()
     printf("end MOVE TO START POSITION\n");
 
 /** ---- designate initial position --------------- **/ //comprobar funcionalidad
-    if ( ! iEncoders->getEncoders( beforeQ.data() ) )    {
+    if ( ! leftArmIEncoders->getEncoders( beforeQ.data() ) )    {
         CD_WARNING("getEncoders failed, not updating control this iteration.\n");
         return;    }
     /** --------------------------------------------------- **/
 
 
     double initspe[7] = {3.0,3.0,3.0,3.0,3.0,3.0,0.0}; // --set NEW ref speed
-    iPositionControl->setRefSpeeds(initspe);
+    leftArmIPositionControl2->setRefSpeeds(initspe);
     double initacc[7] = {3.0,3.0,3.0,3.0,3.0,3,0.0}; // --set NEW ref accelaration
-    iPositionControl->setRefAccelerations(initacc);
+    leftArmIPositionControl2->setRefAccelerations(initacc);
 
 
 fprintf(fp,"fx,fy,fz,Mx,My,Mz,Xzmp,Yzmp,CX3,CX4,CX5,CX6,TX1,TY1,TX2,TY2,initT,currT,diffT");
@@ -175,7 +169,7 @@ void InSrPort::AxesTransform1(){
 void InSrPort::AxesTransform2(){
    //     Force/torque Transformation depending on the TCP orientation.
 
-    if ( ! iEncoders->getEncoders( currentQ.data() ) )    { //obtencion de los valores articulares (encoders absolutos)
+    if ( ! leftArmIEncoders->getEncoders( currentQ.data() ) )    { //obtencion de los valores articulares (encoders absolutos)
         CD_WARNING("getEncoders failed, not updating control this iteration.\n");
         return;    }
     if (fabs(currentQ[0] - beforeQ[0]) < 0.2)  {
@@ -383,7 +377,7 @@ void InSrPort::LIPM3d()
     if ( ! iCartesianSolver->invKin(desireX,currentQ,desireQ) )    {
         CD_ERROR("invKin failed.\n");    }
 
-    if( ! iPositionControl->positionMove( desireQ.data() )) {
+    if( ! leftArmIPositionControl2->positionMove( desireQ.data() )) {
         CD_WARNING("setPositions failed, not updating control this iteration.\n");    }
 
 //    yarp::os::Time::delay(3);
