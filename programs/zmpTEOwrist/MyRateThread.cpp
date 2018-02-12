@@ -1,7 +1,7 @@
 #include "MyRateThread.hpp"
 
 /************************************************************************/
-void MyRateThread::run(){// proceso principal
+void MyRateThread::run(){ // main process
     ReadSensor();
     AxesTransform();
     ZMPcomp();

@@ -21,6 +21,7 @@ bool Jr3WristControl::configure(ResourceFinder &rf) {
     if(rf.check("help")) {
         ::exit(1);
     }
+
     std::string waiterStr("/waiter");
 
     //-----------------LEFT ARM------------//

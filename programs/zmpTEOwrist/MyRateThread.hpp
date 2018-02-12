@@ -24,7 +24,7 @@
 #define TS 0.03
 using namespace std;
 
-
+static FILE *fp;
 
 
 /**
@@ -48,6 +48,14 @@ public:
     yarp::os::Port port3;
     yarp::os::Port IMU;
 
+    void setIEncodersControl(yarp::dev::IEncoders *iEncoders) {
+        this->leftArmIEncoders = iEncoders;        }
+
+    void setIPositionControl2(yarp::dev::IPositionControl2 *iPositionControl2) {
+        this->leftArmIPositionControl2 = iPositionControl2;        }
+
+    //void setICartesianSolver(roboticslab::ICartesianSolver *iCartesianSolver) {
+    //    this->iCartesianSolver = iCartesianSolver;        }
 
 private:
 
@@ -75,7 +83,14 @@ private:
     } _tray;
 
     float _d;  //distance in mm between the plate center and the sensor center in the X axis
-};
 
+    //-- Robot device
+    yarp::dev::IPositionControl2 *leftArmIPositionControl2;
+    yarp::dev::IEncoders *leftArmIEncoders;
+
+    //-- Solver device
+    //roboticslab::ICartesianSolver *iCartesianSolver;
+
+};
 
 #endif //_ratethread_H_
