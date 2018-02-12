@@ -40,9 +40,10 @@ public:
     void ReadFTSensor();
     void AxesTransform();
     void ZMPcomp();
+
     yarp::os::Port port2;
     yarp::os::Port port3;
-
+    yarp::os::Port port0;
 
 
 private:

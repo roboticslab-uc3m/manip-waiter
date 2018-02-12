@@ -30,14 +30,30 @@ int main(void) {
 
     MyRateThread jr3Thread;
     /** Opening YARP ports**/
-    jr3Thread.port2.open("/jr3/ch2:i"); //Opening port associated to jr3 channel 2 (RIGHT ARM)
-    jr3Thread.port3.open("/jr3/ch3:i"); //Opening port associated to jr3 channel 3 (LEFT ARM)
+        jr3Thread.port2.open("/waiter/jr3/ch2:i");  // Opening port associated to jr3 channel 2 (RIGHT ARM)
+        jr3Thread.port3.open("/waiter/jr3/ch3:i");  // Opening port associated to jr3 channel 3 (LEFT ARM)
+        jr3Thread.port0.open("/waiter/inertial:i"); // Opening port associated to inertial channel
 
     /** Connecting I/O YARP ports**/
-    yarp::os::Time::delay(0.5);
-    yarp.connect("/jr3/ch2:o","/jr3/ch2:i");
-    yarp::os::Time::delay(0.5);
-    yarp.connect("/jr3/ch3:o","/jr3/ch3:i");
+        yarp::os::Time::delay(0.5);
+        yarp.connect("/jr3/ch2:o","/waiter/jr3/ch2:i");
+        if (jr3Thread.port2.getInputCount() == 0){
+            cerr << "[error] Couldn't connect to YARP port /jr3/ch2." << endl;
+        } else cout << "[success] Connected to RIGHT ARM JR3." << endl;
+        yarp::os::Time::delay(0.5);
+
+        yarp.connect("/jr3/ch3:o","/waiter/jr3/ch3:i");
+        if (jr3Thread.port3.getInputCount() == 0){
+            cerr << "[error] Couldn't connect to YARP port /jr3/ch3." << endl;
+        } else cout << "[success] Connected to LEFT ARM JR3." << endl;
+        yarp::os::Time::delay(0.5);
+
+        yarp.connect("/inertial:o", "/waiter/inertial:i");
+        if (jr3Thread.port0.getInputCount() == 0){
+            cerr << "[error] Couldn't connect to YARP port /inertial." << endl;
+        } else cout << "[success] Connected to IMU." << endl;
+        yarp::os::Time::delay(0.5);
+
 
     jr3Thread.start();
 
@@ -49,6 +65,7 @@ int main(void) {
     jr3Thread.stop();
     jr3Thread.port2.close();
     jr3Thread.port3.close();
+    jr3Thread.port0.close();
 
     return 0;
 }
