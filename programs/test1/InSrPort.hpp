@@ -37,44 +37,47 @@ namespace roboticslab
 class InSrPort : public BufferedPort<Bottle> {
     public:
 
-        InSrPort()        {
+        InSrPort()  {
             a = 0;
             b = 0;
             w = 0;
-            pepinito = -9;
-            _d = 0.025;
-            _l = 0.05;
-            iteration=1;
+            inputAngle = -9;
+            _d = 0.025; // distance in metres
+            _l = 0.05;  // distance in metres
             _diff_time=0;
+
             quat.resize(4);
             quatC.resize(4);
             preFF.resize(4);
             FF.resize(4);
+
             _rzmp = 0;
             _rzmp_b = 0;
             x_zmp_b = 0;
             y_zmp_b = 0;
+
             //preFM.resize(4);
             //FM.resize(4); // quaternios
+
             _off._F.fx = 0;
             _off._F.fy = 0;
             _off._F.fz = 0;
             _off._M.mx = 0;
             _off._M.my = 0;
             _off._M.mz = 0;
+
             currentQ.resize(7);
             currentX.resize(7);
             desireX.resize(7);
             desireQ.resize(7);
             beforeQ.resize(7);
+
             _jr3._initF.fx = 0;
             _jr3._initF.fy = 0;
             _jr3._initF.fz = 0;
             _jr3._initT.mx = 0;
             _jr3._initT.my = 0;
             _jr3._initT.mz = 0;
-
-
 
         }
 
@@ -92,8 +95,13 @@ class InSrPort : public BufferedPort<Bottle> {
 
     private:
 
-        int a, b, w, numRobotJoints, pepinito, iteration;
-        float _d, _l;  //distance in m between the SDC tray and the SDC jr3
+        int a, b, w; // control porcess variables
+        int numRobotJoints; // number of available joints
+        int inputAngle; // angle input to move the trayTCP (openloop)
+        int pepinito;   // no used on test1 (void mediumJR3(Bottle& FTsensor))
+
+        float _d, _l;  // distance in m between the SDC tray and the SDC jr3
+
         double initpos;
 
         struct SensorData { // lectura F/T del sensor JR3
@@ -119,11 +127,13 @@ class InSrPort : public BufferedPort<Bottle> {
 
         double _rzmp, _rzmp_b, _rWorkSpace, _rFxy, _modFS, _modFF, x_zmp_b, y_zmp_b;
         double angle, _thetaX, _thetaY, _thetaXX, _thetaYY;
-        std::vector<double> quat, quatC, preFF, FF, preFM, FM; // quaternios
-        std::vector<double> currentQ, beforeQ, desireQ;
-        std::vector<double> currentX, desireX;
 
-        double init_time, init_loop, curr_time, _diff_time, _dt;
+        std::vector<double> quat, quatC, preFF, FF, preFM, FM; // quaternios
+
+        std::vector<double> currentQ, beforeQ, desireQ; // cartesian space variables
+        std::vector<double> currentX, desireX;  // joint space variables
+
+        double init_time, init_loop, curr_time, _diff_time, _dt;    // for calculating process time
 
 
         //-- InSrPort Funtions

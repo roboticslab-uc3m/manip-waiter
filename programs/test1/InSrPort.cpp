@@ -20,16 +20,16 @@ namespace roboticslab
 /************************************************************************/
 void InSrPort::onRead(Bottle& FTsensor) {
 
-    if (b!=250)    {
+    if (b!=250)    {    // deleting sensor offset
         offSetJR3(FTsensor);
         //iPositionControl->setPositionMode();
     }
-    if (a==0 && b==250)    {
+    if (a==0 && b==250)    {    // moving the arm to the stability pose
         preprogrammedInitTrajectory();
         //iPositionControl->setPositionMode();
         a=1;    }
 
-    if (b==250 && a==1 && pepinito<12)   {
+    if (b==250 && a==1 && inputAngle<12)   {
         getInitialTime();
         ReadFTSensor(FTsensor);
         AxesTransform1();
@@ -370,8 +370,8 @@ void InSrPort::LIPM3d()
         desireX[3]= 1;
         desireX[4]= 0;
         desireX[5]= 0;
-        desireX[6]= pepinito;
-        pepinito++;
+        desireX[6]= inputAngle;
+        inputAngle++;
     }
 
     if ( ! iCartesianSolver->invKin(desireX,currentQ,desireQ) )    {
