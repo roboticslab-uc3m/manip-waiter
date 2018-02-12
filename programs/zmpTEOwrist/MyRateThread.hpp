@@ -14,6 +14,9 @@
 #include <signal.h>
 #include <sys/ioctl.h>
 #include <cmath>
+#include <fstream>
+#include <deque>
+
 
 #include <yarp/os/all.h>
 #include <yarp/dev/all.h>
@@ -37,22 +40,33 @@ public:
         _d = 0.025;
     }
     void run();
-    void ReadFTSensor();
+    void ReadSensor();
     void AxesTransform();
     void ZMPcomp();
 
     yarp::os::Port port2;
     yarp::os::Port port3;
-    yarp::os::Port port0;
+    yarp::os::Port IMU;
 
 
 private:
 
-    struct SensorData {
+    struct SensorDataJR3 {
         double fx, fy, fz;
         double mx, my, mz;
         yarp::os::Bottle bottle;
     } _sensor2, _sensor3;
+
+    struct SensorDataIMU {
+        double ang_x, ang_y, ang_z; // Angle (x,y,z) [deg]
+        double acc_x, acc_y, acc_z; // Linear acceleration (x,y,z) [m/s^2]
+        double spd_x, spd_y, spd_z; // Angular velocity (x,y,z) [deg/s]
+        double mag_x, mag_y, mag_z; // Magnetic field (x,y,z)
+        yarp::os::Bottle bottle;
+    } _imu;
+
+    deque<double> x_sensor, y_sensor, z_sensor; // to filter the Linear acceleration
+
 
     struct TrayData {
         double fx, fy, fz;
