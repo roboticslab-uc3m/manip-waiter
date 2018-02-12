@@ -75,7 +75,7 @@ void InSrPort::preprogrammedInitTrajectory(){
 
     fp = fopen("../data_zmp_bottle.csv","w+");
 
-    iEncoders->getAxes(&numRobotJoints); // getting the number of joint on left-arm
+    leftArmIEncoders->getAxes(&numRobotJoints); // getting the number of joint on left-arm
     CD_INFO("numRobotJoints: %d.\n",numRobotJoints);
 
     /** ----- generate initial movement --------------- **/
@@ -103,7 +103,7 @@ void InSrPort::preprogrammedInitTrajectory(){
     printf("end MOVE TO START POSITION\n");
 
     /** ---- designate initial position --------------- **/
-    if ( ! iEncoders->getEncoders( beforeQ.data() ) )    {
+    if ( ! leftArmIEncoders->getEncoders( beforeQ.data() ) )    {
         CD_WARNING("[Error] getEncoders failed, not updating control this iteration.\n");
         return;    }
     /** --------------------------------------------------- **/
@@ -189,7 +189,7 @@ void InSrPort::AxesTransform1(){
 void InSrPort::AxesTransform2(){
    //     Force/torque Transformation depending on the TCP orientation.
 
-    if ( ! iEncoders->getEncoders( currentQ.data() ) )    { //obtencion de los valores articulares (encoders absolutos)
+    if ( ! leftArmIEncoders->getEncoders( currentQ.data() ) )    { //obtencion de los valores articulares (encoders absolutos)
         CD_WARNING("getEncoders failed, not updating control this iteration.\n");
         return;    }
     if (fabs(currentQ[0] - beforeQ[0]) < 0.2)  {

@@ -46,7 +46,7 @@ bool Jr3WristControl::configure(ResourceFinder &rf) {
         return false;
     } else printf("[success] Acquired leftArmIControlMode2 interface\n");
 
-    if (!leftArmDevice.view(iEncoders) ) {
+    if (!leftArmDevice.view(leftArmIEncoders) ) {
         printf("[warning] Problems acquiring iEncoders interface\n");
         return false;
     } else printf("[success] Acquired iEncoders interface\n");
@@ -61,10 +61,9 @@ bool Jr3WristControl::configure(ResourceFinder &rf) {
     }
     
     //-- Conection between Jr3WristControl & inSrPort
-    inSrPort.setIEncodersControl(iEncoders);
+    inSrPort.setIEncodersControl(leftArmIEncoders);
     inSrPort.setIPositionControl2(leftArmIPositionControl2);
-    //inSrPort.setIPositionDirect(iPositionDirect);
-    //inSrPort.setIVelocityControl(iVelocityControl);
+    inSrPort.setIVelocityControl2(leftArmIVelocityControl2);
 
     //-- Solver device
     yarp::os::Property solverOptions;

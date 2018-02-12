@@ -78,19 +78,16 @@ class InSrPort : public BufferedPort<Bottle> {
         }
 
         void setIEncodersControl(yarp::dev::IEncoders *iEncoders) {
-            this->iEncoders = iEncoders;        }
+            this->leftArmIEncoders = iEncoders;        }
 
         void setIPositionControl2(yarp::dev::IPositionControl2 *iPositionControl2) {
             this->leftArmIPositionControl2 = iPositionControl2;        }
 
+        void setIVelocityControl2(yarp::dev::IVelocityControl2 *iVelocityControl2) {
+            this->leftArmIVelocityControl2 = iVelocityControl2;        }
+
         void setICartesianSolver(roboticslab::ICartesianSolver *iCartesianSolver) {
             this->iCartesianSolver = iCartesianSolver;        }
-        /*
-        void setIPositionDirect(yarp::dev::IPositionDirect *iPositionDirect) {
-            this->iPositionDirect = iPositionDirect;        }
-        void setIVelocityControl(yarp::dev::IVelocityControl *iVelocityControl) {
-            this->iVelocityControl = iVelocityControl;        }
-            */
 
 
     private:
@@ -144,15 +141,17 @@ class InSrPort : public BufferedPort<Bottle> {
         void getCurrentTime();
 
 
+        //-- Robot device
         /** Left Arm Device */
         yarp::dev::PolyDriver leftArmDevice;
         /** Left Arm ControlMode2 Interface */
         yarp::dev::IControlMode2 *leftArmIControlMode2;
        /** Left Arm PositionControl2 Interface */
         yarp::dev::IPositionControl2 *leftArmIPositionControl2;
-
-        //-- Robot device
-        yarp::dev::IEncoders *iEncoders;
+        /** Left Arm PositionControl2 Interface */
+         yarp::dev::IVelocityControl2 *leftArmIVelocityControl2; // actualmente no se utilizado
+        /** Left Arm Encoders Interface */
+        yarp::dev::IEncoders *leftArmIEncoders;
 
         //-- Solver device
         roboticslab::ICartesianSolver *iCartesianSolver;

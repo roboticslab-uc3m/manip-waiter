@@ -41,21 +41,19 @@ class Jr3WristControl : public RFModule {
     protected:
 
         InSrPort inSrPort;
-        //InCvPort inCvPort;
 
+        //-- Robot device
         /** Left Arm Device */
         yarp::dev::PolyDriver leftArmDevice;
         /** Left Arm ControlMode2 Interface */
         yarp::dev::IControlMode2 *leftArmIControlMode2;
        /** Left Arm PositionControl2 Interface */
         yarp::dev::IPositionControl2 *leftArmIPositionControl2;
+        /** Left Arm PositionControl2 Interface */
+         yarp::dev::IVelocityControl2 *leftArmIVelocityControl2; // actualmente no se utilizado
+        /** Left Arm Encoders Interface */
+        yarp::dev::IEncoders *leftArmIEncoders;
 
-        yarp::dev::IEncoders *iEncoders;
-        /*
-        yarp::dev::IPositionControl *iPositionControl;
-        yarp::dev::IPositionDirect *iPositionDirect;
-        yarp::dev::IVelocityControl *iVelocityControl;
-        */
         //-- Solver device
         yarp::dev::PolyDriver solverDevice;
         roboticslab::ICartesianSolver *iCartesianSolver;
