@@ -75,14 +75,14 @@ int main(void) {
 
 
     /** Configuring LEFT ARM **/
+    yarp::dev::IControlMode2 *leftArmIControlMode2;
+    yarp::dev::IPositionControl2 *leftArmIPositionControl2;
+    yarp::dev::IEncoders *leftArmIEncoders;
     yarp::os::Property leftArmOptions;
     leftArmOptions.put("device","remote_controlboard");
     leftArmOptions.put("remote","/teo/leftArm");
     leftArmOptions.put("local","/waiter/teo/leftArm");
     yarp::dev::PolyDriver leftArmDevice;
-    yarp::dev::IControlMode2 *leftArmIControlMode2;
-    yarp::dev::IPositionControl2 *leftArmIPositionControl2;
-    yarp::dev::IEncoders *leftArmIEncoders;
     leftArmDevice.open(leftArmOptions);
     if(!leftArmDevice.isValid()) {
         printf("robot leftArm device not available.\n");
@@ -121,12 +121,12 @@ int main(void) {
 
 
     /** Solver device */
-    /*yarp::dev::PolyDriver solverDevice;
-    //roboticslab::ICartesianSolver *iCartesianSolver;
+    /*ICartesianSolver *iCartesianSolver;
     yarp::os::Property solverOptions;
     //solverOptions.fromString( rf.toString() );
     std::string solverStr = "KdlSolver";
     solverOptions.put("device",solverStr);
+    yarp::dev::PolyDriver solverDevice;
     solverDevice.open(solverOptions);
 
     if( ! solverDevice.isValid() )    {

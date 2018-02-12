@@ -17,6 +17,7 @@
 #include <fstream>
 #include <deque>
 
+#include "ICartesianSolver.h"
 
 #include <yarp/os/all.h>
 #include <yarp/dev/all.h>
