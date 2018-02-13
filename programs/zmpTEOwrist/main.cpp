@@ -33,9 +33,9 @@
 #include <sys/ioctl.h>
 #include <cmath>
 
-int main(void) {
+#include "ICartesianControl.h"
 
-    fp = fopen("../data_zmp.csv","w+"); // Opening data file
+int main(void) {
 
     /** Check yarp network**/
     yarp::os::Network yarp;
@@ -49,17 +49,18 @@ int main(void) {
 
     MyRateThread jr3Thread;
     /** Opening YARP ports**/
-        jr3Thread.port2.open("/waiter/jr3/ch2:i");  // Opening port associated to jr3 channel 2 (RIGHT ARM)
+        //jr3Thread.port2.open("/waiter/jr3/ch2:i");  // Opening port associated to jr3 channel 2 (RIGHT ARM) // si fuera necesario
         jr3Thread.port3.open("/waiter/jr3/ch3:i");  // Opening port associated to jr3 channel 3 (LEFT ARM)
         jr3Thread.IMU.open("/waiter/inertial:i"); // Opening port associated to inertial channel
 
     /** Connecting I/O YARP ports**/
         yarp::os::Time::delay(0.5);
-        yarp.connect("/jr3/ch2:o","/waiter/jr3/ch2:i");
+        // si fuera necesario
+        /*yarp.connect("/jr3/ch2:o","/waiter/jr3/ch2:i");
         if (jr3Thread.port2.getInputCount() == 0){
             cerr << "[error] Couldn't connect to YARP port /jr3/ch2." << endl;
         } else cout << "[success] Connected to RIGHT ARM JR3." << endl;
-        yarp::os::Time::delay(0.5);
+        yarp::os::Time::delay(0.5);*/
 
         yarp.connect("/jr3/ch3:o","/waiter/jr3/ch3:i");
         if (jr3Thread.port3.getInputCount() == 0){
@@ -114,28 +115,34 @@ int main(void) {
         printf("[warning] Problems setting position control mode of: left-arm\n");
         return false;
     }
-    /** Conection between Jr3WristControl & inSrPort **/
+    /** Conection between zmpTEOwrist & jr3Thread **/
     jr3Thread.setIEncodersControl(leftArmIEncoders);
     jr3Thread.setIPositionControl2(leftArmIPositionControl2);
     //jr3Thread.setIVelocityControl2(leftArmIVelocityControl2);
 
 
     /** Solver device */
-    /*ICartesianSolver *iCartesianSolver;
+    roboticslab::ICartesianControl *iCartesianControl;
+
+    //ICartesianSolver *iCartesianSolver;
     yarp::os::Property solverOptions;
     //solverOptions.fromString( rf.toString() );
     std::string solverStr = "KdlSolver";
     solverOptions.put("device",solverStr);
+    solverOptions.put("cartesianRemote", "/teo/leftArm/CartesianControl"); // remote port through which we'll talk to the server
+    solverOptions.put("cartesianLocal", "/CartesianControlExample");
     yarp::dev::PolyDriver solverDevice;
     solverDevice.open(solverOptions);
 
     if( ! solverDevice.isValid() )    {
-        CD_ERROR("solver device not valid: %s.\n",solverStr.c_str());
+        //CD_ERROR("solver device not valid: %s.\n",solverStr.c_str());
+        printf("[ERROR] Solver device not valid: %s.\n",solverStr.c_str());
         return false;    }
-    if( ! solverDevice.view(iCartesianSolver) )    {
-        CD_ERROR("Could not view iCartesianSolver in: %s.\n",solverStr.c_str());
+    if( ! solverDevice.view(iCartesianControl) )    {
+        //CD_ERROR("Could not view iCartesianSolver in: %s.\n",solverStr.c_str());
+        printf("[ERROR] Could not view iCartesianSolver in: %s.\n",solverStr.c_str());
         return false;    }
-    jr3Thread.setICartesianSolver(iCartesianSolver);*/
+    //jr3Thread.setICartesianSolver(iCartesianSolver);
 
     jr3Thread.start();
 
@@ -145,7 +152,7 @@ int main(void) {
     } while (c != '\n');
 
     jr3Thread.stop();
-    jr3Thread.port2.close();
+    //jr3Thread.port2.close(); // si fuera necesario
     jr3Thread.port3.close();
     jr3Thread.IMU.close();
 
