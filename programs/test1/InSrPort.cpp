@@ -64,6 +64,10 @@ void InSrPort::preprogrammedInitTrajectory()
     leftArmIEncoders->getAxes(&numRobotJoints);
     CD_INFO("numRobotJoints: %d.\n",numRobotJoints);
 
+    double initpos[7] = {-30,0,0,-90,0,30,0};
+    leftArmIPositionControl2->positionMove(initpos);
+
+    yarp::os::Time::delay(5);  // provisional !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 /** ----- generate initial movement --------------- **/
     // -- 0.303928 0.347326 0.248109 0.008763 -0.999962 -0.000286 10.03554
@@ -81,7 +85,7 @@ void InSrPort::preprogrammedInitTrajectory()
     if( ! leftArmIPositionControl2->positionMove( desireQ.data() )) {
         CD_WARNING("setPositions failed, not updating control this iteration.\n");    }
 
-    yarp::os::Time::delay(3);  // provisional !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    yarp::os::Time::delay(5);  // provisional !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     /*bool done = false;
     while( ! done )    {
