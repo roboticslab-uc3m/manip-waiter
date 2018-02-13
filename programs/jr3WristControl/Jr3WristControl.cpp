@@ -83,7 +83,7 @@ bool Jr3WristControl::configure(ResourceFinder &rf) {
     
     //-----------------OPEN LOCAL PORTS------------//
     inSrPort.useCallback();
-    inSrPort.open("/jr3WristControl/jr3/ch2:i"); //ch2:i rightArm - ch3:i leftArm
+    inSrPort.open("/jr3WristControl/jr3/ch3:i"); //ch2:i rightArm - ch3:i leftArm
 
     return true;
 }

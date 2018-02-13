@@ -396,7 +396,7 @@ void InSrPort::LIPM3d()
             desireX[6] = 0;    //
             printf("THE BOTTLE IS FALLING \n");
             //return;
-            _rzmp_b=_rzmp;
+            _rzmp_b = _rzmp;
         }
 
 /*
@@ -416,10 +416,10 @@ void InSrPort::LIPM3d()
             desireX[6] = 0;    //
             printf("THE BOTTLE IS IN EQUILIBRIUM \n");
             //return;
-            _rzmp_b=_rzmp;
+            _rzmp_b = _rzmp;
         }
     }
-    if (fabs(_rzmp-_rzmp_b>20))   {
+    if (fabs(_rzmp - _rzmp_b>20))   {
         desireX[3] = desireX[3];    //
         desireX[4] = desireX[4];     //
         desireX[5] = desireX[5];     //  Orientation
