@@ -51,12 +51,10 @@ bool Test1::configure(ResourceFinder &rf) {
         printf("[warning] Problems acquiring leftArmPos interface\n");
         return false;
     } else printf("[success] Acquired leftArmPos interface\n");
-
     if (!leftArmDevice.view(leftArmIPositionControl2) ) { // connecting our device with "position control 2" interface (configuring our device: speed, acceleration... and sending joint positions)
         printf("[warning] Problems acquiring leftArmIControlMode2 interface\n");
         return false;
     } else printf("[success] Acquired leftArmIControlMode2 interface\n");
-
     if (!leftArmDevice.view(leftArmIEncoders) ) {
         printf("[warning] Problems acquiring iEncoders interface\n");
         return false;
@@ -81,6 +79,7 @@ bool Test1::configure(ResourceFinder &rf) {
     solverOptions.fromString( rf.toString() );
     std::string solverStr = "KdlSolver";
     solverOptions.put("device",solverStr);
+    solverOptions.put("angleRepr","axisAngle");
     solverDevice.open(solverOptions);
 
     if( ! solverDevice.isValid() )    {
@@ -89,13 +88,10 @@ bool Test1::configure(ResourceFinder &rf) {
     if( ! solverDevice.view(iCartesianSolver) )    {
         CD_ERROR("Could not view iCartesianSolver in: %s.\n",solverStr.c_str());
         return false;    }
-    //inCvPort.setICartesianSolver(iCartesianSolver);
     inSrPort.setICartesianSolver(iCartesianSolver);
     
     //-----------------OPEN LOCAL PORTS------------//
-    //inCvPort.useCallback();
     inSrPort.useCallback();
-    //inCvPort.open("/test1/jr3/ch3:i");
     inSrPort.open("/test1/jr3/ch3:i");
 
     return true;

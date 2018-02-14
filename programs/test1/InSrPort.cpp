@@ -421,11 +421,11 @@ void InSrPort::saveToFile(){
 //    cout << "CurX: [" << currentX[3] << "\t, " << currentX[4] << "\t, " << currentX[5] << "\t, " << currentX[6] << "]" << endl;
 //    cout << "DesX: [" << desireX[0] << "\t, " << desireX[1] << "\t, " << desireX[2] << "]" << endl;
 //    cout << "DesX: [" << desireX[3] << "\t, " << desireX[4] << "\t, " << desireX[5] << "\t, " << desireX[6] << "]" << endl;
-//    cout << "CurX: [" << currentX[0] << "\t, " << currentX[1] << "\t, " << currentX[2] << "\t, " << currentX[3] << "\t, " << currentX[4] << "\t, " << currentX[5] << "\t, " << currentX[6] << "]" << endl;
+    cout << "CurQ: [" << currentQ[0] << "\t, " << currentQ[1] << "\t, " << currentQ[2] << "\t, " << currentQ[3] << "\t, " << currentQ[4] << "\t, " << currentQ[5] << "\t, " << currentQ[6] << "]" << endl;
+    cout << "CurX: [" << currentX[0] << "\t, " << currentX[1] << "\t, " << currentX[2] << "\t, " << currentX[3] << "\t, " << currentX[4] << "\t, " << currentX[5] << "\t, " << currentX[6] << "]" << endl;
     cout << "DesX: [" << desireX[0] << "\t, " << desireX[1] << "\t, " << desireX[2] << "\t, " << desireX[3] << "\t, " << desireX[4] << "\t, " << desireX[5] << "\t, " << desireX[6] << "]" << endl;
-    cout << "DesX: [" << desireQ[0] << "\t, " << desireQ[1] << "\t, " << desireQ[2] << "\t, " << desireQ[3] << "\t, " << desireQ[4] << "\t, " << desireQ[5] << "\t, " << desireQ[6] << "]" << endl;
+    cout << "DesQ: [" << desireQ[0] << "\t, " << desireQ[1] << "\t, " << desireQ[2] << "\t, " << desireQ[3] << "\t, " << desireQ[4] << "\t, " << desireQ[5] << "\t, " << desireQ[6] << "]" << endl;
 //    cout << "befQ: [" << beforeQ[0] << "\t, " << beforeQ[1] << "\t, " << beforeQ[2] << "\t, " << beforeQ[3] << "\t, " << beforeQ[4] << "\t, " << beforeQ[5] << "\t, " << beforeQ[6] << "]" << endl;
-//    cout << "curQ: [" << currentQ[0] << "\t, " << currentQ[1] << "\t, " << currentQ[2] << "\t, " << currentQ[3] << "\t, " << currentQ[4] << "\t, " << currentQ[5] << "\t, " << currentQ[6] << "]" << endl;
 
     /*CD_DEBUG_NO_HEADER("F_init:[");
     CD_DEBUG_NO_HEADER("%f \t",_tray._F.fx);
