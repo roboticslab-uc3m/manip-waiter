@@ -79,7 +79,6 @@ bool Test1::configure(ResourceFinder &rf) {
     solverOptions.fromString( rf.toString() );
     std::string solverStr = "KdlSolver";
     solverOptions.put("device",solverStr);
-    solverOptions.put("angleRepr","axisAngle");
     solverDevice.open(solverOptions);
 
     if( ! solverDevice.isValid() )    {
