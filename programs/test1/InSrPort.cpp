@@ -10,6 +10,8 @@
 
 #include <fstream>
 
+#include "KinematicRepresentation.hpp"
+
 using namespace yarp::os;
 using namespace yarp::dev;
 using namespace std;
@@ -281,6 +283,7 @@ void InSrPort::ZMPcomp()    {
     if ( ! iCartesianSolver->fwdKin(currentQ,currentX) )    {
         CD_ERROR("fwdKin failed.\n");    }
 
+
     //angle=(currentX[6]/180)*3.1415926; // transformando a rad
 /*
     _thetaX = -(atan((fabs(FF[3])/FF[1]))); //sobre el plano YZ en rad
@@ -384,6 +387,8 @@ void InSrPort::LIPM3d()
         desireX[5]= 0;
         desireX[6]= inputAngle;
         inputAngle++;
+        KinRepresentation::encodePose(desireX,desireX,
+                                       KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
     }
 
     if ( ! iCartesianSolver->invKin(desireX,currentQ,desireQ) )    {
