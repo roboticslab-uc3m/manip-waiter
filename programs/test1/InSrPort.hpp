@@ -12,6 +12,7 @@
 #include <math.h>  //-- fabs
 
 #include "ICartesianSolver.h"
+#include "KinematicRepresentation.hpp"
 
 #include "ColorDebug.hpp"
 #include <yarp/dev/IPositionDirect.h>
@@ -66,10 +67,12 @@ class InSrPort : public BufferedPort<Bottle> {
             _off._M.my = 0;
             _off._M.mz = 0;
 
-            currentQ.resize(7);
-            currentX.resize(7);
-            desireX.resize(7);
-            desireQ.resize(7);
+            cQ.resize(7);
+            cX.resize(7);
+            cX_AAS.resize(6);
+            dX.resize(7);
+            dX_AAS.resize(6);
+            dQ.resize(7);
             beforeQ.resize(7);
 
             _jr3._initF.fx = 0;
@@ -130,8 +133,8 @@ class InSrPort : public BufferedPort<Bottle> {
 
         std::vector<double> quat, quatC, preFF, FF, preFM, FM; // quaternios
 
-        std::vector<double> currentQ, beforeQ, desireQ; // cartesian space variables
-        std::vector<double> currentX, desireX;  // joint space variables
+        std::vector<double> cQ, beforeQ, dQ; // joint space variables
+        std::vector<double> cX, cX_AAS, dX, dX_AAS;  // cartesian space variables
 
         double init_time, init_loop, curr_time, _diff_time, _dt;    // for calculating process time
 

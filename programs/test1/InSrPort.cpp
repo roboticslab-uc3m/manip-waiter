@@ -10,8 +10,6 @@
 
 #include <fstream>
 
-#include "KinematicRepresentation.hpp"
-
 using namespace yarp::os;
 using namespace yarp::dev;
 using namespace std;
@@ -44,6 +42,11 @@ void InSrPort::onRead(Bottle& FTsensor) {
 //        printf("LoopTime = %f\n",_diff_time);
 
     }
+    // no tengo claro como cerrar el test1
+    /*if (b==250 && a==1 && inputAngle>=11)   {
+        cout << "BYE" << endl;
+        return;
+    }*/
 
     /*
      * if (umbral>rzmp)
@@ -77,20 +80,26 @@ void InSrPort::preprogrammedInitTrajectory()
         return;    }
     /** --------------------------------------------------- **/
 
+    if ( ! iCartesianSolver->fwdKin(beforeQ,cX_AAS) )    {
+        CD_ERROR("fwdKin failed.\n");    }
+    KinRepresentation::decodePose(cX_AAS, cX, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
+
 /** ----- generate initial movement --------------- **/
     // -- 0.303928 0.347326 0.248109 0.008763 -0.999962 -0.000286 10.03554
-    desireX[0] = 0.303928; // new X position
-    desireX[1] = 0.347326; // new Y position
-    desireX[2] = 0.248109; // new Z position
-    desireX[3]= 1;
-    desireX[4]= 0;
-    desireX[5]= 0;
-    desireX[6]= -10;
+    dX[0] = cX[0]; // new X position
+    dX[1] = cX[1]; // new Y position
+    dX[2] = cX[2]; // new Z position
+    dX[3]= 1;
+    dX[4]= 0;
+    dX[5]= 0;
+    dX[6]= -10;
+    KinRepresentation::encodePose(dX, dX_AAS, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
 
-    if ( ! iCartesianSolver->invKin(desireX,beforeQ,desireQ) )    {
+
+    if ( ! iCartesianSolver->invKin(dX_AAS,beforeQ,dQ) )    {
         CD_ERROR("invKin failed.\n");    }
 
-    if( ! leftArmIPositionControl2->positionMove( desireQ.data() )) {
+    if( ! leftArmIPositionControl2->positionMove( dQ.data() )) {
         CD_WARNING("setPositions failed, not updating control this iteration.\n");    }
 
     yarp::os::Time::delay(5);  // provisional !!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -183,54 +192,54 @@ void InSrPort::AxesTransform1(){
 void InSrPort::AxesTransform2(){
    //     Force/torque Transformation depending on the TCP orientation.
 
-    if ( ! leftArmIEncoders->getEncoders( currentQ.data() ) )    { //obtencion de los valores articulares (encoders absolutos)
+    if ( ! leftArmIEncoders->getEncoders( cQ.data() ) )    { //obtencion de los valores articulares (encoders absolutos)
         CD_WARNING("getEncoders failed, not updating control this iteration.\n");
         return;    }
-    if (fabs(currentQ[0] - beforeQ[0]) < 0.2)  {
-        currentQ[0] = beforeQ[0];    }
-    if (fabs(currentQ[1] - beforeQ[1])<0.2)  {
-        currentQ[1] = beforeQ[1];    }
-    if (fabs(currentQ[2] - beforeQ[2])<0.2)  {
-        currentQ[2] = beforeQ[2];    }
-    if (fabs(currentQ[3] - beforeQ[3])<0.5)  {
-        currentQ[3] = beforeQ[3];    }
-    if (fabs(currentQ[4] - beforeQ[4])<0.5)  {
-        currentQ[4] = beforeQ[4];    }
-    if (fabs(currentQ[5] - beforeQ[5])<0.5)  {
-        currentQ[5] = beforeQ[5];    }
-    if (fabs(currentQ[6] - beforeQ[6])<0.5)  {
-        currentQ[6] = beforeQ[6];    }
+    if (fabs(cQ[0] - beforeQ[0]) < 0.2)  {
+        cQ[0] = beforeQ[0];    }
+    if (fabs(cQ[1] - beforeQ[1])<0.2)  {
+        cQ[1] = beforeQ[1];    }
+    if (fabs(cQ[2] - beforeQ[2])<0.2)  {
+        cQ[2] = beforeQ[2];    }
+    if (fabs(cQ[3] - beforeQ[3])<0.5)  {
+        cQ[3] = beforeQ[3];    }
+    if (fabs(cQ[4] - beforeQ[4])<0.5)  {
+        cQ[4] = beforeQ[4];    }
+    if (fabs(cQ[5] - beforeQ[5])<0.5)  {
+        cQ[5] = beforeQ[5];    }
+    if (fabs(cQ[6] - beforeQ[6])<0.5)  {
+        cQ[6] = beforeQ[6];    }
 
 
-    if ( ! iCartesianSolver->fwdKin(currentQ,currentX) )    {
+    if ( ! iCartesianSolver->fwdKin(cQ,cX) )    {
         CD_ERROR("fwdKin failed.\n");    }
 
     //normalizando (no hace falta xq ya esta predefinido)
-    //_normVector = sqrt(pow((currentX[3]),2) + pow((currentX[4]),2) + pow((currentX[5]),2));
-    //currentX[3] = currentX[3] / _normVector;
-    //currentX[4] = currentX[4] / _normVector;
-    //currentX[5] = currentX[5] / _normVector;
+    //_normVector = sqrt(pow((cX[3]),2) + pow((cX[4]),2) + pow((cX[5]),2));
+    //cX[3] = cX[3] / _normVector;
+    //cX[4] = cX[4] / _normVector;
+    //cX[5] = cX[5] / _normVector;
 
     //redondeando los quaternios
     //int i;
     //for (i=3;i<=6;i++)   {
-        //if (currentX[i]>0)  {
-        //    currentX[i] = round (currentX[i]); //} // ceil or floor
-        //else{    currentX[i] = ceil (currentX[i]);    }    }
+        //if (cX[i]>0)  {
+        //    cX[i] = round (cX[i]); //} // ceil or floor
+        //else{    cX[i] = ceil (cX[i]);    }    }
 
     //convirtiendo de grados a radianes
-    //angle= currentX[6];
+    //angle= cX[6];
 
-    currentX[6]=(currentX[6]/180)*3.1415926;
-    if ((currentX[6]<0.015))     {
-        currentX[3] = 0;
-        currentX[4] = 0;
-        currentX[5] = 0;    }
+    cX[6]=(cX[6]/180)*3.1415926;
+    if ((cX[6]<0.015))     {
+        cX[3] = 0;
+        cX[4] = 0;
+        cX[5] = 0;    }
     //convirtiendo en quaternios
-    quat[0] = cos(currentX[6]/2); // angulo theta
-    quat[1] = currentX[3] * sin(currentX[6]/2); // eje X
-    quat[2] = currentX[4] * sin(currentX[6]/2); // eje Y
-    quat[3] = currentX[5] * sin(currentX[6]/2); // eje Z, siempre a cero
+    quat[0] = cos(cX[6]/2); // angulo theta
+    quat[1] = cX[3] * sin(cX[6]/2); // eje X
+    quat[2] = cX[4] * sin(cX[6]/2); // eje Y
+    quat[3] = cX[5] * sin(cX[6]/2); // eje Z, siempre a cero
 
     if (quat[0]==0 && quat[1]==0 && quat[2]==0 && quat[3]==0) {
         quat[1]=1;    }
@@ -275,16 +284,17 @@ void InSrPort::AxesTransform2(){
 void InSrPort::ZMPcomp()    {
     /**     * Bottle ZMP measurements    **/
 /*
-    if ( ! iEncoders->getEncoders( currentQ.data() ) )    { //obtencion de los valores articulares (encoders absolutos)
+    if ( ! iEncoders->getEncoders( cQ.data() ) )    { //obtencion de los valores articulares (encoders absolutos)
         CD_WARNING("getEncoders failed, not updating control this iteration.\n");
         std::cout << "ZMP: [dentro]" << endl;
         return;    }
 */
-    if ( ! iCartesianSolver->fwdKin(currentQ,currentX) )    {
+    if ( ! iCartesianSolver->fwdKin(cQ,cX_AAS) )    {
         CD_ERROR("fwdKin failed.\n");    }
+    KinRepresentation::decodePose(cX_AAS, cX, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
 
 
-    //angle=(currentX[6]/180)*3.1415926; // transformando a rad
+    //angle=(cX[6]/180)*3.1415926; // transformando a rad
 /*
     _thetaX = -(atan((fabs(FF[3])/FF[1]))); //sobre el plano YZ en rad
     _thetaY = (atan((fabs(FF[3])/FF[2]))); //sobre el plano XZ en rad
@@ -371,30 +381,29 @@ void InSrPort::LIPM3d()
 {
 
     // ref[x,y,z]: 0.302982 0.34692 0.247723
-    desireX[0] = 0.302982; // new X position
-    desireX[1] = 0.34692; // new Y position
-    desireX[2] = 0.247723; // new Z position
+    //dX[0] = 0.302982; // new X position
+    //dX[1] = 0.34692; // new Y position
+    //dX[2] = 0.247723; // new Z position
 
-    if (w<200)  {
+    if (w<100)  {
         w++;
         printf("\n %d \n",w);
         return;
     }
     else    {
         w=0;
-        desireX[3]= 1;
-        desireX[4]= 0;
-        desireX[5]= 0;
-        desireX[6]= inputAngle;
+        dX[3]= 1;
+        dX[4]= 0;
+        dX[5]= 0;
+        dX[6]= inputAngle;
         inputAngle++;
-        KinRepresentation::encodePose(desireX,desireX,
-                                       KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
+        KinRepresentation::encodePose(dX, dX_AAS, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
     }
 
-    if ( ! iCartesianSolver->invKin(desireX,currentQ,desireQ) )    {
+    if ( ! iCartesianSolver->invKin(dX_AAS,cQ,dQ) )    {
         CD_ERROR("invKin failed.\n");    }
 
-    if( ! leftArmIPositionControl2->positionMove( desireQ.data() )) {
+    if( ! leftArmIPositionControl2->positionMove( dQ.data() )) {
         CD_WARNING("setPositions failed, not updating control this iteration.\n");    }
 
 //    yarp::os::Time::delay(3);
@@ -407,7 +416,7 @@ void InSrPort::saveToFile(){
 //    _modFS = sqrt(pow((_tray._F.fx),2) + pow((_tray._F.fy),2) + pow((_tray._F.fz),2));
 //    _modFF = sqrt(pow((FF[1]),2) + pow((FF[2]),2) + pow((FF[3]),2));
 
-//    cout << "CurX: [" << currentX[3] << "\t, " << currentX[4] << "\t, " << currentX[5] << "\t, " << currentX[6] << "]" << endl;
+//    cout << "CurX: [" << cX[3] << "\t, " << cX[4] << "\t, " << cX[5] << "\t, " << cX[6] << "]" << endl;
 //    cout << "Quat: [" << quatC[0] << "\t, " << quatC[1] << "\t, " << quatC[2] << "\t, " << quatC[3] << "]" << endl;
 //    cout << "F_init: [" << _tray._F.fx << "\t, " << _tray._F.fy << "\t, " << _tray._F.fz << "\t " << "]" << endl;//<< FF[1] << "]" << endl;
 //    cout << "F_finl: [" << FF[1] << "\t, " << FF[2] << "\t, " << FF[3] << "\t " << "]" << endl;//<< FF[1] << "]" << endl;
@@ -423,13 +432,13 @@ void InSrPort::saveToFile(){
 //    cout << "the1: [" << _thetaXX << "\t, " << _thetaYY << "]" << endl;
 //    cout << "the2: [" << _thetaX << "\t, " << _thetaY << "]" << endl;
 
-//    cout << "CurX: [" << currentX[3] << "\t, " << currentX[4] << "\t, " << currentX[5] << "\t, " << currentX[6] << "]" << endl;
-//    cout << "DesX: [" << desireX[0] << "\t, " << desireX[1] << "\t, " << desireX[2] << "]" << endl;
-//    cout << "DesX: [" << desireX[3] << "\t, " << desireX[4] << "\t, " << desireX[5] << "\t, " << desireX[6] << "]" << endl;
-    cout << "CurQ: [" << currentQ[0] << "\t, " << currentQ[1] << "\t, " << currentQ[2] << "\t, " << currentQ[3] << "\t, " << currentQ[4] << "\t, " << currentQ[5] << "\t, " << currentQ[6] << "]" << endl;
-    cout << "CurX: [" << currentX[0] << "\t, " << currentX[1] << "\t, " << currentX[2] << "\t, " << currentX[3] << "\t, " << currentX[4] << "\t, " << currentX[5] << "\t, " << currentX[6] << "]" << endl;
-    cout << "DesX: [" << desireX[0] << "\t, " << desireX[1] << "\t, " << desireX[2] << "\t, " << desireX[3] << "\t, " << desireX[4] << "\t, " << desireX[5] << "\t, " << desireX[6] << "]" << endl;
-    cout << "DesQ: [" << desireQ[0] << "\t, " << desireQ[1] << "\t, " << desireQ[2] << "\t, " << desireQ[3] << "\t, " << desireQ[4] << "\t, " << desireQ[5] << "\t, " << desireQ[6] << "]" << endl;
+//    cout << "CurX: [" << cX[3] << "\t, " << cX[4] << "\t, " << cX[5] << "\t, " << cX[6] << "]" << endl;
+//    cout << "DesX: [" << dX[0] << "\t, " << dX[1] << "\t, " << dX[2] << "]" << endl;
+//    cout << "DesX: [" << dX[3] << "\t, " << dX[4] << "\t, " << dX[5] << "\t, " << dX[6] << "]" << endl;
+    cout << "CurQ: [" << cQ[0] << "\t, " << cQ[1] << "\t, " << cQ[2] << "\t, " << cQ[3] << "\t, " << cQ[4] << "\t, " << cQ[5] << "\t, " << cQ[6] << "]" << endl;
+    cout << "CurX: [" << cX[0] << "\t, " << cX[1] << "\t, " << cX[2] << "\t, " << cX[3] << "\t, " << cX[4] << "\t, " << cX[5] << "\t, " << cX[6] << "]" << endl;
+    cout << "DesX: [" << dX[0] << "\t, " << dX[1] << "\t, " << dX[2] << "\t, " << dX[3] << "\t, " << dX[4] << "\t, " << dX[5] << "\t, " << dX[6] << "]" << endl;
+    cout << "DesQ: [" << dQ[0] << "\t, " << dQ[1] << "\t, " << dQ[2] << "\t, " << dQ[3] << "\t, " << dQ[4] << "\t, " << dQ[5] << "\t, " << dQ[6] << "]" << endl;
 //    cout << "befQ: [" << beforeQ[0] << "\t, " << beforeQ[1] << "\t, " << beforeQ[2] << "\t, " << beforeQ[3] << "\t, " << beforeQ[4] << "\t, " << beforeQ[5] << "\t, " << beforeQ[6] << "]" << endl;
 
     /*CD_DEBUG_NO_HEADER("F_init:[");
@@ -468,15 +477,15 @@ void InSrPort::saveToFile(){
     fprintf(fp,",%.2f", _tray._zmp.y_zmp);
 //    fprintf(fp,",%.2f", _rzmp);
 
-    fprintf(fp,",%.2f", currentX[3]);
-    fprintf(fp,",%.2f", currentX[4]);
-    fprintf(fp,",%.2f", currentX[5]);
-    fprintf(fp,",%.2f", currentX[6]);
+    fprintf(fp,",%.2f", cX[3]);
+    fprintf(fp,",%.2f", cX[4]);
+    fprintf(fp,",%.2f", cX[5]);
+    fprintf(fp,",%.2f", cX[6]);
 
-//    fprintf(fp,",%.2f", desireX[3]);
-//    fprintf(fp,",%.2f", desireX[4]);
-//    fprintf(fp,",%.2f", desireX[5]);
-//    fprintf(fp,",%.2f", desireX[6]);
+//    fprintf(fp,",%.2f", dX[3]);
+//    fprintf(fp,",%.2f", dX[4]);
+//    fprintf(fp,",%.2f", dX[5]);
+//    fprintf(fp,",%.2f", dX[6]);
 
     fprintf(fp,",%.2f", _thetaXX);
     fprintf(fp,",%.2f", _thetaYY);
