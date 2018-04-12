@@ -72,7 +72,7 @@ void InSrPort::preprogrammedInitTrajectory()
     double initpos[7] = {-30,0,0,-90,0,30,0};
     leftArmIPositionControl2->positionMove(initpos);
 
-    yarp::os::Time::delay(5);  // provisional !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    yarp::os::Time::delay(10);  // provisional !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 /** ---- designate initial position --------------- **/ //comprobar funcionalidad
     if ( ! leftArmIEncoders->getEncoders( beforeQ.data() ) )    {
@@ -379,7 +379,9 @@ void InSrPort::ZMPcomp()    {
 /************************************************************************/
 void InSrPort::LIPM3d()
 {
-
+    dX[0] = cX[0]; // new X position
+    dX[1] = cX[1]; // new Y position
+    dX[2] = cX[2]; // new Z position
     // ref[x,y,z]: 0.302982 0.34692 0.247723
     //dX[0] = 0.302982; // new X position
     //dX[1] = 0.34692; // new Y position
