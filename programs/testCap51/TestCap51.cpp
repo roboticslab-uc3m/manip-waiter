@@ -10,13 +10,13 @@ se medirá el ZMP, tanto en el plano frontal (0,1,0), como en el plano sagital (
 de los dos anteriores (1,1,0).
 */
 
-#include "Test1.hpp"
+#include "TestCap51.hpp"
 
 namespace roboticslab
 {
 
 /************************************************************************/
-bool Test1::configure(ResourceFinder &rf) {
+bool TestCap51::configure(ResourceFinder &rf) {
 
     std::string robot = rf.check("robot",yarp::os::Value(DEFAULT_ROBOT),"name of /robot to be used").asString();
 
@@ -97,19 +97,19 @@ bool Test1::configure(ResourceFinder &rf) {
 }
 
 /************************************************************************/
-double Test1::getPeriod() {
+double TestCap51::getPeriod() {
     return 2.0;  // Fixed, in seconds, the slow thread that calls updateModule below
 }
 
 /************************************************************************/
-bool Test1::updateModule() {
+bool TestCap51::updateModule() {
     //printf("StateMachine in state [%d]. Test1 alive...\n", stateMachine.getMachineState());
     //printf("StateMachine in alive.\n");
     return true;
 }
 
 /************************************************************************/
-bool Test1::interruptModule() {
+bool TestCap51::interruptModule() {
     printf("Test1 closing...\n");
     //inCvPort.disableCallback();
     inSrPort.disableCallback();

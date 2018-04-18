@@ -2,16 +2,16 @@
 
 /**
  *
- * @ingroup Test1_programs
- * \defgroup Test1 Test1
+ * @ingroup TestCap51_programs
+ * \defgroup TestCap51 TestCap51
  *
  * @brief Creates an instance of roboticslab::WaiterExecManip.
  *
- * @section Test1 Legal
+ * @section TestCap51 Legal
  *
  * Copyright: 2017 (C) Universidad Carlos III de Madrid
  *
- * Author:Juan Miguel Garcia 2017
+ * Author:Juan Miguel Garcia 2018
  *
  * CopyPolicy: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License 3.0 or later
@@ -24,12 +24,12 @@
 
 #include <yarp/os/all.h>
 
-#include "Test1.hpp"
+#include "TestCap51.hpp"
 
 
 using namespace yarp::os;
 
-//YARP_DECLARE_DEVICES(Test1)
+//YARP_DECLARE_DEVICES(TestCap51)
 
 int main(int argc, char **argv) {
 
@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
 
     ResourceFinder rf;
     rf.setVerbose(true);
-    rf.setDefaultContext("Test1");
+    rf.setDefaultContext("TestCap51");
     rf.setDefaultConfigFile("/usr/local/share/manip-waiter/contexts/kinematics/leftArmKinematics-waiter.ini");
     rf.configure(argc, argv);
 
