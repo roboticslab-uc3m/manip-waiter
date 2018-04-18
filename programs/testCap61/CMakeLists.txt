@@ -2,9 +2,9 @@
 
 cmake_minimum_required(VERSION 2.6)
 
-IF (ENABLE_zmpTEOwrist)
+IF (ENABLE_inertial_T1)
 
-set(KEYWORD "zmpTEOwrist")
+set(KEYWORD "inertial_T1")
 
 # Find YARP.
 find_package(YARP REQUIRED)
@@ -37,5 +37,5 @@ else (folder_source)
   message(FATAL_ERROR "No source code files found. Please add something")
 endif (folder_source)
 
-ENDIF (ENABLE_zmpTEOwrist)
+ENDIF (ENABLE_inertial_T1)
 
