@@ -1,14 +1,14 @@
 /**
- * @ingroup zmpTEOwrist_programs
- * \defgroup zmpTEOwrist waiterExecManip
+ * @ingroup testCap10_programs
+ * \defgroup testCap10 waiterManip
  *
- * @brief Creates an instance of roboticslab::zmpTEOwrist.
+ * @brief Creates an instance of roboticslab::testCap10.
  *
- * @section zmpTEOwrist_legal Legal
+ * @section testCap10_legal Legal
  *
  * Copyright: 2017 (C) Universidad Carlos III de Madrid
  *
- * Author:Juan Miguel Garcia y Loli Pinel 2017
+ * Author:Juan Miguel Garcia 2018
  *
  * CopyPolicy: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License 3.0 or later
