@@ -1,24 +1,24 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
 /*
-el test 2 está asociado para el journal SENSORS en el que el topic del paper es el modelo de
+el test 52 está asociado para el journal SENSORS en el que el topic del paper es el modelo de
 control de la botella basado en rampas variables usando sensores de fuerza/par
 
-el test 2 consiste en observar y comprobar como ante variaciones de la orientacion del
+el test 52 consiste en observar y comprobar como ante variaciones de la orientacion del
 sensor jr3, volvemos a obtener un nuevo valor del vector de fuerza F (fx, fy, fz),
-que realmente coincide con las fuerzasd aplicadas posteriormente al ZMP. Este test
+que realmente coincide con las fuerzas aplicadas posteriormente al ZMP. Este test
 se debe dividir a mano en otros tres, en el que se medirá el ZMP, tanto en el plano
 frontal (0,1,0), como en el plano sagital (1,0,0), como en un plano combiancion
 de los dos anteriores (1,1,0).
 */
 
-#include "Test3.hpp"
+#include "TestCap52.hpp"
 
 namespace roboticslab
 {
 
 /************************************************************************/
-bool Test3::configure(ResourceFinder &rf) {
+bool TestCap52::configure(ResourceFinder &rf) {
 
     std::string remote = rf.check("remote",yarp::os::Value(DEFAULT_REMOTE),"remote robot to be used").asString();
 
@@ -96,19 +96,19 @@ bool Test3::configure(ResourceFinder &rf) {
 }
 
 /************************************************************************/
-double Test3::getPeriod() {
+double TestCap52::getPeriod() {
     return 2.0;  // Fixed, in seconds, the slow thread that calls updateModule below
 }
 
 /************************************************************************/
-bool Test3::updateModule() {
+bool TestCap52::updateModule() {
     //printf("StateMachine in state [%d]. Test3 alive...\n", stateMachine.getMachineState());
     //printf("StateMachine in alive.\n");
     return true;
 }
 
 /************************************************************************/
-bool Test3::interruptModule() {
+bool TestCap52::interruptModule() {
     printf("Test1 closing...\n");
     myRateThread.jr3.interrupt();
     myRateThread.inertial.interrupt();

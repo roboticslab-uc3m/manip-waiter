@@ -2,16 +2,16 @@
 
 /**
  *
- * @ingroup test3_programs
- * \defgroup test3 test3
+ * @ingroup TestCap52_programs
+ * \defgroup TestCap52 TestCap52
  *
- * @brief Creates an instance of roboticslab::Test2.
+ * @brief Creates an instance of roboticslab::TestCap52.
  *
- * @section Test1 Legal
+ * @section TestCap52 Legal
  *
  * Copyright: 2017 (C) Universidad Carlos III de Madrid
  *
- * Author:Juan Miguel Garcia 2017
+ * Author:Juan Miguel Garcia 2018
  *
  * CopyPolicy: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License 3.0 or later
@@ -24,12 +24,12 @@
 
 #include <yarp/os/all.h>
 
-#include "Test3.hpp"
+#include "TestCap52.hpp"
 
 
 using namespace yarp::os;
 
-//YARP_DECLARE_DEVICES(Test2)
+//YARP_DECLARE_DEVICES(TestCap52)
 
 int main(int argc, char **argv) {
 
@@ -37,11 +37,11 @@ int main(int argc, char **argv) {
 
     ResourceFinder rf;
     rf.setVerbose(true);
-    rf.setDefaultContext("Test3");
+    rf.setDefaultContext("TestCap52");
     rf.setDefaultConfigFile("/usr/local/share/manip-waiter/contexts/kinematics/leftArmKinematics-waiter.ini");
     rf.configure(argc, argv);
 
-    roboticslab::Test3 mod;
+    roboticslab::TestCap52 mod;
     if(rf.check("help")) {
         return mod.runModule(rf);
     }

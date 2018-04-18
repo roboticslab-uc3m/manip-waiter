@@ -1,7 +1,7 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#ifndef __FM_TEST3_HPP__
-#define __FM_TEST3_HPP__
+#ifndef __FM_TESTCAP52_HPP__
+#define __FM_TESTCAP52_HPP__
 
 #include <yarp/os/all.h>
 #include <yarp/dev/all.h>
@@ -29,12 +29,12 @@ namespace roboticslab
 {
 
 /**
- * @ingroup Test3
+ * @ingroup TestCap52
  *
- * @brief Test3.
+ * @brief TestCap52.
  *
  */
-class Test3 : public RFModule {
+class TestCap52 : public RFModule {
     public:
         bool configure(ResourceFinder &rf);
 
@@ -61,4 +61,4 @@ class Test3 : public RFModule {
 
 }  // namespace roboticslab
 
-#endif // __FM_TEST3_HPP__
+#endif // __FM_TESTCAP3_HPP__
