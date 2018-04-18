@@ -17,10 +17,9 @@ project(MANIP_WAITER)
 
 ### options: cpp programs
 option(ENABLE_ankle_strategy_sagittal "Choose if you want to compile ankle_strategy_sagittal" TRUE)
-option(ENABLE_zmpTEOwrist "Choose if you want to compile zmpTEOwrist" TRUE)
 option(ENABLE_jr3WristControl "Choose if you want to compile jr3WristControl" TRUE)
-option(ENABLE_test1 "Choose if you want to compile test1" TRUE)
-option(ENABLE_test3 "Choose if you want to compile test3" TRUE)
+option(ENABLE_testCap51 "Choose if you want to compile test1" TRUE)
+option(ENABLE_testCap52 "Choose if you want to compile test3" TRUE)
 
 ### options: force default
 
