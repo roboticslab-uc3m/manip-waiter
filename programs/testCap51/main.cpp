@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     rf.setDefaultConfigFile("/usr/local/share/manip-waiter/contexts/kinematics/leftArmKinematics-waiter.ini");
     rf.configure(argc, argv);
 
-    roboticslab::Test1 mod;
+    roboticslab::TestCap51 mod;
     if(rf.check("help")) {
         return mod.runModule(rf);
     }
