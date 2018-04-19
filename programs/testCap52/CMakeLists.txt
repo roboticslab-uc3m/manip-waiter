@@ -2,7 +2,7 @@
 
 cmake_minimum_required(VERSION 2.6)
 
-IF (ENABLE_force_T2)
+IF (ENABLE_testCap52)
 
 set(KEYWORD "force_T2")
 
@@ -37,5 +37,5 @@ else (folder_source)
   message(FATAL_ERROR "No source code files found. Please add something")
 endif (folder_source)
 
-ENDIF (ENABLE_force_T2)
+ENDIF (ENABLE_testCap52)
 

@@ -2,7 +2,7 @@
 
 cmake_minimum_required(VERSION 2.6)
 
-IF (ENABLE_force_T1)
+IF (ENABLE_testCap51)
 
 set(KEYWORD "force_T1")
 
@@ -27,6 +27,7 @@ endforeach(header_file ${folder_header})
 include_directories(${YARP_INCLUDE_DIRS}
                     ${COLOR_DEBUG_INCLUDE_DIRS}
                     ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS})
+
 # Set up our main executable.
 if (folder_source)
   add_executable(${KEYWORD} ${folder_source} ${folder_header})
@@ -36,5 +37,5 @@ else (folder_source)
   message(FATAL_ERROR "No source code files found. Please add something")
 endif (folder_source)
 
-ENDIF (ENABLE_force_T1)
+ENDIF (ENABLE_testCap51)
 

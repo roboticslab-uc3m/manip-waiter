@@ -1,4 +1,4 @@
-# Copyright: Universidad Carlos III de Madrid (C) 2013
+# Copyright: Universidad Carlos III de Madrid (C) 2018
 # Authors: Juan Miguel Garcia Haro
 
 add_subdirectory(ankle_strategy_sagittal)

@@ -2,7 +2,7 @@
 
 cmake_minimum_required(VERSION 2.6)
 
-IF (ENABLE_wholeBalance)
+IF (ENABLE_testCap10)
 
 set(KEYWORD "wholeBalance")
 
@@ -37,5 +37,5 @@ else (folder_source)
   message(FATAL_ERROR "No source code files found. Please add something")
 endif (folder_source)
 
-ENDIF (ENABLE_wholeBalance)
+ENDIF (ENABLE_testCap10)
 

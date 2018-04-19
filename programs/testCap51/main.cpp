@@ -33,7 +33,7 @@ using namespace yarp::os;
 
 int main(int argc, char **argv) {
 
-    //YARP_REGISTER_DEVICES(Test1);
+    //YARP_REGISTER_DEVICES(TestCap51);
 
     ResourceFinder rf;
     rf.setVerbose(true);
