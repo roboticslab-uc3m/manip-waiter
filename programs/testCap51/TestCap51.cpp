@@ -1,13 +1,16 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
 /*
-el test 1 está asociado para el journal SENSORS en el que el topic del paper es el modelo de
-control de la botella basado en rampas variables usando sensores de fuerza/par
+el test 51 está asociado para el journal SENSORS en el que el topic del paper es el modelo de
+control de la botella basado en rampas variables usando el sensor de fuerza/par (CH3).
 
-el test 1 consiste en observar y comprobar si el ZMP se calcula correctamente en funcion del
+el test 51 consiste en observar y comprobar si el ZMP se calcula correctamente en funcion del
 angulo de inclinacion de la bandeja. Este test se debe dividir a mano en otros tres, en el que
-se medirá el ZMP, tanto en el plano frontal (0,1,0), como en el plano sagital (1,0,0), como en un plano que sea combinacion
-de los dos anteriores (1,1,0).
+se medirá el ZMP, tanto en el plano frontal (0,1,0), como en el plano sagital (1,0,0), como en
+un plano que sea combinacion de los dos anteriores (1,1,0).
+
+Unicamente se utiliza el brazo izquierdo, luego solo es necesario crear el device de esta
+extremidad y el solver asociado a esta.
 */
 
 #include "TestCap51.hpp"
@@ -72,7 +75,7 @@ bool TestCap51::configure(ResourceFinder &rf) {
     //-- Conection between Jr3WristControl & inSrPort
     inSrPort.setIEncodersControl(leftArmIEncoders);
     inSrPort.setIPositionControl2(leftArmIPositionControl2);
-    inSrPort.setIVelocityControl2(leftArmIVelocityControl2);
+    //inSrPort.setIVelocityControl2(leftArmIVelocityControl2); // no se utiliza de momento
 
     //-- Solver device
     yarp::os::Property solverOptions;
@@ -91,7 +94,7 @@ bool TestCap51::configure(ResourceFinder &rf) {
     
     //-----------------OPEN LOCAL PORTS------------//
     inSrPort.useCallback();
-    inSrPort.open("/test1/jr3/ch3:i");
+    inSrPort.open("/testCap51/jr3/ch3:i");
 
     return true;
 }
@@ -103,19 +106,15 @@ double TestCap51::getPeriod() {
 
 /************************************************************************/
 bool TestCap51::updateModule() {
-    //printf("StateMachine in state [%d]. Test1 alive...\n", stateMachine.getMachineState());
-    //printf("StateMachine in alive.\n");
+    printf("TestCap51 alive...\n");
     return true;
 }
 
 /************************************************************************/
 bool TestCap51::interruptModule() {
     printf("Test1 closing...\n");
-    //inCvPort.disableCallback();
     inSrPort.disableCallback();
-    //inCvPort.interrupt();
     inSrPort.interrupt();
-    //inCvPort.close();
     inSrPort.close();
 
     solverDevice.close();

@@ -39,6 +39,7 @@ int main(int argc, char **argv) {
     rf.setVerbose(true);
     rf.setDefaultContext("TestCap51");
     rf.setDefaultConfigFile("/usr/local/share/manip-waiter/contexts/kinematics/leftArmKinematics-waiter.ini");
+    // para la waiter-app existe un fichero.ini con la cinematica especifica de la bandeja.
     rf.configure(argc, argv);
 
     roboticslab::TestCap51 mod;

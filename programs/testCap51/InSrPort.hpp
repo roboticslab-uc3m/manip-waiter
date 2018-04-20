@@ -91,7 +91,7 @@ class InSrPort : public BufferedPort<Bottle> {
             this->leftArmIPositionControl2 = iPositionControl2;        }
 
         void setIVelocityControl2(yarp::dev::IVelocityControl2 *iVelocityControl2) {
-            this->leftArmIVelocityControl2 = iVelocityControl2;        }
+            this->leftArmIVelocityControl2 = iVelocityControl2;        } // no se utiliza
 
         void setICartesianSolver(roboticslab::ICartesianSolver *iCartesianSolver) {
             this->iCartesianSolver = iCartesianSolver;        }
@@ -101,9 +101,9 @@ class InSrPort : public BufferedPort<Bottle> {
         int a, b, w; // control porcess variables
         int numRobotJoints; // number of available joints
         int inputAngle; // angle input to move the trayTCP (openloop)
-        int pepinito;   // no used on test1 (void mediumJR3(Bottle& FTsensor))
+        int pepinito;   // no used on test51 (void mediumJR3(Bottle& FTsensor))
 
-        float _d, _l;  // distance in m between the SDC tray and the SDC jr3
+        float _d, _l;  // distance in metres between the SDC tray and the SDC jr3
 
         double initpos;
 
