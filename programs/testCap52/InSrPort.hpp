@@ -8,7 +8,7 @@
 
 #include <stdlib.h>
 #include <fstream>
-#include <stdio.h>
+#include <iostream>
 #include <math.h>  //-- fabs
 
 #include "ICartesianSolver.h"

@@ -8,6 +8,7 @@
 
 #include <stdlib.h>
 #include <fstream>
+#include <iostream>
 #include <stdio.h>
 #include <math.h>  //-- fabs
 
