@@ -3,9 +3,9 @@
 /**
  *
  * @ingroup TestCap52_programs
- * \defgroup TestCap52 TestCap52
+ * \defgroup TestCap52 TestCap51
  *
- * @brief Creates an instance of roboticslab::TestCap52.
+ * @brief Creates an instance of roboticslab::WaiterExecManip.
  *
  * @section TestCap52 Legal
  *
@@ -22,23 +22,13 @@
  *
  */
 
-#include <yarp/os/all.h>
-
 #include "TestCap52.hpp"
 
-
-using namespace yarp::os;
-
-//YARP_DECLARE_DEVICES(TestCap52)
-
 int main(int argc, char **argv) {
-
-    //YARP_REGISTER_DEVICES(Test3);
 
     ResourceFinder rf;
     rf.setVerbose(true);
     rf.setDefaultContext("TestCap52");
-    rf.setDefaultConfigFile("/usr/local/share/manip-waiter/contexts/kinematics/leftArmKinematics-waiter.ini");
     rf.configure(argc, argv);
 
     roboticslab::TestCap52 mod;
@@ -56,4 +46,5 @@ int main(int argc, char **argv) {
     } else printf("[ok]\n");
 
     return mod.runModule(rf);
+
 }

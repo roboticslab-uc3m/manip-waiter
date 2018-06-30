@@ -21,6 +21,7 @@ option(ENABLE_jr3WristControl "Choose if you want to compile jr3WristControl" TR
 option(ENABLE_testCap51 "Choose if you want to compile test1" TRUE)
 option(ENABLE_testCap511 "Choose if you want to compile test1_threat" TRUE)
 option(ENABLE_testCap52 "Choose if you want to compile test3" TRUE)
+option(ENABLE_testCap522 "Choose if you want to compile test1_threat" TRUE)
 
 ### options: force default
 
