@@ -117,7 +117,7 @@ bool TestCap52::configure(ResourceFinder &rf) {
     /** **************************************************************************************
      * ******************************************************************************** **/
 
-    /* // ------ TRUNK DEV -------
+    // ------ TRUNK DEV -------
     yarp::os::Property trunkOptions;
     trunkOptions.put("device","remote_controlboard");
     trunkOptions.put("remote",robot+"/trunk");
@@ -140,7 +140,7 @@ bool TestCap52::configure(ResourceFinder &rf) {
     if (!trunkDevice.view(trunkIPositionControl2) ) { // connecting our device with "position control 2" interface (configuring our device: speed, acceleration... and sending joint positions)
         printf("[warning] Problems acquiring trunkIPositionControl2 interface\n");
         return false;
-    } else printf("[success] Acquired trunkIPositionControl2 interface\n");*/
+    } else printf("[success] Acquired trunkIPositionControl2 interface\n");
     /** **************************************************************************************
      * ******************************************************************************** **/
 
@@ -217,20 +217,20 @@ bool TestCap52::configure(ResourceFinder &rf) {
         printf("[warning] Problems setting position control mode of: right-arm\n");
         return false;
     }*/
-    /* // conf lower body
-    trunkIPositionControl2->getAxes(&numtrunkJoints);
-    std::vector<int> trunkControlModes(numtrunkJoints,VOCAB_CM_POSITION);
+    // conf lower body
+    trunkIPositionControl2->getAxes(&numTrunkJoints);
+    std::vector<int> trunkControlModes(numTrunkJoints,VOCAB_CM_POSITION);
     if(! trunkIControlMode2->setControlModes( trunkControlModes.data() )){
         printf("[warning] Problems setting position control mode of: trunk\n");
         return false;
     }
-    leftLegIPositionControl2->getAxes(&numLeftLegJoints);
+/*    leftLegIPositionControl2->getAxes(&numLeftLegJoints);
     std::vector<int> leftLegControlModes(numLeftLegJoints,VOCAB_CM_POSITION);
     if(! leftLegIControlMode2->setControlModes( leftLegControlModes.data() )){
         printf("[warning] Problems setting position control mode of: left-Leg\n");
         return false;
-    }
-    rightLegIPositionControl2->getAxes(&numRightLegJoints);
+    }*/
+/*    rightLegIPositionControl2->getAxes(&numRightLegJoints);
     std::vector<int> rightLegControlModes(numRightLegJoints,VOCAB_CM_POSITION);
     if(! rightLegIControlMode2->setControlModes(rightLegControlModes.data())){
         printf("[warning] Problems setting position control mode of: right-Leg\n");
@@ -309,7 +309,7 @@ bool TestCap52::configure(ResourceFinder &rf) {
 
     yarp::os::Time::delay(1);
 
-    //-- OPEN YARP PORTS
+/*    //-- OPEN YARP PORTS
     portImu.open("/waiter/inertial:i");
     portft0.open("/waiter/jr3ch0:i");
     portft1.open("/waiter/jr3ch1:i");
@@ -318,7 +318,7 @@ bool TestCap52::configure(ResourceFinder &rf) {
     yarp::os::Time::delay(0.5);
 
     //-- CONNECTIONS PORTS
-/*    // ft right foot
+    // ft right foot
     Network::connect("/jr3/ch0:o","/waiter/jr3ch0:i");
     if ( NetworkBase::isConnected("/jr3/ch0:o","/waiter/jr3ch0:i") == false ){
         cerr << "[error] Couldn't connect to YARP port /waiter/jr3ch0:i." << endl;
@@ -335,14 +335,14 @@ bool TestCap52::configure(ResourceFinder &rf) {
     if ( NetworkBase::isConnected("/jr3/ch2:o","/waiter/jr3ch2:i") == false ){
         cerr << "[error] Couldn't connect to YARP port /waiter/jr3ch2:i." << endl;
     } else cout << "[success] Connected to /jr3ch2:i." << endl;
-    yarp::os::Time::delay(0.5);*/
+    yarp::os::Time::delay(0.5);
     // ft left hand
     Network::connect("/jr3/ch3:o","/waiter/jr3ch3:i");
     if ( NetworkBase::isConnected("/jr3/ch3:o","/waiter/jr3ch3:i") == false ){
         cerr << "[error] Couldn't connect to YARP port /waiter/jr3ch3:i." << endl;
     } else cout << "[success] Connected to /jr3ch3:i." << endl;
     yarp::os::Time::delay(0.5);
-/*    // imu trunk
+    // imu trunk
     Network::connect("/inertial", "/waiter/inertial:i");
     if ( NetworkBase::isConnected("/inertial", "/waiter/inertial:i") == false ){
         cerr << "[error] Couldn't connect to YARP port /waiter/inertial:i." << endl;
@@ -355,7 +355,8 @@ bool TestCap52::configure(ResourceFinder &rf) {
     //-- Conection between TestCap51 & ThreadImpl
     //threadImpl.setNumJoints(numLeftArmJoints);
     threadImpl.setIEncodersControl(leftArmIEncoders);
-    threadImpl.setIPositionControl2(leftArmIPositionControl2);
+    threadImpl.setLeftArmIPositionControl2(leftArmIPositionControl2);
+    threadImpl.setTrunkIPositionControl2(trunkIPositionControl2);
     //threadImpl.setIVelocityControl2(leftArmIVelocityControl2); // no se utiliza de momento
     threadImpl.setICartesianSolver(leftArmICartesianSolver);
     threadImpl.setInputPorts(&portImu,&portft0,&portft1,&portft2,&portft3);
@@ -367,7 +368,7 @@ bool TestCap52::configure(ResourceFinder &rf) {
 
 /************************************************************************/
 double TestCap52::getPeriod() {
-    return 2.0;  // Fixed, in seconds, the slow thread that calls updateModule below
+    return 4.0;  // Fixed, in seconds, the slow thread that calls updateModule below
 }
 
 /************************************************************************/
