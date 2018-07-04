@@ -53,8 +53,11 @@ class ThreadImpl : public yarp::os::Thread {
         void setIEncodersControl(yarp::dev::IEncoders *iEncoders) {
             this->leftArmIEncoders = iEncoders;        }
 
-        void setIPositionControl2(yarp::dev::IPositionControl2 *iPositionControl2) {
+        void setLeftArmIPositionControl2(yarp::dev::IPositionControl2 *iPositionControl2) {
             this->leftArmIPositionControl2 = iPositionControl2;        }
+
+        void setTrunkIPositionControl2(yarp::dev::IPositionControl2 *iPositionControl2) {
+            this->trunkIPositionControl2 = iPositionControl2;        }
 
         void setIVelocityControl2(yarp::dev::IVelocityControl2 *iVelocityControl2) {
             this->leftArmIVelocityControl2 = iVelocityControl2;        }
@@ -115,14 +118,13 @@ class ThreadImpl : public yarp::os::Thread {
             } _zmp; // vector ZMP con sus dos componentes X e Y
         } _tray, _off;
 
-        int a, b, w, n; // control porcess variables
-        int inputAngle; // angle input to move the trayTCP (openloop)
+        int a, b, c, e, f, w, n; // control porcess variables
         int pepinito;   // no used on test51 (void mediumJR3(Bottle& FTsensor))
 
-        float _d, _l;  // distance in metres between the SDC tray and the SDC jr3
+        float _d_X, _d_Y, _l;  // distance in metres between the SDC tray and the SDC jr3
 
-        double _rzmp, _rzmp_b, _rWorkSpace, _rFxy, _modFS, _modFF, x_zmp_b, y_zmp_b;
-        double angle, _thetaX, _thetaY, _thetaXX, _thetaYY;
+        double _rzmp, _rzmp_b, _rWorkSpace, _rFxy, _modFS, _modFF, x_zmp_b, y_zmp_b; // transformation and ZMP
+        double angle, _thetaX, _thetaY, _thetaXX, _thetaYY; // tray angles
 
         std::vector<double> quat, quatC, preFF, FF, preFM, FM; // quaternios - needed for transformations
 
@@ -135,8 +137,11 @@ class ThreadImpl : public yarp::os::Thread {
 
         //-- ThreadImpl Funtions
         bool threadInit();
-        void run();void offSetJR3();/** Offset JR3 measurements. **/
-        void preprogrammedInitTrajectory();/** Set INITIAL POS-VEL-ACC **/
+        void run();
+        void confCSVfile();/** Configuring CSV file **/
+        void homeTrajectory();/** Set home waiter poss & Initial VEL-ACC **/
+        void openingPorts();/** Opening Ports & connecting with sensor programs **/
+        void calcParam_D();/** Calculating _d parameter **/
         void getInitialTime();
         void readSensors();/** Reading from the FT_JR3_sensor. **/
         void axesTransform1();/** Rotation Transformation matrix of JR3. **/
