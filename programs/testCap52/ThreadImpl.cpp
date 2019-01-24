@@ -16,7 +16,7 @@ bool ThreadImpl::threadInit() {
     w = 0;
     n = 1;
 
-    //_d = 0.028; // distance in metres
+    _d_X = 0.027; // distance in metres
     _l = 0.05;  // distance in metres
 
     quat.resize(4);
@@ -29,9 +29,6 @@ bool ThreadImpl::threadInit() {
     x_zmp_b = 0;
     y_zmp_b = 0;
 
-    //preFM.resize(4);
-    //FM.resize(4); // quaternios
-
     _off._F.fx = 0;
     _off._F.fy = 0;
     _off._F.fz = 0;
@@ -39,6 +36,8 @@ bool ThreadImpl::threadInit() {
     _off._M.my = 0;
     _off._M.mz = 0;
 
+    iniQ.resize(7);
+    iniX.resize(7);
     curQ.resize(7);
     curX.resize(7);
     curX_AAS.resize(6);
@@ -53,6 +52,16 @@ bool ThreadImpl::threadInit() {
     _FTLeftHand._initT.mx = 0;
     _FTLeftHand._initT.my = 0;
     _FTLeftHand._initT.mz = 0;
+
+    //double initspe[7] = {2.0,2.0,2.0,2.0,2.0,2.0,0.0}; // --set NEW ref speed
+    double initspe[7] = {10.0,10.0,10.0,10.0,10.0,10.0,0.0}; // --set NEW ref speed
+    //double initspe[7] = {20.0,20.0,20.0,20.0,20.0,20.0,0.0}; // --set NEW ref speed
+    leftArmIPositionControl2->setRefSpeeds(initspe);
+    //double initacc[7] = {2.0,2.0,2.0,2.0,2.0,2.0,0.0}; // --set NEW ref accelaration
+    double initacc[7] = {10.0,10.0,10.0,10.0,10.0,10,0.0}; // --set NEW ref accelaration
+    //double initacc[7] = {20.0,20.0,20.0,20.0,20.0,20,0.0}; // --set NEW ref accelaration
+    leftArmIPositionControl2->setRefAccelerations(initacc);
+
 return true;
 }
 
@@ -115,34 +124,34 @@ void ThreadImpl::homeTrajectory(){       /** Set home waiter poss & Initial VEL-
     cout << "[configuring] ... STEP 2 " << endl;
 
     // Moving leftArm & trunk to the waiter homePoss
-    double initpos[7] = {-30,0,0,-90,-1,30,0};
+    double initpos[7] = {-30,0,0,-90,0,30,0};
     leftArmIPositionControl2->positionMove(initpos);
     trunkIPositionControl2->positionMove(1,-3);
-    yarp::os::Time::delay(15);
+    yarp::os::Time::delay(10);
 
     // Obtaining waiter homePoss in Cartesian Space
-    if ( ! leftArmIEncoders->getEncoders( befQ.data() ) )    {
+    if ( ! leftArmIEncoders->getEncoders( iniQ.data() ) )    {
         CD_WARNING("getEncoders failed, not updating control this iteration.\n");
         return;    }
-    if ( ! leftArmICartesianSolver->fwdKin(befQ,curX_AAS) )    {
+    if ( ! leftArmICartesianSolver->fwdKin(iniQ,curX_AAS) )    {
         CD_ERROR("fwdKin failed.\n");    }
-    KinRepresentation::decodePose(curX_AAS, befX, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
+    KinRepresentation::decodePose(curX_AAS, iniX, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
 
-    desX[0] = befX[0]; // new X position
-    desX[1] = befX[1]; // new Y position
-    desX[2] = befX[2]; // new Z position
-    desX[3]= 0;
-    desX[4]= 0;
-    desX[5]= 0;
-    desX[6]= 0;
+    desX[0] = iniX[0]; // new X position
+    desX[1] = iniX[1]; // new Y position
+    desX[2] = iniX[2]; // new Z position
+    desX[3] = iniX[3];
+    desX[4] = iniX[4];
+    desX[5] = iniX[5];
+    desX[6] = iniX[6];
 
     KinRepresentation::encodePose(desX, desX_AAS, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
-    if ( ! leftArmICartesianSolver->invKin(desX_AAS,befQ,desQ) )    {
+    if ( ! leftArmICartesianSolver->invKin(desX_AAS,iniQ,desQ) )    {
         CD_ERROR("invKin failed.\n");    }
-    if( ! leftArmIPositionControl2->positionMove( desQ.data() )) {
-        CD_WARNING("setPositions failed, not updating control this iteration.\n");    }
+    /*if( ! leftArmIPositionControl2->positionMove( desQ.data() )) {
+        CD_WARNING("setPositions failed, not updating control this iteration.\n");    }*/
 
-    yarp::os::Time::delay(1);
+    yarp::os::Time::delay(0.5);
     cout << "[success] Waiter Home Poss." << endl;
 
     // Configuring Speed & Acc references for the left Arm
@@ -150,9 +159,15 @@ void ThreadImpl::homeTrajectory(){       /** Set home waiter poss & Initial VEL-
         CD_WARNING("getEncoders failed, not updating control this iteration.\n");
         return;    }
 
-    double initspe[7] = {10.0,10.0,10.0,10.0,10.0,10.0,0.0}; // --set NEW ref speed
+    //double initspe[7] = {2.0,2.0,2.0,2.0,2.0,2.0,0.0}; // --set NEW ref speed
+    double initspe[7] = {5.0,5.0,5.0,5.0,5.0,5.0,0.0}; // --set NEW ref speed
+    //double initspe[7] = {10.0,10.0,10.0,10.0,10.0,10.0,0.0}; // --set NEW ref speed
+    //double initspe[7] = {20.0,20.0,20.0,20.0,20.0,20.0,0.0}; // --set NEW ref speed
     leftArmIPositionControl2->setRefSpeeds(initspe);
-    double initacc[7] = {10.0,10.0,10.0,10.0,10.0,10,0.0}; // --set NEW ref accelaration
+    //double initacc[7] = {2.0,2.0,2.0,2.0,2.0,2.0,0.0}; // --set NEW ref accelaration
+    double initacc[7] = {5.0,5.0,5.0,5.0,5.0,5.0,0.0}; // --set NEW ref speed
+    //double initacc[7] = {10.0,10.0,10.0,10.0,10.0,10,0.0}; // --set NEW ref accelaration
+    //double initacc[7] = {20.0,20.0,20.0,20.0,20.0,20,0.0}; // --set NEW ref accelaration
     leftArmIPositionControl2->setRefAccelerations(initacc);
     cout << "[success] Ref Speeds and Acc configured." << endl;
 
@@ -171,8 +186,8 @@ void ThreadImpl::openingPorts(){       /** Opening Ports & Connecting with senso
     portFt2->open("/waiter/jr3ch2:i");
     portFt3->open("/waiter/jr3ch3:i");
 
-    cout << "[atention] User must activate sensor programs." << endl;
-    yarp::os::Time::delay(10);
+    cout << "\n [atention] User must activate sensor programs." << endl;
+    yarp::os::Time::delay(5);
 
     //-- CONNECTIONS PORTS
 /*    // ft right foot
@@ -230,8 +245,11 @@ void ThreadImpl::calcParam_D(){       /** Calculating _d parameter **/
         yarp::os::Time::delay(1);
         cout << "[success] ... botella puesta " << endl;
         yarp::os::Time::delay(1);
-        f=1;        }
+        cout << "[success] ... botella puesta " << endl;
+        yarp::os::Time::delay(1);
+        e=250;        }
 
+/*    // Para promediar el punto de apoyo respecto del centro de la bandeja
     if (f==1){
         _FTLeftHand._initT.my = _FTLeftHand._initT.my /100;
         _off._M.my += + _FTLeftHand._initT.my;
@@ -246,9 +264,8 @@ void ThreadImpl::calcParam_D(){       /** Calculating _d parameter **/
             _d_X = _off._M.my / e; // distancia en el eje X del JR3 a la botella
             _d_Y = _off._M.mx / e; // distancia en el eje Y del JR3 a la botella
             printf("distancia _d = %f ,\t %f \n", _d_X, _d_Y);
-
         }
-    }
+    }*/
 
 }
 
@@ -460,10 +477,10 @@ void ThreadImpl::axesTransform2(){  /** Force/torque Transformation depending on
     FF[2]=((preFF[0]*quatC[2]) - (preFF[1]*quatC[3]) + (preFF[2]*quatC[0])) + (preFF[3]*quatC[1]); //fy
     FF[3]=((preFF[0]*quatC[3]) + (preFF[1]*quatC[2]) - (preFF[2]*quatC[1])) + (preFF[3]*quatC[0]); //fz
 
-    FF[0] = trunc(FF[0]);
-    FF[1] = trunc(FF[1]);
-    FF[2] = trunc(FF[2]);
-    FF[3] = trunc(FF[3]);
+    //FF[0] = trunc(FF[0]);
+    //FF[1] = trunc(FF[1]);
+    //FF[2] = trunc(FF[2]);
+    //FF[3] = trunc(FF[3]);
 
     //transformada      preFM   = quat              *   _initM
     //                  FM     = _preFM    *   quatC
@@ -484,7 +501,6 @@ void ThreadImpl::zmpComp(){         /** Bottle ZMP measurements    **/
 
     if ( ! leftArmIEncoders->getEncoders( curQ.data() ) )    { //obtencion de los valores articulares (encoders absolutos)
         CD_WARNING("getEncoders failed, not updating control this iteration.\n");
-        std::cout << "ZMP: [dentro]" << endl;
         return;    }
 
     if ( ! leftArmICartesianSolver->fwdKin(curQ,curX_AAS) )    {
@@ -543,9 +559,10 @@ void ThreadImpl::zmpComp(){         /** Bottle ZMP measurements    **/
         _tray._zmp.y_zmp = _tray._zmp.y_zmp; // Metros
     }else{
         _tray._zmp.x_zmp = ((- _tray._M.my / (-9.72*cos(_thetaXX))) - (_l*FF[1]/(-9.72*cos(_thetaXX)) ) - _d_X); // Metros
-        _tray._zmp.y_zmp = ((_tray._M.mx / (-9.72*cos(_thetaYY)))   - (_l*FF[2]/(-9.72*cos(_thetaYY)) ) + _d_Y); // Metros
+        _tray._zmp.y_zmp = ((_tray._M.mx / (-9.72*cos(_thetaYY)))   - (_l*FF[2]/(-9.72*cos(_thetaYY)) ) ); // Metros
         _tray._zmp.x_zmp = 1000 * _tray._zmp.x_zmp; // conversion a milimetros
         _tray._zmp.y_zmp = 1000 * _tray._zmp.y_zmp; // conversion a milimetros
+
         /*_tray._zmp.x_zmp = trunc(_tray._zmp.x_zmp);
         _tray._zmp.y_zmp = trunc(_tray._zmp.y_zmp);*/
 
@@ -575,6 +592,7 @@ void ThreadImpl::zmpComp(){         /** Bottle ZMP measurements    **/
     if ((_tray._zmp.y_zmp<0.001) && (_tray._zmp.y_zmp>-0.001))    {
         _tray._zmp.y_zmp = 0;} //limitando el minimo ZMP en Y positivo
 */
+
     _rzmp = sqrt(pow(_tray._zmp.x_zmp,2) + pow(_tray._zmp.y_zmp,2));
 
 }
@@ -583,78 +601,144 @@ void ThreadImpl::zmpComp(){         /** Bottle ZMP measurements    **/
 void ThreadImpl::LIPM3d(){          /** Control - Joint Position Calculus    **/
 
     //Generacion de la actuacion a los motores (CONTROL)
-    if (fabs(_rzmp - _rzmp_b < 20))   {
-        if ((_rzmp>5) && (curX[6]<10))  { // será necesario programar los limites en los ejes X e Y.
-                //rotVector();
-                // calculo del angulo de rotacion
-//                _rFxy = sqrt(pow(_tray._F.fx,2) + pow(_tray._F.fy,2)); // usando Fx y Fy .
-//                _rFxy = sqrt(pow(_tray._zmp.x_zmp,2) + pow(_tray._zmp.y_zmp,2)); // usando zmp_x y zmp_y .
-                desX[6] = (((atan(_rzmp/(fabs(_tray._F.fz))))*180)/(3.1415926));
-                desX[6] = (desX[6] - curX[6]); /// 2;
+
+    if (_FTLeftHand._initF.fx<-5){   // botella SI puesta
+
+        // version 2
+        if (_rzmp>=15)  { // ZMP botella INESTABLE
+
+            desX[3] = curX[3];
+            desX[4] = curX[4];
+            desX[5] = curX[5];
+
+            _rFxy = sqrt(pow(FF[1],2) + pow(FF[2],2)); // composicion de Fx y Fy
+            _alpha = ((atan(_rFxy/(-FF[3])))*180)/(3.1415926); // angulo botella
+
+            desX[6] = (fabs(curX[6]) - (_alpha));
+
+            KinRepresentation::encodePose(desX, desX_AAS, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
+            if ( ! leftArmICartesianSolver->invKin(desX_AAS,curQ,desQ) )    {
+                CD_ERROR("invKin failed.\n");    }
+            if( ! leftArmIPositionControl2->positionMove( desQ.data() )) {
+                CD_WARNING("setPositions failed, not updating control this iteration.\n");      }
+
+            printf("MOVIENDOME HACIA ...\n");
+            befX = desX;
+            befQ = desQ;
+            _rzmp_b = _rzmp;
+        }
+        if (_rzmp<15)   { // ZMP botella estable
+
+            if (_rzmp_b<15)   { // me voy a la waiter pose
+
+                desX = iniX;
+                KinRepresentation::encodePose(desX, desX_AAS, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
+                if ( ! leftArmICartesianSolver->invKin(desX_AAS,iniQ,desQ) )    {
+                    CD_ERROR("invKin failed.\n");    }
+                if( ! leftArmIPositionControl2->positionMove( desQ.data() )) {
+                    CD_WARNING("setPositions failed, not updating control this iteration.\n");    }
+
+                printf("WAITER POSE \n");
+                befQ = desQ;
+                _rzmp_b = _rzmp;
+            }
+            if (_rzmp_b>15)   { // me quedo donde estoy
+                if ( ! leftArmIEncoders->getEncoders( curQ.data() ) )    {
+                    CD_WARNING("getEncoders failed, not updating control this iteration.\n");
+                    return;    }
+                if( ! leftArmIPositionControl2->positionMove( curQ.data() )) {
+                    CD_WARNING("setPositions failed, not updating control this iteration.\n");      }
+
+                printf("QUIETOOOOOOOOO \n");
+                befQ = curQ;
+                _rzmp_b = _rzmp;
+            }
+        }
+
+    /*    // version 1
+        if (fabs(_rzmp - _rzmp_b < 40))   {
+            if (_rzmp>=10)  { // será necesario programar los limites en los ejes X e Y.
                 // calculo del vector unitario de rotacion
-                desX[3] = 1 / ( sqrt( 1 + pow((_tray._zmp.x_zmp/_tray._zmp.y_zmp),2) ) );
-                desX[4] = -_tray._zmp.x_zmp / (_tray._zmp.y_zmp * ( sqrt( 1 + pow((_tray._zmp.x_zmp/_tray._zmp.y_zmp),2) ) ) );
-                desX[5] = 0;
-                _rzmp_b=_rzmp;
+                desX[3] = curX[3];
+                desX[4] = curX[4];
+                desX[5] = curX[5];
+
+                _rFxy = sqrt(pow(FF[1],2) + pow(FF[2],2)); // composicion de Fx y Fy
+                _alpha = ((atan(_rFxy/(-FF[3])))*180)/(3.1415926);
+
+                desX[6] = -(fabs(curX[6])+ (_alpha/4));
+
+                KinRepresentation::encodePose(desX, desX_AAS, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
+                if ( ! leftArmICartesianSolver->invKin(desX_AAS,curQ,desQ) )    {
+                    CD_ERROR("invKin failed.\n");    }
+
+                if( ! leftArmIPositionControl2->positionMove( desQ.data() )) {
+                    CD_WARNING("setPositions failed, not updating control this iteration.\n");      }
+
+                 // calculo del vector unitario de rotacion
+              //  desX[3] = -_tray._zmp.y_zmp / _rzmp;
+              //  desX[4] = _tray._zmp.x_zmp / _rzmp;
+              //  desX[5] = 0;
+                // calculo del angulo de rotacion
+              //  _rFxy = sqrt(pow(FF[1],2) + pow(FF[2],2)); // composicion de Fx y Fy
+              //  if (desX[3]*desX[4]>=0)
+              //      desX[6] = (((atan(_rFxy/(-FF[3])))*180)/(3.1415926));
+              //  if (desX[3]*desX[4]<0)
+              //      desX[6] = -(((atan(_rFxy/(-FF[3])))*180)/(3.1415926));
+              //  desX[6] = (desX[6] - curX[6]); /// 2;
+                printf("MOVIENDOME HACIA ...\n");
+                befX = desX;
+                _rzmp_b = _rzmp;
+            }
+
+            if (_rzmp<10)   { // será necesario programar los limites en los ejes X e Y.
+
+                if ( ! leftArmIEncoders->getEncoders( curQ.data() ) )    { //obtencion de los valores articulares (encoders absolutos)
+                    CD_WARNING("getEncoders failed, not updating control this iteration.\n");
+                    return;    }
+                if( ! leftArmIPositionControl2->positionMove( curQ.data() )) {
+                    CD_WARNING("setPositions failed, not updating control this iteration.\n");      }
+
+                printf("THE BOTTLE IS IN EQUILIBRIUM \n");
+                befQ = desQ;
+                _rzmp_b = _rzmp;
+            }
         }
-        if ((_rzmp>5) && (curX[6]>10))  { // será necesario programar los limites en los ejes X e Y.
-            desX[3] = 0;    //
-            desX[4] = 0;     //
-            desX[5] = 0;     //  Orientation
-            desX[6] = 0;    //
-            printf("THE BOTTLE IS FALLING \n");
+        if (fabs(_rzmp - _rzmp_b > 40))   {
+
+            if ( ! leftArmIEncoders->getEncoders( curQ.data() ) )    { //obtencion de los valores articulares (encoders absolutos)
+                CD_WARNING("getEncoders failed, not updating control this iteration.\n");
+                return;    }
+            if( ! leftArmIPositionControl2->positionMove( curQ.data() )) {
+                CD_WARNING("setPositions failed, not updating control this iteration.\n");      }
+
+            printf("ME HE PASADO TRES PUEBLOS \n");
             //return;
+            befQ = desQ;
             _rzmp_b = _rzmp;
         }
-
-/*
-        if ((_rzmp>0.005) && (_rWorkSpace>0.100))   { // será necesario programar los limites en los ejes X e Y.
-            desireX[3] = 0;    //
-            desireX[4] = 0;     //
-            desireX[5] = 0;     //  Orientation
-            desireX[6] = 0;
-            printf("¡¡¡ BOTTLE FALL !!! \n");
-            //return;
-            _rzmp_b=_rzmp;
-        }*/
-        if (_rzmp<5)   { // será necesario programar los limites en los ejes X e Y.
-            desX[3] = 0;    //
-            desX[4] = 0;     //
-            desX[5] = 0;     //  Orientation
-            desX[6] = 0;    //
-            printf("THE BOTTLE IS IN EQUILIBRIUM \n");
-            //return;
-            _rzmp_b = _rzmp;
-        }
+    */
     }
-    if (fabs(_rzmp - _rzmp_b > 20))   {
-        desX[3] = desX[3];    //
-        desX[4] = desX[4];     //
-        desX[5] = desX[5];     //  Orientation
-        desX[6] = desX[6];    //
-        _rzmp_b=_rzmp_b;
 
-    }
-/*
-    if (currentX[6]>10)   { // será necesario programar los limites en los ejes X e Y.
-        desireX[3] = desireX[3];    //
-        desireX[4] = desireX[4];     //
-        desireX[5] = desireX[5];     //  Orientation
-        desireX[6] = desireX[6];    //
-        printf("¡¡¡ BOTTLE FALL !!! \n");
-        _rzmp_b=_rzmp;
-    }*/
+    if (_FTLeftHand._initF.fx>-5){   // botella NO puesta
 
-    // ref[x,y,z]: 0.302982 0.34692 0.247723
-    //desX[0] = 0.302982; // new X position
-    //desX[1] = 0.34692; // new Y position
-    //desX[2] = 0.247723; // new Z position
+        cout << "[error] ... botella NO puesta " << endl;
 
-    KinRepresentation::encodePose(desX, desX_AAS, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
+        KinRepresentation::encodePose(iniX, desX_AAS, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
+        if ( ! leftArmICartesianSolver->invKin(desX_AAS,befQ,desQ) )    {
+            CD_ERROR("invKin failed.\n");    }
+        if( ! leftArmIPositionControl2->positionMove( desQ.data() )) {
+            CD_WARNING("setPositions failed, not updating control this iteration.\n");      }
+
+        yarp::os::Time::delay(1);
+    }   
+
+/*  // como se genera la InvKin para actuar en posicion
+ *  KinRepresentation::encodePose(desX, desX_AAS, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
     if ( ! leftArmICartesianSolver->invKin(desX_AAS,befQ,desQ) )    {
         CD_ERROR("invKin failed.\n");    }
 
-    /*if( ! leftArmIPositionControl2->positionMove( desQ.data() )) {
+    if( ! leftArmIPositionControl2->positionMove( desQ.data() )) {
         CD_WARNING("setPositions failed, not updating control this iteration.\n");    }*/
 
     return;
@@ -667,6 +751,8 @@ void ThreadImpl::printData()
 
 //    _modFS = sqrt(pow((_tray._F.fx),2) + pow((_tray._F.fy),2) + pow((_tray._F.fz),2));
 //    _modFF = sqrt(pow((FF[1]),2) + pow((FF[2]),2) + pow((FF[3]),2));
+
+    cout << "angle: [" << curX[6] << "\t, " << _alpha << "\t, " << desX[6] << "\t " << "]" << endl;//<< FF[1] << "]" << endl;
 
 //    cout << "CurX: [" << cX[3] << "\t, " << cX[4] << "\t, " << cX[5] << "\t, " << cX[6] << "]" << endl;
 //    cout << "Quat: [" << quatC[0] << "\t, " << quatC[1] << "\t, " << quatC[2] << "\t, " << quatC[3] << "]" << endl;
@@ -688,10 +774,10 @@ void ThreadImpl::printData()
 //    cout << "CurX: [" << cX[3] << "\t, " << cX[4] << "\t, " << cX[5] << "\t, " << cX[6] << "]" << endl;
 //    cout << "DesX: [" << dX[0] << "\t, " << dX[1] << "\t, " << dX[2] << "]" << endl;
 //    cout << "DesX: [" << dX[3] << "\t, " << dX[4] << "\t, " << dX[5] << "\t, " << dX[6] << "]" << endl;
-    //cout << "CurQ: [" << curQ[0] << "\t, " << curQ[1] << "\t, " << curQ[2] << "\t, " << curQ[3] << "\t, " << curQ[4] << "\t, " << curQ[5] << "\t, " << curQ[6] << "]" << endl;
-    //cout << "CurX: [" << curX[0] << "\t, " << curX[1] << "\t, " << curX[2] << "\t, " << curX[3] << "\t, " << curX[4] << "\t, " << curX[5] << "\t, " << curX[6] << "]" << endl;
+    cout << "CurX: [" << curX[0] << "\t, " << curX[1] << "\t, " << curX[2] << "\t, " << curX[3] << "\t, " << curX[4] << "\t, " << curX[5] << "\t, " << curX[6] << "]" << endl;
     cout << "DesX: [" << desX[0] << "\t, " << desX[1] << "\t, " << desX[2] << "\t, " << desX[3] << "\t, " << desX[4] << "\t, " << desX[5] << "\t, " << desX[6] << "]" << endl;
-    //cout << "DesQ: [" << desQ[0] << "\t, " << desQ[1] << "\t, " << desQ[2] << "\t, " << desQ[3] << "\t, " << desQ[4] << "\t, " << desQ[5] << "\t, " << desQ[6] << "]" << endl;
+    cout << "CurQ: [" << curQ[0] << "\t, " << curQ[1] << "\t, " << curQ[2] << "\t, " << curQ[3] << "\t, " << curQ[4] << "\t, " << curQ[5] << "]" << endl;
+    cout << "DesQ: [" << desQ[0] << "\t, " << desQ[1] << "\t, " << desQ[2] << "\t, " << desQ[3] << "\t, " << desQ[4] << "\t, " << desQ[5] << "]" << endl;
 //    cout << "befQ: [" << beforeQ[0] << "\t, " << beforeQ[1] << "\t, " << beforeQ[2] << "\t, " << beforeQ[3] << "\t, " << beforeQ[4] << "\t, " << beforeQ[5] << "\t, " << beforeQ[6] << "]" << endl;
 
 }

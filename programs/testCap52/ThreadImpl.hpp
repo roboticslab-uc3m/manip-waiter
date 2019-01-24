@@ -124,13 +124,14 @@ class ThreadImpl : public yarp::os::Thread {
         float _d_X, _d_Y, _l;  // distance in metres between the SDC tray and the SDC jr3
 
         double _rzmp, _rzmp_b, _rWorkSpace, _rFxy, _modFS, _modFF, x_zmp_b, y_zmp_b; // transformation and ZMP
-        double angle, _thetaX, _thetaY, _thetaXX, _thetaYY; // tray angles
+        double _alpha, angle, _thetaX, _thetaY, _thetaXX, _thetaYY; // tray angles
 
         std::vector<double> quat, quatC, preFF, FF, preFM, FM; // quaternios - needed for transformations
 
         double initpos; // for preprogrammedInitTrajectory() - first joint movement
-        std::vector<double> curQ, befQ, desQ; // joint space variables
-        std::vector<double> befX, curX, curX_AAS, desX, desX_AAS;  // cartesian space variables
+
+        std::vector<double> iniQ, curQ, befQ, desQ; // joint space variables
+        std::vector<double> iniX, befX, curX, curX_AAS, desX, desX_AAS;  // cartesian space variables
 
         double init_time, act_time, init_loop, act_loop, it_time, it_prev; // for calculating process time
 
