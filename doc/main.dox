@@ -1,15 +1,15 @@
 /**
-  * \mainpage manip-waiter Repository documentation
+  * \mainpage wbpc-waiter Repository documentation
 
-Welcome to the manip-waiter Repository documentation for the manipulation and locomotion PCs. <a class=el href="http://robots.uc3m.es">Click here to return to Wiki.</a> <a class=el href="https://github.com/roboticslab-uc3m/manip-waiter">Click here to see manip-waiter on repo.</a>
+Welcome to the wbpc-waiter Repository documentation for the manipulation and locomotion PCs. <a class=el href="http://robots.uc3m.es">Click here to return to Wiki.</a> <a class=el href="https://github.com/roboticslab-uc3m/WBPCwaiter">Click here to see wbpc-waiter on repo.</a>
 
- \li \ref manip-waiter_install
+ \li \ref wbpc-waiter_install
 
 Other internal links of interest:
- \li \ref manip-waiter_programs
- \li \ref manip-waiter_libraries
- \li \ref manip-waiter_applications
- \li \ref manip-waiter_examples
+ \li \ref wbpc-waiter_programs
+ \li \ref wbpc-waiter_libraries
+ \li \ref wbpc-waiter_applications
+ \li \ref wbpc-waiter_examples
 
 Even more internal links of interest:
  \li <a class=el href="http://robots.uc3m.es/dox-teo-main/index.html">teo-main</a>
@@ -22,7 +22,7 @@ External links (related projects):
 
 <hr>
 
-This page can be edited at manip-waiter/doc/main.dox.
+This page can be edited at wbpc-waiter/doc/main.dox.
 
 */
 

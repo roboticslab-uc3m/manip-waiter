@@ -11,17 +11,14 @@ if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
 
-project(MANIP_WAITER)
+project(WBPC_WAITER)
 
 ### options: cpp libraries
 
 ### options: cpp programs
-option(ENABLE_ankle_strategy_sagittal "Choose if you want to compile ankle_strategy_sagittal" TRUE)
-option(ENABLE_jr3WristControl "Choose if you want to compile jr3WristControl" TRUE)
-option(ENABLE_testCap51 "Choose if you want to compile test1" TRUE)
-option(ENABLE_testCap511 "Choose if you want to compile test1_threat" TRUE)
-option(ENABLE_testCap52 "Choose if you want to compile test3" TRUE)
-option(ENABLE_testCap522 "Choose if you want to compile test1_threat" TRUE)
+option(ENABLE_testCap511 "Choose if you want to compile test 511" TRUE)
+option(ENABLE_testCap52 "Choose if you want to compile test_52" TRUE)
+option(ENABLE_testCap54 "Choose if you want to compile test3" TRUE)
 
 ### options: force default
 
@@ -92,23 +89,23 @@ mark_as_advanced(CMAKE_BACKWARDS_COMPATIBILITY)
 ##########################################
 
 # Pick up our cmake modules - they are all in the cmake subdirectory
-set(MANIP_WAITER_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+set(WBPC_WAITER_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 # let cmake use them
-list(APPEND CMAKE_MODULE_PATH ${MANIP_WAITER_MODULE_PATH})
+list(APPEND CMAKE_MODULE_PATH ${WBPC_WAITER_MODULE_PATH})
 
-set(MANIP_WAITER_INCLUDE_DIRS CACHE INTERNAL "appended header dirs" FORCE)
-set(MANIP_WAITER_LINK_DIRS CACHE INTERNAL "appended link dirs" FORCE)
-set(MANIP_WAITER_LIBRARIES CACHE INTERNAL "appended libraries" FORCE)
+set(WBPC_WAITER_INCLUDE_DIRS CACHE INTERNAL "appended header dirs" FORCE)
+set(WBPC_WAITER_LINK_DIRS CACHE INTERNAL "appended link dirs" FORCE)
+set(WBPC_WAITER_LIBRARIES CACHE INTERNAL "appended libraries" FORCE)
 
 # add main contents
 add_subdirectory(share)
 add_subdirectory(libraries)
 add_subdirectory(programs)
 
-# export our variables to a MANIP_WAITERConfig.cmake creation
-set(MANIP_WAITER_LINK_DIRS ${MANIP_WAITER_LINK_DIRS} ${LIBRARY_OUTPUT_PATH})
-configure_file(${CMAKE_SOURCE_DIR}/cmake/template/MANIP_WAITERConfig.cmake.in
-               ${CMAKE_BINARY_DIR}/MANIP_WAITERConfig.cmake @ONLY)
+# export our variables to a WBPC_WAITERConfig.cmake creation
+set(WBPC_WAITER_LINK_DIRS ${WBPC_WAITER_LINK_DIRS} ${LIBRARY_OUTPUT_PATH})
+configure_file(${CMAKE_SOURCE_DIR}/cmake/template/WBPC_WAITERConfig.cmake.in
+               ${CMAKE_BINARY_DIR}/WBPC_WAITERConfig.cmake @ONLY)
 
 # create a symbolic link to the shared directory (as contains models and may be heavy)
 # If you want a deep copy, you can use the copy_directory command instead of create_symlink.
@@ -121,9 +118,9 @@ configure_file(${CMAKE_SOURCE_DIR}/cmake/template/MANIP_WAITERConfig.cmake.in
 
 # uninstall target
 configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/template/MANIP_WAITERConfigUninstall.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/MANIP_WAITERConfigUninstall.cmake" IMMEDIATE @ONLY)
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/template/WBPC_WAITERConfigUninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/WBPC_WAITERConfigUninstall.cmake" IMMEDIATE @ONLY)
 
 add_custom_target(uninstall
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/MANIP_WAITERConfigUninstall.cmake)
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/WBPC_WAITERConfigUninstall.cmake)
 
