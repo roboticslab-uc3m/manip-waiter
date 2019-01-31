@@ -5,10 +5,11 @@
 namespace roboticslab
 {
 /************************************************************************/
-bool ThreadImpl::threadInit() {
+bool ThreadImpl::threadInit()
+{
     printf("[success] entrando en ratethread -> init/run\n");
 
-    a = 0; // pendiente de chequear cuantos sobran
+    a = 0;
     b = 0;
     n = 1;
 
@@ -16,31 +17,7 @@ bool ThreadImpl::threadInit() {
     _ang_ref = 0; // initial value and our angle reference
     _ang_out = 0; // initial value and our output
 
-    _LF._F.fx = 0; // creo que esto no es necesario
-    _LF._F.fy = 0;
-    _LF._F.fz = 0;
-    _LF._T.mx = 0;
-    _LF._T.my = 0;
-    _LF._T.mz = 0;
-
-    _RF._F.fx = 0; // creo que esto no es necesario
-    _RF._F.fy = 0;
-    _RF._F.fz = 0;
-    _RF._T.mx = 0;
-    _RF._T.my = 0;
-    _RF._T.mz = 0;
-
-
-    //double initspe[7] = {2.0,2.0,2.0,2.0,2.0,2.0,0.0}; // --set NEW ref speed
-    double initspe[7] = {10.0,10.0,10.0,10.0,10.0,10.0,0.0}; // --set NEW ref speed
-    //double initspe[7] = {20.0,20.0,20.0,20.0,20.0,20.0,0.0}; // --set NEW ref speed
-    leftLegIPositionControl2->setRefSpeeds(initspe);
-    //double initacc[7] = {2.0,2.0,2.0,2.0,2.0,2.0,0.0}; // --set NEW ref accelaration
-    double initacc[7] = {10.0,10.0,10.0,10.0,10.0,10,0.0}; // --set NEW ref accelaration
-    //double initacc[7] = {20.0,20.0,20.0,20.0,20.0,20,0.0}; // --set NEW ref accelaration
-    leftLegIPositionControl2->setRefAccelerations(initacc);
-
-return true;
+    return true;
 }
 
 /************************************************************************/
@@ -59,6 +36,11 @@ void ThreadImpl::run()
         if (a==1 && b==1)
         {
             // STEP 3 - main code
+
+            // Test escalon con rampa // generacion del ZMP_ref para test FT sensor
+            if (n <= 300){zmp_ref = 0.0;}
+            else if (n >= 300 && n <= 330){zmp_ref = (0.1/30)*n - 1;} // variar desde 0.01 a 0.09
+            else {zmp_ref = zmp_ref;}
 
             getInitialTime();
 

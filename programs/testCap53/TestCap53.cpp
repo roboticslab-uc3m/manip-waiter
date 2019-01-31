@@ -7,19 +7,19 @@ añadir explicacion del codigo
 * 
 */
 
-#include "TestCap54.hpp"
+#include "TestCap53.hpp"
 
 namespace roboticslab
 {
 
 /************************************************************************/
-bool TestCap54::configure(ResourceFinder &rf) {
+bool TestCap53::configure(ResourceFinder &rf) {
 
     std::string robot = rf.check("robot",yarp::os::Value(DEFAULT_ROBOT),"name of /robot to be used").asString();
 
     printf("--------------------------------------------------------------\n");
     if (rf.check("help")) {
-        printf("testCap54 options:\n");
+        printf("testCap53 options:\n");
         printf("\t--help (this help)\t--from [file.ini]\t--context [path]\n");
         printf("\t--robot ('teo' or 'teoSim')\n");
         printf("\t--robot: %s [%s]\n",robot.c_str(),DEFAULT_ROBOT);
@@ -28,7 +28,7 @@ bool TestCap54::configure(ResourceFinder &rf) {
     if(rf.check("help")) {
         ::exit(1);
     }
-    std::string waiterStr("/waiter");
+    std::string waiterStr("/bodyBal");
     /** **************************************************************************************
      * ******************************************************************************** **/
 
@@ -344,7 +344,7 @@ bool TestCap54::configure(ResourceFinder &rf) {
     /** **************************************************************************************
      * ******************************************************************************** **/
 
-    //-- Conection between TestCap54 & ThreadImpl
+    //-- Conection between TestCap53 & ThreadImpl
     //threadImpl.setNumJoints(numLeftArmJoints);
     threadImpl.setIEncodersControl(rightLegIEncoders,leftLegIEncoders);
     threadImpl.setIPositionControl2(rightLegIPositionControl2,leftLegIPositionControl2);
@@ -357,18 +357,18 @@ bool TestCap54::configure(ResourceFinder &rf) {
 }
 
 /************************************************************************/
-double TestCap54::getPeriod() {
+double TestCap53::getPeriod() {
     return 4.0;  // Fixed, in seconds, the slow thread that calls updateModule below
 }
 
 /************************************************************************/
-bool TestCap54::updateModule() {
-    printf("TestCap51 alive...\n");
+bool TestCap53::updateModule() {
+    printf("TestCap53 alive...\n");
     return true;
 }
 
 /************************************************************************/
-bool TestCap54::interruptModule() {
+bool TestCap53::interruptModule() {
     printf("Test51 closing...\n");
 
     threadImpl.stop();

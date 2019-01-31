@@ -2,12 +2,12 @@
 
 /**
  *
- * @ingroup TestCap54_programs
- * \defgroup TestCap54 TestCap51
+ * @ingroup TestCap53_programs
+ * \defgroup TestCap53 TestCap51
  *
  * @brief Creates an instance of roboticslab::WaiterExecManip.
  *
- * @section TestCap54 Legal
+ * @section TestCap53 Legal
  *
  * Copyright: 2019 (C) Universidad Carlos III de Madrid
  *
@@ -22,7 +22,7 @@
  *
  */
 
-#include "TestCap54.hpp"
+#include "TestCap53.hpp"
 
 int main(int argc, char **argv) {
 
@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
     rf.setDefaultContext("TestCap52");
     rf.configure(argc, argv);
 
-    roboticslab::TestCap54 mod;
+    roboticslab::TestCap53 mod;
     if(rf.check("help")) {
         return mod.runModule(rf);
     }

@@ -18,7 +18,8 @@ project(WBPC_WAITER)
 ### options: cpp programs
 option(ENABLE_testCap511 "Choose if you want to compile test 511" TRUE)
 option(ENABLE_testCap52 "Choose if you want to compile test_52" TRUE)
-option(ENABLE_testCap54 "Choose if you want to compile test3" TRUE)
+option(ENABLE_testCap53 "Choose if you want to compile test53" TRUE)
+option(ENABLE_testCap54 "Choose if you want to compile test54" TRUE)
 
 ### options: force default
 

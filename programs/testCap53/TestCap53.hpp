@@ -1,7 +1,7 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#ifndef __FM_TESTCAP54_HPP__ 
-#define __FM_TESTCAP54_HPP__
+#ifndef __FM_TESTCAP53_HPP__ 
+#define __FM_TESTCAP53_HPP__
 
 #include <math.h>
 #include <yarp/os/all.h>
@@ -38,12 +38,12 @@ namespace roboticslab
 {
 
 /**
- * @ingroup testCap54
+ * @ingroup testCap53
  *
- * @brief testCap54.
+ * @brief testCap53.
  *
  */   
-class TestCap54 : public RFModule {
+class TestCap53 : public RFModule {
 private:
     ThreadImpl threadImpl;
 
@@ -166,4 +166,4 @@ public:
 
 }  // namespace roboticslab
 
-#endif // __FM_TESTCAP54_HPP__
+#endif // __FM_TESTCAP53_HPP__
