@@ -2,7 +2,6 @@
 #define _ratethread_H_
 
 #include "LIPM2d.h"
-#include "pid.h"
 #include "global.h"
 
 static FILE *fp;
