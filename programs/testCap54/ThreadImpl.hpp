@@ -26,7 +26,6 @@
 #include "ICartesianSolver.h"
 
 #include "LIPM2d.h"
-#include "pid.h"
 #include "global.h"
 
 using namespace std;
