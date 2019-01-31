@@ -1,11 +1,20 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-/*
+/**
 
-añadir explicacion del codigo
-* 
-* 
-*/
+in this test, we pretend to compute the different erros of the robot. Therefore, we
+propose to generate a dataset for the zmp values and the FT sensor.
+
+
+first, it is not need to apply the function "evaluateModel()". the purpose is generate
+different test (changing the ZMP_ref from 0.01m to 0.09m). and then calculate the error
+related to the LIPM model.
+
+
+sencond. with the error equation inside "evaluateModel()" and the DLIPM (in th space state),
+we apply the same test (ZMP_ref from 0.01m to 0.09m) to verify if (ZMP_ref = ZMP_ft).
+
+**/
 
 #include "TestCap53.hpp"
 

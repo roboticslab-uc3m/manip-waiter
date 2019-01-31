@@ -1,11 +1,18 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-/*
+/**
 
-añadir explicacion del codigo
-* 
-* 
-*/
+the idea is make the first step for a body balance control for the waiter.
+this TestCap54 start with the verification of previous TestCap53.we generate
+a simple control:
+    ->  focus on push recovery test and ankle strategy.
+    ->  with the validate DLIPM.
+
+
+there can be a second part. we can extend this test with hip strategy or using:
+    ->  "velocity" or "PositionDirect" mode control
+
+**/
 
 #include "TestCap54.hpp"
 
