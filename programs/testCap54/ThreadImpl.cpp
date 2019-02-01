@@ -88,7 +88,7 @@ void ThreadImpl::confCSVfile(){       /** Configuring CSV file    **/
 
     cout << "[configuring] ... STEP 1 " << endl;
     fp = fopen("../data_dlipm_threat.csv","w+");
-    fprintf(fp,"Time,ang_x_imu,acc_x_imu,acc_y_imu,acc_z_imu,acc_x_robot,acc_y_robot,acc_z_robot,fx_ft0,fz_ft0,my_ft0,fx_ft1,fz_ft1,my_ft1,zmp_imu,Xzmp_ft,Xzmp_ft0,Xzmp_ft1,iter");
+    fprintf(fp,"Time,Fx_ft0,Fz_ft0,My_ft0,Fx_ft1,Fz_ft1,My_ft1,Xzmp_ft,zmp_RF,zmp_LF,iter");
     yarp::os::Time::delay(1);
 
     cout << "[success] data_dlipm_threat.csv file configured." << endl;
@@ -357,25 +357,27 @@ void ThreadImpl::setJoints()        /** Position control **/
 /************************************************************************/
 void ThreadImpl::printData()
 {
-/*        cout << endl << "El angulo 1 es: " << _angle_ref_a << endl;
-    cout << endl << "El angulo 2 es: " << _angle_ref_b << endl;
-    cout << endl << "El angulo 3 es: " << _angle_ref_c << endl;
-    cout << endl << "El angulo 4 es: " << _angle_ref_d << endl;
-    cout << endl << "El angulo 4 es: " << g << endl;
-    cout << endl << "El angulo 4 es: " << ka << endl;
-*/
-    cout << endl << "El angulo imu es: " << ang_x << endl;
-    //cout << endl << "El ANKLE pid es: " << pid_output_ankle << endl;
-    //cout << endl << "El HIP pid es: " << pid_output_hip << endl;
-    //cout << endl << "El ZMP REF es: " << setpoint << endl;
-    cout << endl << "El ZMP IMU es: " << Xzmp_imu << endl;
-    cout << endl << "El ZMP FT es: " << Xzmp_ft << endl;
-    //cout << endl << "La capture_point es: " << capture_point << endl;
-    //cout << endl << "ZMP_Error_Loli = ("<< _eval_x._zmp_error << ") [mm]" << endl;
-    //cout << endl << "ZMP model es: " << _eval_x.y << endl;
-    //cout << endl << "Num es: " << _num << endl;  _u_ref
-    //cout << endl << "El _u_ref x es: " << _eval_x._u_ref << endl;
-    //cout << endl << "El _angle_error x es: " << _eval_x._angle_error << endl;
+    /*        cout << endl << "El angulo 1 es: " << _angle_ref_a << endl;
+        cout << endl << "El angulo 2 es: " << _angle_ref_b << endl;
+        cout << endl << "El angulo 3 es: " << _angle_ref_c << endl;
+        cout << endl << "El angulo 4 es: " << _angle_ref_d << endl;
+        cout << endl << "El angulo 4 es: " << g << endl;
+        cout << endl << "El angulo 4 es: " << ka << endl;
+    */
+        //cout << endl << "El ANKLE pid es: " << pid_output_ankle << endl;
+        //cout << endl << "El HIP pid es: " << pid_output_hip << endl;
+        //cout << endl << "El ZMP REF es: " << setpoint << endl;
+
+        cout << endl << "El ZMP IMU es: " << zmp_ref << endl;
+        cout << endl << "El ZMP FT es: " << Xzmp_ft << endl;
+        cout << endl << "El angulo imu es: " << _ang_out << endl;
+
+        //cout << endl << "La capture_point es: " << capture_point << endl;
+        //cout << endl << "ZMP_Error_Loli = ("<< _eval_x._zmp_error << ") [mm]" << endl;
+        //cout << endl << "ZMP model es: " << _eval_x.y << endl;
+        //cout << endl << "Num es: " << _num << endl;  _u_ref
+        //cout << endl << "El _u_ref x es: " << _eval_x._u_ref << endl;
+        //cout << endl << "El _angle_error x es: " << _eval_x._angle_error << endl;
 
 }
 
@@ -384,28 +386,19 @@ void ThreadImpl::saveInFileCsv()
 {
 
     fprintf(fp,"\n%.2f", act_time);
-    fprintf(fp,",%.10f", ang_x); // angulo x del sensor imu
-    fprintf(fp,",%.10f", acc_x); // acc_x del sensor imu
-    fprintf(fp,",%.10f", acc_y); // acc_y del sensor imu
-    fprintf(fp,",%.10f", acc_z); // acc_z del sensor imu
-    fprintf(fp,",%.10f", ddx_robot); // acc_x del robot
-    fprintf(fp,",%.10f", ddy_robot); // acc_y del robot
-    fprintf(fp,",%.10f", ddz_robot); // acc_z del robot
-    fprintf(fp,",%.10f", _RF._F.fx); // f_x del sensor ft 0
-    fprintf(fp,",%.10f", _RF._F.fz); // f_z del sensor ft 0
-    fprintf(fp,",%.10f", _RF._T.my); // m_y del sensor ft 0
-    fprintf(fp,",%.10f", _LF._F.fx); // f_x del sensor ft 1
-    fprintf(fp,",%.10f", _LF._F.fz); // f_z del sensor ft 1
-    fprintf(fp,",%.10f", _LF._T.my); // m_y del sensor ft 1
-    //fprintf(fp,",%.10f", pid_output_ankle);
-    //fprintf(fp,",%.10f", pid_output_hip);
-    //fprintf(fp,",%.10f", setpoint);
-    //fprintf(fp,",%.8f", Xzmp_total);
-    fprintf(fp,",%.8f", Xzmp_imu);
-    fprintf(fp,",%.8f", Xzmp_ft);
-    fprintf(fp,",%.8f", _xzmp_ft0);
-    fprintf(fp,",%.8f", _xzmp_ft1);
-    //fprintf(fp,",%.10f", capture_point);
+
+    fprintf(fp,",%.10f", _RF._F.fx); // f_x - sensor ft 0
+    fprintf(fp,",%.10f", _RF._F.fz); // f_z - sensor ft 0
+    fprintf(fp,",%.10f", _RF._T.my); // m_y - sensor ft 0
+
+    fprintf(fp,",%.10f", _LF._F.fx); // f_x - sensor ft 1
+    fprintf(fp,",%.10f", _LF._F.fz); // f_z - sensor ft 1
+    fprintf(fp,",%.10f", _LF._T.my); // m_y - sensor ft 1
+
+    fprintf(fp,",%.8f", Xzmp_ft); // ZMP body (double support) (frontal plane)
+    fprintf(fp,",%.8f", _xzmp_ft0); // zmp (right foot)
+    fprintf(fp,",%.8f", _xzmp_ft1); // zmp (leftt foot)
+
     fprintf(fp,",%i", n);
 
 }
