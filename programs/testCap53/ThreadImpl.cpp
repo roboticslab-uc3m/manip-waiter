@@ -38,8 +38,13 @@ void ThreadImpl::run()
             // STEP 3 - main code
 
             // Test escalon con rampa // generacion del ZMP_ref para test FT sensor
+            // equaction: zmp_ref = (0.0X / 30) * n - 0.X
+            // where x is the ref value
+            // example_1: zmp_ref = (0.05/30)*n - 0.5 ------> for zmp_ref = 0.05 meters
+            // example_2: zmp_ref = (0.09/30)*n - 0.9 ------> for zmp_ref = 0.09 meters
+
             if (n <= 300){zmp_ref = 0.0;}
-            else if (n >= 300 && n <= 330){zmp_ref = (0.05/30)*n - 1;} // variar desde 0.01 a 0.09 [m]
+            else if (n >= 300 && n <= 330){zmp_ref = (0.05/30)*n - 0.5;} // test from 0.01 to 0.09 [m]
             else {zmp_ref = zmp_ref;}
 
             getInitialTime();
@@ -88,41 +93,37 @@ void ThreadImpl::openingPorts()     /** Opening Ports & Connecting with sensor p
     //portFt2->open("/bodyBal/jr3ch2:i");
     //portFt3->open("/bodyBal/jr3ch3:i");
 
-    //getchar(); // propose for waiting for the arm waiter pose
-
-    cout << "\n [atention] User must activate sensor programs." << endl;
-    yarp::os::Time::delay(5);
 
     //-- CONNECTIONS PORTS
 
     // ft right foot
-    Network::connect("/jr3/ch0:o","/waiter/jr3ch0:i");
-    if ( NetworkBase::isConnected("/jr3/ch0:o","/waiter/jr3ch0:i") == false ){
-        cerr << "[error] Couldn't connect to YARP port /waiter/jr3ch0:i." << endl;
+    Network::connect("/jr3/ch0:o","/bodyBal/jr3ch0:i");
+    if ( NetworkBase::isConnected("/jr3/ch0:o","/bodyBal/jr3ch0:i") == false ){
+        cerr << "[error] Couldn't connect to YARP port /bodyBal/jr3ch0:i." << endl;
     } else cout << "[success] Connected to /jr3ch0:i." << endl;
     yarp::os::Time::delay(0.5);
     // ft left foot
-    Network::connect("/jr3/ch1:o","/waiter/jr3ch1:i");
-    if ( NetworkBase::isConnected("/jr3/ch1:o","/waiter/jr3ch1:i") == false ){
-        cerr << "[error] Couldn't connect to YARP port /waiter/jr3ch1:i." << endl;
+    Network::connect("/jr3/ch1:o","/bodyBal/jr3ch1:i");
+    if ( NetworkBase::isConnected("/jr3/ch1:o","/bodyBal/jr3ch1:i") == false ){
+        cerr << "[error] Couldn't connect to YARP port /bodyBal/jr3ch1:i." << endl;
     } else cout << "[success] Connected to /jr3ch1:i." << endl;
     yarp::os::Time::delay(0.5);
 /*    // ft right hand
-    Network::connect("/jr3/ch2:o","/waiter/jr3ch2:i");
-    if ( NetworkBase::isConnected("/jr3/ch2:o","/waiter/jr3ch2:i") == false ){
-        cerr << "[error] Couldn't connect to YARP port /waiter/jr3ch2:i." << endl;
+    Network::connect("/jr3/ch2:o","/bodyBal/jr3ch2:i");
+    if ( NetworkBase::isConnected("/jr3/ch2:o","/bodyBal/jr3ch2:i") == false ){
+        cerr << "[error] Couldn't connect to YARP port /bodyBal/jr3ch2:i." << endl;
     } else cout << "[success] Connected to /jr3ch2:i." << endl;
     yarp::os::Time::delay(0.5);
     // ft left hand
-    Network::connect("/jr3/ch3:o","/waiter/jr3ch3:i");
-    if ( NetworkBase::isConnected("/jr3/ch3:o","/waiter/jr3ch3:i") == false ){
-        cerr << "[error] Couldn't connect to YARP port /waiter/jr3ch3:i." << endl;
+    Network::connect("/jr3/ch3:o","/bodyBal/jr3ch3:i");
+    if ( NetworkBase::isConnected("/jr3/ch3:o","/bodyBal/jr3ch3:i") == false ){
+        cerr << "[error] Couldn't connect to YARP port /bodyBal/jr3ch3:i." << endl;
     } else cout << "[success] Connected to /jr3ch3:i." << endl;
     yarp::os::Time::delay(0.5);
     // imu trunk
-    Network::connect("/inertial", "/waiter/inertial:i");
-    if ( NetworkBase::isConnected("/inertial", "/waiter/inertial:i") == false ){
-        cerr << "[error] Couldn't connect to YARP port /waiter/inertial:i." << endl;
+    Network::connect("/inertial", "/bodyBal/inertial:i");
+    if ( NetworkBase::isConnected("/inertial", "/bodyBal/inertial:i") == false ){
+        cerr << "[error] Couldn't connect to YARP port /bodyBal/inertial:i." << endl;
     } else cout << "[success] Connected to IMU." << endl;
     yarp::os::Time::delay(0.5);*/
 
@@ -314,18 +315,19 @@ void ThreadImpl::zmpCompIMU()       /** Calculating ZMP-IMU of the body . **/
 /************************************************************************/
 void ThreadImpl::evaluateModel()        /** Calculating OUTPUT (Qi) of the legs. **/
 {
-    // obtaining the angle error for the D-LIPM
+    // obtaining the angle error for the D-LIPM space state
     _evalLIPM.model(Xzmp_ft,zmp_ref);
 
     ka = 0.25 * zmp_ref + 9.95; // dudo entre zmp_ref o Xzmp_ft
     _ang_ref = (zmp_ref*(-G))/ (L*(ka-G));
+
 /*    como otra posibilidad para calcular:  _angle_ref
     if ( ! leftArmIEncoders->getEncoders( encLegs.data() ) )    {
         CD_WARNING("getEncoders failed, not updating control this iteration.\n");
         return;    }
     _angle_ref = encLegs[4];*/
 
-    _ang_out =  -_evalLIPM.ang_error_out + _ang_ref;
+    _ang_out =  _evalLIPM.ang_error_out + _ang_ref;
 
 }
 
@@ -350,9 +352,9 @@ void ThreadImpl::printData()
     //cout << endl << "El HIP pid es: " << pid_output_hip << endl;
     //cout << endl << "El ZMP REF es: " << setpoint << endl;
 
-    cout << endl << "El ZMP IMU es: " << zmp_ref << endl;
+    cout << endl << "El ZMP REF es: " << zmp_ref << endl;
     cout << endl << "El ZMP FT es: " << Xzmp_ft << endl;
-    cout << endl << "El angulo imu es: " << _ang_out << endl;
+    cout << endl << "El angulo out es: " << _ang_out << endl;
 
     //cout << endl << "La capture_point es: " << capture_point << endl;
     //cout << endl << "ZMP_Error_Loli = ("<< _eval_x._zmp_error << ") [mm]" << endl;
