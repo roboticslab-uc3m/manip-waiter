@@ -54,8 +54,10 @@ namespace roboticslab
 class ThreadImpl : public yarp::os::Thread {
     public:
 
+    void setNumJoints(int iNumRightLegJoints,int iNumLeftLegJoints);
     void setIEncodersControl(IEncoders *iRightLegEncoders, IEncoders *iLeftLegEncoders);
     void setIPositionControl2(IPositionControl2 *iRightLegPositionControl2,IPositionControl2 *iLeftLegPositionControl2);
+    void setIControlMode2(IControlMode2 *iRightLegControlMode2,IControlMode2 *iLeftLegControlMode2);
     void setIVelocityControl2(IVelocityControl2 *iRightLegVelocityControl2,IVelocityControl2 *iLeftLegVelocityControl2);
     void setInputPorts(yarp::os::Port *inputPortImu, yarp::os::Port *inputPortFt0, yarp::os::Port *inputPortFt1, yarp::os::Port *inputPortFt2, yarp::os::Port *inputPortFt3);
 
@@ -135,60 +137,7 @@ class ThreadImpl : public yarp::os::Thread {
         void getInitialTime();
         void getCurrentTime();
 
-        //-- upper body devices variables
-        /** Axes number **/
-        int numHeadJoints;
-        /** Head Device */
-        yarp::dev::PolyDriver headDevice;
-        /** Encoders **/
-        yarp::dev::IEncoders *headIEncoders;
-        /** Head ControlMode2 Interface */
-        yarp::dev::IControlMode2 *headIControlMode2;
-        /** Head PositionControl2 Interface */
-        yarp::dev::IPositionControl2 *headIPositionControl2; // para control en posicion
-        /** Head VelocityControl2 Interface */
-        yarp::dev::IVelocityControl2 *headIVelocityControl2; // para control en velocidad
-
-        /** Axes number **/
-        int numLeftArmJoints;
-        /** Left Arm Device */
-        yarp::dev::PolyDriver leftArmDevice;
-        /** Encoders **/
-        yarp::dev::IEncoders *leftArmIEncoders;
-        /** Left Arm ControlMode2 Interface */
-        yarp::dev::IControlMode2 *leftArmIControlMode2;
-        /** Left Arm PositionControl2 Interface */
-        yarp::dev::IPositionControl2 *leftArmIPositionControl2; // para control en posicion
-        /** Left Arm VelocityControl2 Interface */
-        yarp::dev::IVelocityControl2 *leftArmIVelocityControl2; // para control en velocidad
-
-        /** Axes number **/
-        int numRightArmJoints;
-        /** Right Arm Device */
-        yarp::dev::PolyDriver rightArmDevice;
-        /** Encoders **/
-        yarp::dev::IEncoders *rightArmIEncoders;
-        /** Right Arm ControlMode2 Interface */
-        yarp::dev::IControlMode2 *rightArmIControlMode2;
-        /** Right Arm PositionControl2 Interface */
-        yarp::dev::IPositionControl2 *rightArmIPositionControl2; // para control en posicion
-        /** Right Arm VelocityControl2 Interface */
-        yarp::dev::IVelocityControl2 *rightArmIVelocityControl2; // para control en velocidad
-
         //-- lower body devices variables
-        /** Axes number **/
-        int numTrunkJoints;
-        /** Trunk Device */
-        yarp::dev::PolyDriver trunkDevice;
-        /** Encoders **/
-        yarp::dev::IEncoders *trunkIEncoders;
-        /** Trunk ControlMode2 Interface */
-        yarp::dev::IControlMode2 *trunkIControlMode2;
-        /** Trunk PositionControl2 Interface */
-        yarp::dev::IPositionControl2 *trunkIPositionControl2; // para control en posicion
-        /** Trunk VelocityControl2 Interface */
-        yarp::dev::IVelocityControl2 *trunkIVelocityControl2; // para control en velocidad
-
         /** Axes number **/
         int numtLegJoints;
         /** Left Leg Device */
