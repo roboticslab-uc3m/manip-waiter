@@ -139,7 +139,7 @@ class ThreadImpl : public yarp::os::Thread {
 
         //-- lower body devices variables
         /** Axes number **/
-        int numtLegJoints;
+        int numleftLegJoints;
         /** Left Leg Device */
         yarp::dev::PolyDriver leftLegDevice;
         /** Encoders **/

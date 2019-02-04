@@ -339,11 +339,12 @@ void ThreadImpl::setInputPorts(Port *inputPortImu,Port *inputPortFt0,Port *input
 }
 
 /************************************************************************/
-void setNumJoints(int *iNumRightLegJoints,int *iNumLeftLegJoints)
+void ThreadImpl::setNumJoints(int iNumRightLegJoints,int iNumLeftLegJoints)
 {
-    this->numRightLegJoints = iNumRightLegJoints;
-    this->numLeftLegJoints = iNumLeftLegJoints;
+    numRightLegJoints = iNumRightLegJoints;
+    numleftLegJoints = iNumLeftLegJoints;
 }
+
 
 /************************************************************************/
       //--  NOT USED  --//
