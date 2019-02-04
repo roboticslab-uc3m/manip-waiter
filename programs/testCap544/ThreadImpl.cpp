@@ -322,6 +322,13 @@ void ThreadImpl::setIPositionControl2(IPositionControl2 *iRightLegPositionContro
 }
 
 /************************************************************************/
+void ThreadImpl::setIControlMode2(IControlMode2 *iRightLegControlMode2,IControlMode2 *iLeftLegControlMode2)
+{
+    this->rightLegIControlMode2 = iRightLegControlMode2;
+    this->leftLegIControlMode2 = iLeftLegControlMode2;
+}
+
+/************************************************************************/
 void ThreadImpl::setInputPorts(Port *inputPortImu,Port *inputPortFt0,Port *inputPortFt1,Port *inputPortFt2,Port *inputPortFt3)
 {
     this->portImu = inputPortImu;
@@ -331,6 +338,12 @@ void ThreadImpl::setInputPorts(Port *inputPortImu,Port *inputPortFt0,Port *input
     this->portFt3 = inputPortFt3;
 }
 
+/************************************************************************/
+void setNumJoints(int *iNumRightLegJoints,int *iNumLeftLegJoints)
+{
+    this->numRightLegJoints = iNumRightLegJoints;
+    this->numLeftLegJoints = iNumLeftLegJoints;
+}
 
 /************************************************************************/
       //--  NOT USED  --//
