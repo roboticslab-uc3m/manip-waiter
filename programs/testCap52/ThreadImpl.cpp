@@ -77,7 +77,7 @@ void ThreadImpl::run()
             homeTrajectory();
             b=1;    }
         if (a==1 && b==1 && c!=1)    {    // STEP 3 - Opening & Connecting Ports
-            openingPorts();
+            //openingPorts();
             c=1;    }
         if (a==1 && b==1 && c==1 && e!=250)    {    // STEP 4 - Calculating _d parameter
             calcParam_D();    }
@@ -111,7 +111,7 @@ void ThreadImpl::run()
 void ThreadImpl::confCSVfile(){       /** Configuring CSV file    **/
 
     cout << "[configuring] ... STEP 1 " << endl;
-    fp = fopen("../data_testCap.csv","w+");
+    fp = fopen("../data_3dslope_threat.csv","w+");
     fprintf(fp,"fx,fy,fz,Mx,My,Mz,Xzmp,Yzmp,CX3,CX4,CX5,CX6,TX1,TY1,TX2,TY2,act_time");
     yarp::os::Time::delay(1);
 
@@ -124,10 +124,10 @@ void ThreadImpl::homeTrajectory(){       /** Set home waiter poss & Initial VEL-
     cout << "[configuring] ... STEP 2 " << endl;
 
     // Moving leftArm & trunk to the waiter homePoss
-    double initpos[7] = {-30,0,0,-90,0,30,0};
+/*    double initpos[7] = {-30,0,0,-90,0,30,0};
     leftArmIPositionControl2->positionMove(initpos);
-    trunkIPositionControl2->positionMove(1,-3);
-    yarp::os::Time::delay(10);
+    trunkIPositionControl2->positionMove(1,-2.5);
+    yarp::os::Time::delay(10);*/
 
     // Obtaining waiter homePoss in Cartesian Space
     if ( ! leftArmIEncoders->getEncoders( iniQ.data() ) )    {
@@ -160,13 +160,14 @@ void ThreadImpl::homeTrajectory(){       /** Set home waiter poss & Initial VEL-
         return;    }
 
     //double initspe[7] = {2.0,2.0,2.0,2.0,2.0,2.0,0.0}; // --set NEW ref speed
-    double initspe[7] = {5.0,5.0,5.0,5.0,5.0,5.0,0.0}; // --set NEW ref speed
-    //double initspe[7] = {10.0,10.0,10.0,10.0,10.0,10.0,0.0}; // --set NEW ref speed
+    //
+    //double initspe[7] = {5.0,5.0,5.0,5.0,5.0,5.0,0.0}; // --set NEW ref speed
+    double initspe[7] = {10.0,10.0,10.0,10.0,10.0,10.0,0.0}; // --set NEW ref speed
     //double initspe[7] = {20.0,20.0,20.0,20.0,20.0,20.0,0.0}; // --set NEW ref speed
     leftArmIPositionControl2->setRefSpeeds(initspe);
     //double initacc[7] = {2.0,2.0,2.0,2.0,2.0,2.0,0.0}; // --set NEW ref accelaration
-    double initacc[7] = {5.0,5.0,5.0,5.0,5.0,5.0,0.0}; // --set NEW ref speed
-    //double initacc[7] = {10.0,10.0,10.0,10.0,10.0,10,0.0}; // --set NEW ref accelaration
+    //double initacc[7] = {5.0,5.0,5.0,5.0,5.0,5.0,0.0}; // --set NEW ref speed
+    double initacc[7] = {10.0,10.0,10.0,10.0,10.0,10,0.0}; // --set NEW ref accelaration
     //double initacc[7] = {20.0,20.0,20.0,20.0,20.0,20,0.0}; // --set NEW ref accelaration
     leftArmIPositionControl2->setRefAccelerations(initacc);
     cout << "[success] Ref Speeds and Acc configured." << endl;
@@ -229,11 +230,13 @@ void ThreadImpl::calcParam_D(){       /** Calculating _d parameter **/
 
     cout << "[configuring] ... STEP 4 " << endl;
 
-    Bottle ch3;
+/*    Bottle ch3;
     portFt3->read(ch3); // lectura del sensor JR3 ch3 - left hand
     _FTLeftHand._initF.fx = ch3.get(0).asDouble(); // momento eje Y
     _FTLeftHand._initT.my = ch3.get(4).asDouble(); // momento eje Y
-    _FTLeftHand._initT.mx = ch3.get(5).asDouble(); // momento eje Y
+    _FTLeftHand._initT.mx = ch3.get(5).asDouble(); // momento eje Y*/
+
+    readSensors();
 
     if (_FTLeftHand._initF.fx>-5 && f==0){   // botella NO puesta
         cout << "[error] ... botella NO puesta " << endl;
@@ -241,11 +244,11 @@ void ThreadImpl::calcParam_D(){       /** Calculating _d parameter **/
         e=0;        }
 
     if (_FTLeftHand._initF.fx<-5 && f==0){   // botella puesta
-        cout << "[success] ... botella puesta " << endl;
+        cout << "[success] ... botella puesta en 3" << endl;
         yarp::os::Time::delay(1);
-        cout << "[success] ... botella puesta " << endl;
+        cout << "[success] ... botella puesta en 2" << endl;
         yarp::os::Time::delay(1);
-        cout << "[success] ... botella puesta " << endl;
+        cout << "[success] ... botella puesta en 1" << endl;
         yarp::os::Time::delay(1);
         e=250;        }
 
@@ -293,6 +296,9 @@ void ThreadImpl::readSensors(){     /** Reading input messages from SENSORS    *
         _FTLeftHand._initT.mx = ch3[3];
         _FTLeftHand._initT.my = ch3[4];
         _FTLeftHand._initT.mz = ch3[5];
+
+        //std::printf("Good read, got: %s\n",ch3.toString().c_str()); // print on terminal vector ch3
+
     }
 }
 

@@ -34,7 +34,7 @@ bool TestCap52::configure(ResourceFinder &rf) {
     if(rf.check("help")) {
         ::exit(1);
     }
-    std::string waiterStr("/waiter");
+    std::string waiterStr("/objectBal");
 
     /** **************************************************************************************
      * ******************************************************************************** **/
@@ -410,7 +410,7 @@ bool TestCap52::configure(ResourceFinder &rf) {
     //-- Set home waiter poss & Initial SPEED-ACC
     configInitPosition(25,25);
     double leftArmInitPoss[7] = {-30,0,0,-90,0,30,0};
-    double trunkInitPoss[2] = {0,-3};
+    double trunkInitPoss[2] = {0,-2.5};
     std::vector<double> leftArm(&leftArmInitPoss[0], &leftArmInitPoss[0]+7);
     std::vector<double> trunk(&trunkInitPoss[0], &trunkInitPoss[0]+2);
     moveJointsInitPosition(trunk, leftArm);
@@ -443,7 +443,6 @@ bool TestCap52::configure(ResourceFinder &rf) {
     threadImpl.setIAnalogSensor(iFT2AnalogSensor,iFT3AnalogSensor);
     //yarp::dev::IAnalogSensor *iFT3AnalogSensor;
 
-    getchar();
     threadImpl.start();
 
     return true;
