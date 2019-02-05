@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.6)
 
 IF (ENABLE_testCap52)
 
-set(KEYWORD "force_T2_threat")
+set(KEYWORD "3dslope_threat")
 
 # Find YARP.  Point the YARP_DIR environment variable at your build.
 find_package(YARP REQUIRED)

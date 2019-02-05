@@ -362,7 +362,6 @@ bool TestCap52::configure(ResourceFinder &rf) {
     printf("channels: %d\n", channelsFT3);
     /** **************************************************************************************
      * ******************************************************************************** **/
-    yarp::os::Time::delay(1);
 
 
 /*    //-- OPEN YARP PORTS
@@ -408,22 +407,27 @@ bool TestCap52::configure(ResourceFinder &rf) {
      * ******************************************************************************** **/
 
 
-    //-- Set home waiter poss & Initial VEL-ACC
+    //-- Set home waiter poss & Initial SPEED-ACC
     configInitPosition(25,25);
     double leftArmInitPoss[7] = {-30,0,0,-90,0,30,0};
     double trunkInitPoss[2] = {0,-3};
     std::vector<double> leftArm(&leftArmInitPoss[0], &leftArmInitPoss[0]+7);
     std::vector<double> trunk(&trunkInitPoss[0], &trunkInitPoss[0]+2);
     moveJointsInitPosition(trunk, leftArm);
+
+    yarp::os::Time::delay(5); // checkMotionDone() doesn't work very well
+
     /** **************************************************************************************
      * ******************************************************************************** **/
 
+
     //-- Calibrating the sensor
     int ret = iFT3AnalogSensor->calibrateChannel(3);
-    if (!(ret == yarp::dev::IAnalogSensor::AS_OK)) {
-        printf("[ERROR] Calibrating sensor...\n");
+    // ret value is not checked due to a bug in yarp(2.3.70/2.3.72.1)
+    /*if (ret != yarp::dev::IAnalogSensor::AS_OK) {
+        printf("[ERROR] Calibrating Channel ...\n");
         return false;    }
-    else printf("[OK] All channels reseted\n");
+    else printf("[OK] All channels reseted\n");*/
     /** **************************************************************************************
      * ******************************************************************************** **/
 
@@ -478,8 +482,8 @@ bool TestCap52::configInitPosition(double speed, double acc){
 /************************************************************************/
 bool TestCap52::moveJointsInitPosition(vector<double> &trunk, vector<double>& leftArm)
 {
-    bool doneRight = false;
-    bool doneLeft = false;
+    bool doneTrunk = false;
+    bool doneLeftArm = false;
 
     // -- moving to position
     if(!trunkIPositionControl2->positionMove( trunk.data() )){
@@ -490,12 +494,12 @@ bool TestCap52::moveJointsInitPosition(vector<double> &trunk, vector<double>& le
         return false;    }
 
     // -- checking movement done...
-    while(!doneRight)    {
+    while(!doneTrunk)    {
         yarp::os::Time::delay(0.1);
-        trunkIPositionControl2->checkMotionDone(&doneRight);    }
-    while(!doneLeft)    {
+        trunkIPositionControl2->checkMotionDone(&doneTrunk);    }
+    while(!doneLeftArm)    {
         yarp::os::Time::delay(0.1);
-        leftArmIPositionControl2->checkMotionDone(&doneLeft);    }
+        leftArmIPositionControl2->checkMotionDone(&doneLeftArm);    }
 
     return true;
 }
@@ -507,13 +511,13 @@ double TestCap52::getPeriod() {
 
 /************************************************************************/
 bool TestCap52::updateModule() {
-    printf("TestCap51 alive...\n");
+    printf("TestCap52 alive...\n");
     return true;
 }
 
 /************************************************************************/
 bool TestCap52::interruptModule() {
-    printf("Test51 closing...\n");
+    printf("TestCap52 closing...\n");
 
     threadImpl.stop();
 
