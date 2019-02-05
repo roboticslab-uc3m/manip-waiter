@@ -35,7 +35,7 @@ bool TestCap54::configure(ResourceFinder &rf) {
     if(rf.check("help")) {
         ::exit(1);
     }
-    std::string waiterStr("/waiter");
+    std::string waiterStr("/bodyBal");
     /** **************************************************************************************
      * ******************************************************************************** **/
 

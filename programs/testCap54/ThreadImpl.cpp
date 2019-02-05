@@ -53,6 +53,7 @@ void ThreadImpl::run()
             a=1;    }
         if (a==1 && b!=1)    {    // STEP 2 - Opening & Connecting Ports
             openingPorts();
+            getchar(); // waiting for waiter pose of the left arm
             b=1;    }
 
         // ------------------------------------------------------------------------
@@ -165,7 +166,7 @@ void ThreadImpl::evaluateModel()        /** Calculating OUTPUT (Qi) of the legs.
         ka = 0.25 * zmp_ref + 9.95;
         _ang_ref = (zmp_ref*(-G))/ (L*(ka-G));
 
-        _ang_out =  3*(_evalLIPM.ang_error_out + _ang_ref)/10;      }
+        _ang_out =  1*(_evalLIPM.ang_error_out + _ang_ref)/10;      }
 
     //_ang_out =  (_evalLIPM.ang_error_out + _ang_ref); // original
 
