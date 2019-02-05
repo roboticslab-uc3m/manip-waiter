@@ -156,19 +156,24 @@ void ThreadImpl::zmpCompFT()        /** Calculating ZMP-FT of the body . **/
 void ThreadImpl::evaluateModel()        /** Calculating OUTPUT (Qi) of the legs. **/
 {
     // obtaining the angle error for the D-LIPM space-state
-    if(abs(zmp_ref-Xzmp_ft)>0.005){
+
+    if(abs(Xzmp_ft)<0.01){
+        _ang_out = 0;       }
+    else {
         _evalLIPM.model(Xzmp_ft,zmp_ref);
-    }
-    ka = 0.25 * zmp_ref + 9.95; // dudo entre zmp_ref o Xzmp_ft
-    _ang_ref = (zmp_ref*(-G))/ (L*(ka-G));
+
+        ka = 0.25 * zmp_ref + 9.95;
+        _ang_ref = (zmp_ref*(-G))/ (L*(ka-G));
+
+        _ang_out =  3*(_evalLIPM.ang_error_out + _ang_ref)/10;      }
+
+    //_ang_out =  (_evalLIPM.ang_error_out + _ang_ref); // original
 
 /*    como otra posibilidad para calcular:  _angle_ref
     if ( ! leftArmIEncoders->getEncoders( encLegs.data() ) )    {
         CD_WARNING("getEncoders failed, not updating control this iteration.\n");
         return;    }
     _angle_ref = encLegs[4];*/
-
-    _ang_out =  _evalLIPM.ang_error_out + _ang_ref;
 
 }
 
