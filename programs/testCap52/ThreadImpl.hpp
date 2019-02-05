@@ -22,6 +22,8 @@
 #include "ColorDebug.hpp"
 #include <iomanip>
 
+#include <yarp/sig/Vector.h>
+
 #include "KinematicRepresentation.hpp"
 #include "ICartesianSolver.h"
 
@@ -71,6 +73,10 @@ class ThreadImpl : public yarp::os::Thread {
             this->portFt1 = inputPortFt1;
             this->portFt2 = inputPortFt2;
             this->portFt3 = inputPortFt3;        }
+
+        void setIAnalogSensor(IAnalogSensor *iFT2AnalogSensor,IAnalogSensor *iFT3AnalogSensor) {
+            this->ft2AnalogSensor = iFT2AnalogSensor;
+            this->ft3AnalogSensor = iFT3AnalogSensor;        }
 
     protected:
 
@@ -187,6 +193,8 @@ class ThreadImpl : public yarp::os::Thread {
         yarp::dev::IPositionControl2 *leftArmIPositionControl2; // para control en posicion
         /** Left Arm VelocityControl2 Interface */
         yarp::dev::IVelocityControl2 *leftArmIVelocityControl2; // para control en velocidad
+        /** FT 3 AnalogSensor Interface */
+        yarp::dev::IAnalogSensor *ft3AnalogSensor;
 
         /** Axes number **/
         int numRightArmJoints;
@@ -200,6 +208,8 @@ class ThreadImpl : public yarp::os::Thread {
         yarp::dev::IPositionControl2 *rightArmIPositionControl2; // para control en posicion
         /** Right Arm VelocityControl2 Interface */
         yarp::dev::IVelocityControl2 *rightArmIVelocityControl2; // para control en velocidad
+        /** FT 2 AnalogSensor Interface */
+        yarp::dev::IAnalogSensor *ft2AnalogSensor;
 
         // ----------------------------------------------------------------------------------
 

@@ -281,7 +281,25 @@ void ThreadImpl::getInitialTime()
 /************************************************************************/
 void ThreadImpl::readSensors(){     /** Reading input messages from SENSORS    **/
 
-/*        //--- FT-Sensor 0 right leg
+    //--- FT-Sensor 3 left hand
+
+    yarp::sig::Vector ch3;
+    int ret = ft3AnalogSensor->read(ch3); // lecture from sensor JR3 ch3 - left hand
+    if (ret == yarp::dev::IAnalogSensor::AS_OK)
+    {
+        _FTLeftHand._initF.fx = ch3[0];
+        _FTLeftHand._initF.fy = ch3[1];
+        _FTLeftHand._initF.fz = ch3[2];
+        _FTLeftHand._initT.mx = ch3[3];
+        _FTLeftHand._initT.my = ch3[4];
+        _FTLeftHand._initT.mz = ch3[5];
+    }
+}
+
+/************************************************************************/
+/*void ThreadImpl::OLDreadSensors(){
+
+        //--- FT-Sensor 0 right leg
     Bottle ch0;
     portFt0->read(ch0); // lectura del sensor JR3 ch0 - right foot
     _FTRightFoot._initF.fx = ch0.get(0).asDouble();
@@ -289,9 +307,9 @@ void ThreadImpl::readSensors(){     /** Reading input messages from SENSORS    *
     _FTRightFoot._initF.fz = ch0.get(2).asDouble();
     _FTRightFoot._initT.mx = ch0.get(3).asDouble();
     _FTRightFoot._initT.my = ch0.get(4).asDouble();
-    _FTRightFoot._initT.mz = ch0.get(5).asDouble();*/
+    _FTRightFoot._initT.mz = ch0.get(5).asDouble();
 
-/*        //--- FT-Sensor 1 left leg
+        //--- FT-Sensor 1 left leg
     Bottle ch1;
     portFt1->read(ch1); // lectura del sensor JR3 ch1 - left foot
     _FTLeftFoot._initF.fx = ch1.get(0).asDouble();
@@ -299,9 +317,9 @@ void ThreadImpl::readSensors(){     /** Reading input messages from SENSORS    *
     _FTLeftFoot._initF.fz = ch1.get(2).asDouble();
     _FTLeftFoot._initT.mx = ch1.get(3).asDouble();
     _FTLeftFoot._initT.my = ch1.get(4).asDouble();
-    _FTLeftFoot._initT.mz = ch1.get(5).asDouble();*/
+    _FTLeftFoot._initT.mz = ch1.get(5).asDouble();
 
-/*        //--- FT-Sensor 2 right hand
+        //--- FT-Sensor 2 right hand
     Bottle ch2;
     portFt2->read(ch2); // lectura del sensor JR3 ch2 - right hand
     _FTRightHand._initF.fx = ch2.get(0).asDouble();
@@ -309,7 +327,7 @@ void ThreadImpl::readSensors(){     /** Reading input messages from SENSORS    *
     _FTRightHand._initF.fx = ch2.get(2).asDouble();
     _FTRightHand._initT.mx = ch2.get(3).asDouble();
     _FTRightHand._initT.my = ch2.get(4).asDouble();
-    _FTRightHand._initT.mz = ch2.get(5).asDouble();*/
+    _FTRightHand._initT.mz = ch2.get(5).asDouble();
 
     //--- FT-Sensor 3 left hand
     Bottle ch3;
@@ -321,7 +339,7 @@ void ThreadImpl::readSensors(){     /** Reading input messages from SENSORS    *
     _FTLeftHand._initT.my = ch3.get(4).asDouble();
     _FTLeftHand._initT.mz = ch3.get(5).asDouble();
 
-/*        //--- Inertial-Sensor
+        //--- Inertial-Sensor
     Bottle imu;
     portImu->read(imu); // lectura del sensor IMU
     ang_x = imu.get(0).asDouble(); // Angulo en X [deg]
@@ -360,9 +378,9 @@ void ThreadImpl::readSensors(){     /** Reading input messages from SENSORS    *
     //CONVERSION FROM IMU SENSOR COORDINATES TO ROBOT COORDINATES
      ddx_robot = ddx;
      ddy_robot = -ddy;
-     ddz_robot = ddz;*/
+     ddz_robot = ddz;
 
-}
+}*/
 
 /************************************************************************/
 void ThreadImpl::axesTransform1(){  /** Transformation matrix between TEO_body_axes (world) and Jr3_axes with horizontal tray (waiter)    **/
