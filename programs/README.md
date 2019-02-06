@@ -23,4 +23,6 @@ cap 08 - body balance
 
 cap 09 - object balance
 
+	testCap91 - Object Balance (Whole-Body extended 3D Dynamical Slope)
+
 cap 10 - whole-body balance
