@@ -145,13 +145,13 @@ void ThreadImpl::homeTrajectory(){       /** Set home waiter poss & Initial VEL-
     //double initspe[7] = {2.0,2.0,2.0,2.0,2.0,2.0,0.0}; // --set NEW ref speed
     //
     //double initspe[7] = {5.0,5.0,5.0,5.0,5.0,5.0,0.0}; // --set NEW ref speed
-    double initspe[7] = {10.0,10.0,10.0,10.0,10.0,10.0,0.0}; // --set NEW ref speed
-    //double initspe[7] = {20.0,20.0,20.0,20.0,20.0,20.0,0.0}; // --set NEW ref speed
+    //double initspe[7] = {10.0,10.0,10.0,10.0,10.0,10.0,0.0}; // --set NEW ref speed
+    double initspe[7] = {20.0,20.0,20.0,20.0,20.0,20.0,0.0}; // --set NEW ref speed
     leftArmIPositionControl2->setRefSpeeds(initspe);
     //double initacc[7] = {2.0,2.0,2.0,2.0,2.0,2.0,0.0}; // --set NEW ref accelaration
     //double initacc[7] = {5.0,5.0,5.0,5.0,5.0,5.0,0.0}; // --set NEW ref speed
-    double initacc[7] = {10.0,10.0,10.0,10.0,10.0,10,0.0}; // --set NEW ref accelaration
-    //double initacc[7] = {20.0,20.0,20.0,20.0,20.0,20,0.0}; // --set NEW ref accelaration
+    //double initacc[7] = {10.0,10.0,10.0,10.0,10.0,10,0.0}; // --set NEW ref accelaration
+    double initacc[7] = {20.0,20.0,20.0,20.0,20.0,20,0.0}; // --set NEW ref accelaration
     leftArmIPositionControl2->setRefAccelerations(initacc);
     cout << "[success] Ref Speeds and Acc configured." << endl;
 
