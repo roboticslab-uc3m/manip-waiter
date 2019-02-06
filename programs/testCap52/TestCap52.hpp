@@ -49,7 +49,6 @@ class TestCap52 : public RFModule {
 private:
     ThreadImpl threadImpl;
 
-    //yarp::os::BufferedPort<yarp::os::Bottle> portImu;
     yarp::os::Port portImu;
 
     /** Axes number **/

@@ -152,7 +152,6 @@ class ThreadImpl : public yarp::os::Thread {
         void getCurrentTime();
 
         //-- IMU data port
-        //yarp::os::BufferedPort<yarp::os::Bottle> *portImu;
         yarp::os::Port *portImu;
 
 
