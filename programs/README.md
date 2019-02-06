@@ -1,5 +1,5 @@
 
-MANIP-WAITER PROGRAMS.
+WAITER PROGRAMS.
 
 El repositorio tiene la finalidad de contener todos los posibles tests relacionados con el robot camarero. Cada programa esta definido segun el capitulo al que pertenecen, de tal manera, que es mas facil seguir o entender de manera rapida la finalidad de cada test.
 
@@ -22,5 +22,7 @@ cap 07 - fusion
 cap 08 - body balance
 
 cap 09 - object balance
+
+	testCap91 - Object Balance (Whole-Body extended 3D Dynamical Slope)
 
 cap 10 - whole-body balance
