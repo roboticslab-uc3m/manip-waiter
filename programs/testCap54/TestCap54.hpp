@@ -47,10 +47,6 @@ class TestCap54 : public RFModule {
 private:
     ThreadImpl threadImpl;
 
-    yarp::os::Port portft0;
-    yarp::os::Port portft1;
-    yarp::os::Port portft2;
-    yarp::os::Port portft3;
     yarp::os::Port portImu;
 
     /** Axes number **/
@@ -78,6 +74,10 @@ private:
     yarp::dev::IPositionControl2 *leftArmIPositionControl2; // para control en posicion
     /** Left Arm VelocityControl2 Interface */
     yarp::dev::IVelocityControl2 *leftArmIVelocityControl2; // para control en velocidad
+    /** FT 3 Sensor Device */
+    yarp::dev::PolyDriver ft3SensorDevice;
+    /** FT 3 AnalogSensor Interface */
+    yarp::dev::IAnalogSensor *iFT3AnalogSensor;
 
     /** Axes number **/
     int numRightArmJoints;
@@ -91,6 +91,10 @@ private:
     yarp::dev::IPositionControl2 *rightArmIPositionControl2; // para control en posicion
     /** Right Arm VelocityControl2 Interface */
     yarp::dev::IVelocityControl2 *rightArmIVelocityControl2; // para control en velocidad
+    /** FT 2 Sensor Device */
+    yarp::dev::PolyDriver ft2SensorDevice;
+    /** FT 2 AnalogSensor Interface */
+    yarp::dev::IAnalogSensor *iFT2AnalogSensor;
 
     // ----------------------------------------------------------------------------------
 
@@ -119,6 +123,10 @@ private:
     yarp::dev::IPositionControl2 *leftLegIPositionControl2; // para control en posicion
     /** Left Leg VelocityControl2 Interface */
     yarp::dev::IVelocityControl2 *leftLegIVelocityControl2; // para control en velocidad
+    /** FT 1 Sensor Device */
+    yarp::dev::PolyDriver ft1SensorDevice;
+    /** FT 1 AnalogSensor Interface */
+    yarp::dev::IAnalogSensor *iFT1AnalogSensor;
 
     /** Axes number **/
     int numRightLegJoints;
@@ -132,6 +140,10 @@ private:
     yarp::dev::IPositionControl2 *rightLegIPositionControl2; // para control en posicion
     /** Right Leg VelocityControl2 Interface */
     yarp::dev::IVelocityControl2 *rightLegIVelocityControl2; // para control en velocidad
+    /** FT 0 Sensor Device */
+    yarp::dev::PolyDriver ft0SensorDevice;
+    /** FT 0 AnalogSensor Interface */
+    yarp::dev::IAnalogSensor *iFT0AnalogSensor;
 
     // -------------------------------------------------------------------------------------
 

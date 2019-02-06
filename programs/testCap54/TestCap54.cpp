@@ -3,11 +3,12 @@
 /**
 
 the idea is make the first step for a body balance control for the waiter.
-this TestCap54 start with the verification of previous TestCap53.we generate
+this TestCap54 start with the verification of previous TestCap53. we generate
 a simple control:
     ->  focus on push recovery test and ankle strategy.
     ->  with the validate DLIPM.
 
+we include IMU sensor only for measure the external disturbance.
 
 there can be a second part. we can extend this test with hip strategy or using:
     ->  "velocity" or "PositionDirect" mode control
@@ -306,48 +307,71 @@ bool TestCap54::configure(ResourceFinder &rf) {
     /** **************************************************************************************
      * ******************************************************************************** **/
 
+
+    // ----- FT0 SENSOR DEVICE -----
+    yarp::os::Property ft0SensorOptions;
+    ft0SensorOptions.put("device","analogsensorclient");
+    ft0SensorOptions.put("remote","/jr3/ch0:o");
+    ft0SensorOptions.put("local",waiterStr+"/jr3/ch0:i");
+
+    ft0SensorDevice.open(ft0SensorOptions); // FT 0 Sensor Device
+    if(!ft0SensorDevice.isValid()) {
+      printf("Device not available.\n");
+      ft0SensorDevice.close();
+      yarp::os::Network::fini();
+      return false;    }
+
+    if ( ! ft0SensorDevice.view(iFT0AnalogSensor) )    {
+        std::printf("[error] Problems acquiring interface\n");
+        return false;
+    } else printf("[success] acquired SENSOR FT 0 interface\n");
+
+    yarp::os::Time::delay(1);   // The following delay should avoid 0 channels and bad read
+
+    int channelsFT0 = iFT0AnalogSensor->getChannels();
+    printf("channels: %d\n", channelsFT0);
+    /** **************************************************************************************
+     * ******************************************************************************** **/
+
+
+    // ----- FT1 SENSOR DEVICE -----
+    yarp::os::Property ft1SensorOptions;
+    ft1SensorOptions.put("device","analogsensorclient");
+    ft1SensorOptions.put("remote","/jr3/ch1:o");
+    ft1SensorOptions.put("local",waiterStr+"/jr3/ch1:i");
+
+    ft1SensorDevice.open(ft1SensorOptions); // FT 2 Sensor Device
+    if(!ft1SensorDevice.isValid()) {
+      printf("Device not available.\n");
+      ft1SensorDevice.close();
+      yarp::os::Network::fini();
+      return false;    }
+
+    if ( ! ft1SensorDevice.view(iFT1AnalogSensor) )    {
+        std::printf("[error] Problems acquiring interface\n");
+        return false;
+    } else printf("[success] acquired SENSOR FT 1 interface\n");
+
+    yarp::os::Time::delay(1);   // The following delay should avoid 0 channels and bad read
+
+    int channelsFT1 = iFT1AnalogSensor->getChannels();
+    printf("channels: %d\n", channelsFT1);
+    /** **************************************************************************************
+     * ******************************************************************************** **/
+
+
     yarp::os::Time::delay(1);
 
-/*    //-- OPEN YARP PORTS
-    portImu.open("/waiter/inertial:i");
-    portft0.open("/waiter/jr3ch0:i");
-    portft1.open("/waiter/jr3ch1:i");
-    portft2.open("/waiter/jr3ch2:i");
-    portft3.open("/waiter/jr3ch3:i");
+    //-- OPEN AND CONNECTIONS YARP PORTS
+    portImu.open(waiterStr+"/inertial:i");
     yarp::os::Time::delay(0.5);
 
-    //-- CONNECTIONS PORTS
-    // ft right foot
-    Network::connect("/jr3/ch0:o","/waiter/jr3ch0:i");
-    if ( NetworkBase::isConnected("/jr3/ch0:o","/waiter/jr3ch0:i") == false ){
-        cerr << "[error] Couldn't connect to YARP port /waiter/jr3ch0:i." << endl;
-    } else cout << "[success] Connected to /jr3ch0:i." << endl;
-    yarp::os::Time::delay(0.5);
-    // ft left foot
-    Network::connect("/jr3/ch1:o","/waiter/jr3ch1:i");
-    if ( NetworkBase::isConnected("/jr3/ch1:o","/waiter/jr3ch1:i") == false ){
-        cerr << "[error] Couldn't connect to YARP port /waiter/jr3ch1:i." << endl;
-    } else cout << "[success] Connected to /jr3ch1:i." << endl;
-    yarp::os::Time::delay(0.5);
-    // ft right hand
-    Network::connect("/jr3/ch2:o","/waiter/jr3ch2:i");
-    if ( NetworkBase::isConnected("/jr3/ch2:o","/waiter/jr3ch2:i") == false ){
-        cerr << "[error] Couldn't connect to YARP port /waiter/jr3ch2:i." << endl;
-    } else cout << "[success] Connected to /jr3ch2:i." << endl;
-    yarp::os::Time::delay(0.5);
-    // ft left hand
-    Network::connect("/jr3/ch3:o","/waiter/jr3ch3:i");
-    if ( NetworkBase::isConnected("/jr3/ch3:o","/waiter/jr3ch3:i") == false ){
-        cerr << "[error] Couldn't connect to YARP port /waiter/jr3ch3:i." << endl;
-    } else cout << "[success] Connected to /jr3ch3:i." << endl;
-    yarp::os::Time::delay(0.5);
     // imu trunk
-    Network::connect("/inertial", "/waiter/inertial:i");
-    if ( NetworkBase::isConnected("/inertial", "/waiter/inertial:i") == false ){
-        cerr << "[error] Couldn't connect to YARP port /waiter/inertial:i." << endl;
+    Network::connect("/inertial", waiterStr+"/inertial:i");
+    if ( NetworkBase::isConnected("/inertial",waiterStr+"/inertial:i") == false ){
+        cerr << "[error] Couldn't connect to YARP port /inertial:i." << endl;
     } else cout << "[success] Connected to IMU." << endl;
-    yarp::os::Time::delay(0.5);*/
-
+    yarp::os::Time::delay(0.5);
     /** **************************************************************************************
      * ******************************************************************************** **/
 
@@ -356,7 +380,8 @@ bool TestCap54::configure(ResourceFinder &rf) {
     threadImpl.setIEncodersControl(rightLegIEncoders,leftLegIEncoders);
     threadImpl.setIPositionControl2(rightLegIPositionControl2,leftLegIPositionControl2);
     //threadImpl.setIVelocityControl2(rightLegIVelocityControl2,leftLegIVelocityControl2); // no se utiliza de momento
-    threadImpl.setInputPorts(&portImu,&portft0,&portft1,&portft2,&portft3);
+    threadImpl.setInputPorts(&portImu);
+    threadImpl.setIAnalogSensor(iFT0AnalogSensor,iFT1AnalogSensor,iFT2AnalogSensor,iFT3AnalogSensor);
 
     threadImpl.start();
 

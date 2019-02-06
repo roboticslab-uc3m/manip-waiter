@@ -46,13 +46,6 @@ bool ThreadImpl::threadInit() {
     desQ.resize(7);
     befQ.resize(7);
 
-    _FTLeftHand._initF.fx = 0;
-    _FTLeftHand._initF.fy = 0;
-    _FTLeftHand._initF.fz = 0;
-    _FTLeftHand._initT.mx = 0;
-    _FTLeftHand._initT.my = 0;
-    _FTLeftHand._initT.mz = 0;
-
     //double initspe[7] = {2.0,2.0,2.0,2.0,2.0,2.0,0.0}; // --set NEW ref speed
     double initspe[7] = {10.0,10.0,10.0,10.0,10.0,10.0,0.0}; // --set NEW ref speed
     //double initspe[7] = {20.0,20.0,20.0,20.0,20.0,20.0,0.0}; // --set NEW ref speed
@@ -86,7 +79,8 @@ void ThreadImpl::run()
         if (a==1 && b==1 && c==1 && e==250)   {     // STEP 5 - main code
             getInitialTime();
 
-            readSensors();
+            readSensorsFT3();
+            readSensorsIMU();
 
             axesTransform1(); // SDC_jr3 -> SDC_root (permanente)
             axesTransform2(); // SDC_root -> SDC(theta) (variable)
@@ -105,17 +99,6 @@ void ThreadImpl::run()
 
         }
     }
-}
-
-/************************************************************************/
-void ThreadImpl::confCSVfile(){       /** Configuring CSV file    **/
-
-    cout << "[configuring] ... STEP 1 " << endl;
-    fp = fopen("../data_3dslope_threat.csv","w+");
-    fprintf(fp,"fx,fy,fz,Mx,My,Mz,Xzmp,Yzmp,CX3,CX4,CX5,CX6,TX1,TY1,TX2,TY2,act_time");
-    yarp::os::Time::delay(1);
-
-    cout << "[success] data_testCap.csv file configured." << endl;
 }
 
 /************************************************************************/
@@ -181,13 +164,9 @@ void ThreadImpl::openingPorts(){       /** Opening Ports & Connecting with senso
     cout << "[configuring] ... STEP 3 " << endl;
 
     //-- OPEN YARP PORTS
-    portImu->open("/waiter/inertial:i");
-    portFt0->open("/waiter/jr3ch0:i");
-    portFt1->open("/waiter/jr3ch1:i");
-    portFt2->open("/waiter/jr3ch2:i");
-    portFt3->open("/waiter/jr3ch3:i");
+    portImu->open("/objectBal/inertial:i");
 
-    cout << "\n [atention] User must activate sensor programs." << endl;
+    cout << "\n [ATENTION] User must activate sensor programs.\n" << endl;
     yarp::os::Time::delay(5);
 
     //-- CONNECTIONS PORTS
@@ -208,19 +187,19 @@ void ThreadImpl::openingPorts(){       /** Opening Ports & Connecting with senso
     if ( NetworkBase::isConnected("/jr3/ch2:o","/waiter/jr3ch2:i") == false ){
         cerr << "[error] Couldn't connect to YARP port /waiter/jr3ch2:i." << endl;
     } else cout << "[success] Connected to /jr3ch2:i." << endl;
-    yarp::os::Time::delay(0.5);*/
+    yarp::os::Time::delay(0.5);
     // ft left hand
     Network::connect("/jr3/ch3:o","/waiter/jr3ch3:i");
     if ( NetworkBase::isConnected("/jr3/ch3:o","/waiter/jr3ch3:i") == false ){
         cerr << "[error] Couldn't connect to YARP port /waiter/jr3ch3:i." << endl;
     } else cout << "[success] Connected to /jr3ch3:i." << endl;
-    yarp::os::Time::delay(0.5);
-/*    // imu trunk
-    Network::connect("/inertial", "/waiter/inertial:i");
-    if ( NetworkBase::isConnected("/inertial", "/waiter/inertial:i") == false ){
-        cerr << "[error] Couldn't connect to YARP port /waiter/inertial:i." << endl;
-    } else cout << "[success] Connected to IMU." << endl;
     yarp::os::Time::delay(0.5);*/
+    // imu trunk
+    Network::connect("/inertial", "/objectBal/inertial:i");
+    if ( NetworkBase::isConnected("/inertial", "/objectBal/inertial:i") == false ){
+        cerr << "[error] Couldn't connect to YARP port /objectBal/inertial:i." << endl;
+    } else cout << "[success] Connected to IMU." << endl;
+    yarp::os::Time::delay(0.5);
 
     return;
 }
@@ -236,14 +215,14 @@ void ThreadImpl::calcParam_D(){       /** Calculating _d parameter **/
     _FTLeftHand._initT.my = ch3.get(4).asDouble(); // momento eje Y
     _FTLeftHand._initT.mx = ch3.get(5).asDouble(); // momento eje Y*/
 
-    readSensors();
+    readSensorsFT3();
 
-    if (_FTLeftHand._initF.fx>-5 && f==0){   // botella NO puesta
+    if (_LA._F.fx>-5 && f==0){   // botella NO puesta
         cout << "[error] ... botella NO puesta " << endl;
         yarp::os::Time::delay(0.5);
         e=0;        }
 
-    if (_FTLeftHand._initF.fx<-5 && f==0){   // botella puesta
+    if (_LA._F.fx<-5 && f==0){   // botella puesta
         cout << "[success] ... botella puesta en 3" << endl;
         yarp::os::Time::delay(1);
         cout << "[success] ... botella puesta en 2" << endl;
@@ -282,121 +261,80 @@ void ThreadImpl::getInitialTime()
 }
 
 /************************************************************************/
-void ThreadImpl::readSensors(){     /** Reading input messages from SENSORS    **/
+void ThreadImpl::readSensorsFT3(){     /** Reading input messages from FT3 SENSORS    **/
 
-    //--- FT-Sensor 3 left hand
+    //--- FT-Sensor 3 left arm
 
     yarp::sig::Vector ch3;
-    int ret = ft3AnalogSensor->read(ch3); // lecture from sensor JR3 ch3 - left hand
+    int ret = ft3AnalogSensor->read(ch3); // lecture from sensor JR3 ch3 - left arm
     if (ret == yarp::dev::IAnalogSensor::AS_OK)
     {
-        _FTLeftHand._initF.fx = ch3[0];
-        _FTLeftHand._initF.fy = ch3[1];
-        _FTLeftHand._initF.fz = ch3[2];
-        _FTLeftHand._initT.mx = ch3[3];
-        _FTLeftHand._initT.my = ch3[4];
-        _FTLeftHand._initT.mz = ch3[5];
+        _LA._F.fx = ch3[0];
+        _LA._F.fy = ch3[1];
+        _LA._F.fz = ch3[2];
+        _LA._T.mx = ch3[3];
+        _LA._T.my = ch3[4];
+        _LA._T.mz = ch3[5];
 
         //std::printf("Good read, got: %s\n",ch3.toString().c_str()); // print on terminal vector ch3
-
     }
 }
 
 /************************************************************************/
-/*void ThreadImpl::OLDreadSensors(){
-
-        //--- FT-Sensor 0 right leg
-    Bottle ch0;
-    portFt0->read(ch0); // lectura del sensor JR3 ch0 - right foot
-    _FTRightFoot._initF.fx = ch0.get(0).asDouble();
-    _FTRightFoot._initF.fy = ch0.get(1).asDouble();
-    _FTRightFoot._initF.fz = ch0.get(2).asDouble();
-    _FTRightFoot._initT.mx = ch0.get(3).asDouble();
-    _FTRightFoot._initT.my = ch0.get(4).asDouble();
-    _FTRightFoot._initT.mz = ch0.get(5).asDouble();
-
-        //--- FT-Sensor 1 left leg
-    Bottle ch1;
-    portFt1->read(ch1); // lectura del sensor JR3 ch1 - left foot
-    _FTLeftFoot._initF.fx = ch1.get(0).asDouble();
-    _FTLeftFoot._initF.fy = ch1.get(1).asDouble();
-    _FTLeftFoot._initF.fz = ch1.get(2).asDouble();
-    _FTLeftFoot._initT.mx = ch1.get(3).asDouble();
-    _FTLeftFoot._initT.my = ch1.get(4).asDouble();
-    _FTLeftFoot._initT.mz = ch1.get(5).asDouble();
-
-        //--- FT-Sensor 2 right hand
-    Bottle ch2;
-    portFt2->read(ch2); // lectura del sensor JR3 ch2 - right hand
-    _FTRightHand._initF.fx = ch2.get(0).asDouble();
-    _FTRightHand._initF.fy = ch2.get(1).asDouble();
-    _FTRightHand._initF.fx = ch2.get(2).asDouble();
-    _FTRightHand._initT.mx = ch2.get(3).asDouble();
-    _FTRightHand._initT.my = ch2.get(4).asDouble();
-    _FTRightHand._initT.mz = ch2.get(5).asDouble();
-
-    //--- FT-Sensor 3 left hand
-    Bottle ch3;
-    portFt3->read(ch3); // lectura del sensor JR3 ch3 - left hand
-    _FTLeftHand._initF.fx = ch3.get(0).asDouble();
-    _FTLeftHand._initF.fy = ch3.get(1).asDouble();
-    _FTLeftHand._initF.fz = ch3.get(2).asDouble();
-    _FTLeftHand._initT.mx = ch3.get(3).asDouble();
-    _FTLeftHand._initT.my = ch3.get(4).asDouble();
-    _FTLeftHand._initT.mz = ch3.get(5).asDouble();
-
+void ThreadImpl::readSensorsIMU()       /** Reading input messages from IMU SENSORS    **/
+{
         //--- Inertial-Sensor
     Bottle imu;
     portImu->read(imu); // lectura del sensor IMU
     ang_x = imu.get(0).asDouble(); // Angulo en X [deg]
-    ang_y = imu.get(1).asDouble(); // Angulo en Y [deg]
-    ang_z = imu.get(2).asDouble(); // Angulo en Z [deg]
+    //ang_y = imu.get(1).asDouble(); // Angulo en Y [deg]
+    //ang_z = imu.get(2).asDouble(); // Angulo en Z [deg]
     acc_x = imu.get(3).asDouble(); //Linear acceleration in X [m/s^2]
     x_sensor.push_front(acc_x);
     x_sensor.pop_back();
-    acc_y = imu.get(4).asDouble(); //Linear acceleration in Y [m/s^2]
-    y_sensor.push_front(acc_y);
-    y_sensor.pop_back();
-    acc_z = imu.get(5).asDouble(); //Linear acceleration in Z [m/s^2]
-    z_sensor.push_front(acc_z);
-    z_sensor.pop_back();
-    spd_x=imu.get(6).asDouble(); // Velocidad angular en X [deg/s]
-    spd_y=imu.get(7).asDouble(); // Velocidad angular en Y [deg/s]
-    spd_z=imu.get(8).asDouble(); // Velocidad angular en Z [deg/s]
+    //acc_y = imu.get(4).asDouble(); //Linear acceleration in Y [m/s^2]
+    //y_sensor.push_front(acc_y);
+    //y_sensor.pop_back();
+    //acc_z = imu.get(5).asDouble(); //Linear acceleration in Z [m/s^2]
+    //z_sensor.push_front(acc_z);
+    //z_sensor.pop_back();
+    //spd_x=imu.get(6).asDouble(); // Velocidad angular en X [deg/s]
+    //spd_y=imu.get(7).asDouble(); // Velocidad angular en Y [deg/s]
+    //spd_z=imu.get(8).asDouble(); // Velocidad angular en Z [deg/s]
     //mag_x=imu.get(9).asDouble(); // Campo magnetico en X
     //mag_y=imu.get(10).asDouble(); // Campo magnetico en Y
     //mag_z=imu.get(11).asDouble(); // Campo magnetico en Z
 
     //LOW-PASS FILTER
     ddx = 0.0;
-    ddy = 0.0;
-    ddz = 0.0;
+    //ddy = 0.0;
+    //ddz = 0.0;
     for(deque<double>::iterator it = x_sensor.begin(); it != x_sensor.end(); it++)
         ddx = ddx + *it;
-    for(deque<double>::iterator it = y_sensor.begin(); it != y_sensor.end(); it++)
-        ddy = ddy + *it;
-    for(deque<double>::iterator it = z_sensor.begin(); it != z_sensor.end(); it++)
-        ddz = ddz + *it;
+    //for(deque<double>::iterator it = y_sensor.begin(); it != y_sensor.end(); it++)
+        //ddy = ddy + *it;
+    //for(deque<double>::iterator it = z_sensor.begin(); it != z_sensor.end(); it++)
+        //ddz = ddz + *it;
     ddx = ddx / samples;
-    ddy = ddy / samples;
-    ddz = ddz / samples;
+    //ddy = ddy / samples;
+    //ddz = ddz / samples;
 
     //CONVERSION FROM IMU SENSOR COORDINATES TO ROBOT COORDINATES
      ddx_robot = ddx;
-     ddy_robot = -ddy;
-     ddz_robot = ddz;
+     //ddy_robot = -ddy;
+     //ddz_robot = ddz;
 
-}*/
+}
 
 /************************************************************************/
 void ThreadImpl::axesTransform1(){  /** Transformation matrix between TEO_body_axes (world) and Jr3_axes with horizontal tray (waiter)    **/
 
-    _tray._F.fx = + _FTLeftHand._initF.fz;// - _off._F.fz;
-    _tray._F.fy = + _FTLeftHand._initF.fy;// - _off._F.fy;
-    _tray._F.fz = + _FTLeftHand._initF.fx;// + _off._F.fx;
-    _tray._M.mx = + _FTLeftHand._initT.mz;// - _off._M.mz;
-    _tray._M.my = + _FTLeftHand._initT.my;// - _off._M.my;
-    _tray._M.mz = + _FTLeftHand._initT.mx;// - _off._M.mx;
+    _tray._F.fx = + _LA._F.fz;// - _off._F.fz;
+    _tray._F.fy = + _LA._F.fy;// - _off._F.fy;
+    _tray._F.fz = + _LA._F.fx;// + _off._F.fx;
+    _tray._M.mx = + _LA._T.mz;// - _off._M.mz;
+    _tray._M.my = + _LA._T.my;// - _off._M.my;
+    _tray._M.mz = + _LA._T.mx;// - _off._M.mx;
 
     _tray._F.fx = _tray._F.fx * 100; // *10 redondeo un decimal // *100 redondeo dos decimales
     _tray._F.fy = _tray._F.fy * 100;
@@ -626,7 +564,7 @@ void ThreadImpl::LIPM3d(){          /** Control - Joint Position Calculus    **/
 
     //Generacion de la actuacion a los motores (CONTROL)
 
-    if (_FTLeftHand._initF.fx<-5){   // botella SI puesta
+    if (_LA._F.fx<-5){   // botella SI puesta
 
         // version 2
         if (_rzmp>=15)  { // ZMP botella INESTABLE
@@ -744,7 +682,7 @@ void ThreadImpl::LIPM3d(){          /** Control - Joint Position Calculus    **/
     */
     }
 
-    if (_FTLeftHand._initF.fx>-5){   // botella NO puesta
+    if (_LA._F.fx>-5){   // botella NO puesta
 
         cout << "[error] ... botella NO puesta " << endl;
 
@@ -807,17 +745,34 @@ void ThreadImpl::printData()
 }
 
 /************************************************************************/
+void ThreadImpl::confCSVfile(){       /** Configuring CSV file    **/
+
+    cout << "[configuring] ... STEP 1 " << endl;
+    fp = fopen("../data_3dslope_threat.csv","w+");
+    fprintf(fp,"act_time,fx,fy,fz,Mx,My,Mz,Ang_imu,Acc_imu,Xzmp,Yzmp,CX3,CX4,CX5,CX6,TX1,TY1,TX2,TY2,iter");
+    yarp::os::Time::delay(1);
+
+    cout << "[success] data_3dslope_threat.csv file configured." << endl;
+}
+
+/************************************************************************/
 void ThreadImpl::saveInFileCsv()
 {
 
-    fprintf(fp,"\n%.4f", _FTLeftHand._initF.fx);
-    fprintf(fp,",%.4f", _FTLeftHand._initF.fy);
-    fprintf(fp,",%.4f", _FTLeftHand._initF.fz);
-    fprintf(fp,",%.4f", _FTLeftHand._initT.mx);
-    fprintf(fp,",%.4f", _FTLeftHand._initT.my);
-    fprintf(fp,",%.4f", _FTLeftHand._initT.mz);
-    fprintf(fp,",%.4f", _tray._zmp.x_zmp);
-    fprintf(fp,",%.4f", _tray._zmp.y_zmp);
+    fprintf(fp,"\n%.4f", act_time);
+
+    fprintf(fp,",%.10f", _LA._F.fx);
+    fprintf(fp,",%.10f", _LA._F.fy);
+    fprintf(fp,",%.10f", _LA._F.fz);
+    fprintf(fp,",%.10f", _LA._T.mx);
+    fprintf(fp,",%.10f", _LA._T.my);
+    fprintf(fp,",%.10f", _LA._T.mz);
+
+    fprintf(fp,",%.10f", ang_x); // angle X imu
+    fprintf(fp,",%.10f", acc_x); // acceleration X imu
+
+    fprintf(fp,",%.8f", _tray._zmp.x_zmp);
+    fprintf(fp,",%.8f", _tray._zmp.y_zmp);
 
     fprintf(fp,",%.4f", curX[3]);
     fprintf(fp,",%.4f", curX[4]);
@@ -829,7 +784,7 @@ void ThreadImpl::saveInFileCsv()
     fprintf(fp,",%.4f", _thetaX);
     fprintf(fp,",%.4f", _thetaY);
 
-    fprintf(fp,",%.4f", act_time);
+    fprintf(fp,",%i", n);
 
 }
 

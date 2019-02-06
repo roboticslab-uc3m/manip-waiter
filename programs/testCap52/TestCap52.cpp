@@ -1,13 +1,14 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
 /*
-el test 52 está asociado para el HUMANOID 2018 en el que el topic del paper es el modelo de
+el test 52 está asociado para el congreso ??? en el que el topic del paper es el modelo de
 control de la botella basado en rampas variables usando el sensor de fuerza/par (CH3).
 
-el test 52 consiste en observar y comprobar si el ZMP se calcula correctamente en funcion del
-angulo de inclinacion de la bandeja. Este test se debe dividir a mano en otros tres, en el que
-se medirá el ZMP, tanto en el plano frontal (0,1,0), como en el plano sagital (1,0,0), como en
-un plano que sea combinacion de los dos anteriores (1,1,0).
+el test 52 consiste en controlar el zmp de la botella en funcion del sensor FT de la muñeca,
+aunque tambien se añade el sensor IMU para medir las pertubacion externads sobre el robot/sistema.
+
+de hecho, algunas pruebas consistirian en empujar al robot con distintas intesidades y ver la
+respuesta del brazo y del controlador.
 
 Unicamente se utiliza el brazo izquierdo, luego solo es necesario crear el device de esta
 extremidad y el solver asociado a esta.
@@ -312,6 +313,57 @@ bool TestCap52::configure(ResourceFinder &rf) {
      * ******************************************************************************** **/
 
 
+    // ----- FT0 SENSOR DEVICE -----
+    yarp::os::Property ft0SensorOptions;
+    ft0SensorOptions.put("device","analogsensorclient");
+    ft0SensorOptions.put("remote","/jr3/ch0:o");
+    ft0SensorOptions.put("local",waiterStr+"/jr3/ch0:i");
+
+    ft0SensorDevice.open(ft0SensorOptions); // FT 0 Sensor Device
+    if(!ft0SensorDevice.isValid()) {
+      printf("Device not available.\n");
+      ft0SensorDevice.close();
+      yarp::os::Network::fini();
+      return false;    }
+
+    if ( ! ft0SensorDevice.view(iFT0AnalogSensor) )    {
+        std::printf("[error] Problems acquiring interface\n");
+        return false;
+    } else printf("[success] acquired SENSOR FT 0 interface\n");
+
+    yarp::os::Time::delay(1);   // The following delay should avoid 0 channels and bad read
+
+    int channelsFT0 = iFT0AnalogSensor->getChannels();
+    printf("channels: %d\n", channelsFT0);
+    /** **************************************************************************************
+     * ******************************************************************************** **/
+
+
+    // ----- FT1 SENSOR DEVICE -----
+    yarp::os::Property ft1SensorOptions;
+    ft1SensorOptions.put("device","analogsensorclient");
+    ft1SensorOptions.put("remote","/jr3/ch1:o");
+    ft1SensorOptions.put("local",waiterStr+"/jr3/ch1:i");
+
+    ft1SensorDevice.open(ft1SensorOptions); // FT 2 Sensor Device
+    if(!ft1SensorDevice.isValid()) {
+      printf("Device not available.\n");
+      ft1SensorDevice.close();
+      yarp::os::Network::fini();
+      return false;    }
+
+    if ( ! ft1SensorDevice.view(iFT1AnalogSensor) )    {
+        std::printf("[error] Problems acquiring interface\n");
+        return false;
+    } else printf("[success] acquired SENSOR FT 1 interface\n");
+
+    yarp::os::Time::delay(1);   // The following delay should avoid 0 channels and bad read
+
+    int channelsFT1 = iFT1AnalogSensor->getChannels();
+    printf("channels: %d\n", channelsFT1);
+    /** **************************************************************************************
+     * ******************************************************************************** **/
+
     // ----- FT2 SENSOR DEVICE -----
     yarp::os::Property ft2SensorOptions;
     ft2SensorOptions.put("device","analogsensorclient");
@@ -328,7 +380,7 @@ bool TestCap52::configure(ResourceFinder &rf) {
     if ( ! ft2SensorDevice.view(iFT2AnalogSensor) )    {
         std::printf("[error] Problems acquiring interface\n");
         return false;
-    } else printf("[success] acquired interface\n");
+    } else printf("[success] acquired SENSOR FT 2 interface\n");
 
     yarp::os::Time::delay(1);   // The following delay should avoid 0 channels and bad read
 
@@ -354,7 +406,7 @@ bool TestCap52::configure(ResourceFinder &rf) {
     if ( ! ft3SensorDevice.view(iFT3AnalogSensor) )    {
         printf("[error] Problems acquiring interface\n");
         return false;
-    } else printf("[success] acquired interface\n");
+    } else printf("[success] acquired SENSOR FT 3 interface\n");
 
     yarp::os::Time::delay(1);   // The following delay should avoid 0 channels and bad read
 
@@ -364,45 +416,18 @@ bool TestCap52::configure(ResourceFinder &rf) {
      * ******************************************************************************** **/
 
 
-/*    //-- OPEN YARP PORTS
-    portImu.open("/waiter/inertial:i");
-    portft0.open("/waiter/jr3ch0:i");
-    portft1.open("/waiter/jr3ch1:i");
-    portft2.open("/waiter/jr3ch2:i");
-    portft3.open("/waiter/jr3ch3:i");
+    yarp::os::Time::delay(1);
+
+    //-- OPEN AND CONNECTIONS YARP PORTS
+    portImu.open(waiterStr+"/inertial:i");
     yarp::os::Time::delay(0.5);
 
-    //-- CONNECTIONS PORTS
-    // ft right foot
-    Network::connect("/jr3/ch0:o","/waiter/jr3ch0:i");
-    if ( NetworkBase::isConnected("/jr3/ch0:o","/waiter/jr3ch0:i") == false ){
-        cerr << "[error] Couldn't connect to YARP port /waiter/jr3ch0:i." << endl;
-    } else cout << "[success] Connected to /jr3ch0:i." << endl;
-    yarp::os::Time::delay(0.5);
-    // ft left foot
-    Network::connect("/jr3/ch1:o","/waiter/jr3ch1:i");
-    if ( NetworkBase::isConnected("/jr3/ch1:o","/waiter/jr3ch1:i") == false ){
-        cerr << "[error] Couldn't connect to YARP port /waiter/jr3ch1:i." << endl;
-    } else cout << "[success] Connected to /jr3ch1:i." << endl;
-    yarp::os::Time::delay(0.5);
-    // ft right hand
-    Network::connect("/jr3/ch2:o","/waiter/jr3ch2:i");
-    if ( NetworkBase::isConnected("/jr3/ch2:o","/waiter/jr3ch2:i") == false ){
-        cerr << "[error] Couldn't connect to YARP port /waiter/jr3ch2:i." << endl;
-    } else cout << "[success] Connected to /jr3ch2:i." << endl;
-    yarp::os::Time::delay(0.5);
-    // ft left hand
-    Network::connect("/jr3/ch3:o","/waiter/jr3ch3:i");
-    if ( NetworkBase::isConnected("/jr3/ch3:o","/waiter/jr3ch3:i") == false ){
-        cerr << "[error] Couldn't connect to YARP port /waiter/jr3ch3:i." << endl;
-    } else cout << "[success] Connected to /jr3ch3:i." << endl;
-    yarp::os::Time::delay(0.5);
     // imu trunk
-    Network::connect("/inertial", "/waiter/inertial:i");
-    if ( NetworkBase::isConnected("/inertial", "/waiter/inertial:i") == false ){
-        cerr << "[error] Couldn't connect to YARP port /waiter/inertial:i." << endl;
+    Network::connect("/inertial", waiterStr+"/inertial:i");
+    if ( NetworkBase::isConnected("/inertial",waiterStr+"/inertial:i") == false ){
+        cerr << "[error] Couldn't connect to YARP port /inertial:i." << endl;
     } else cout << "[success] Connected to IMU." << endl;
-    yarp::os::Time::delay(0.5);*/
+    yarp::os::Time::delay(0.5);
     /** **************************************************************************************
      * ******************************************************************************** **/
 
@@ -439,8 +464,8 @@ bool TestCap52::configure(ResourceFinder &rf) {
     threadImpl.setTrunkIPositionControl2(trunkIPositionControl2); // not used
     //threadImpl.setIVelocityControl2(leftArmIVelocityControl2); // not used
     threadImpl.setICartesianSolver(leftArmICartesianSolver);
-    threadImpl.setInputPorts(&portImu,&portft0,&portft1,&portft2,&portft3);
-    threadImpl.setIAnalogSensor(iFT2AnalogSensor,iFT3AnalogSensor);
+    threadImpl.setInputPorts(&portImu);
+    threadImpl.setIAnalogSensor(iFT0AnalogSensor,iFT1AnalogSensor,iFT2AnalogSensor,iFT3AnalogSensor);
     //yarp::dev::IAnalogSensor *iFT3AnalogSensor;
 
     threadImpl.start();

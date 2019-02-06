@@ -3,24 +3,7 @@
 #ifndef __THREAD_IMPL_HPP__
 #define __THREAD_IMPL_HPP__
 
-#include <math.h>
-#include <yarp/os/all.h>
-#include <yarp/dev/all.h>
-#include <fstream>
-#include <deque>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <iostream>
-#include <string.h>
-#include <signal.h>
-#include <sys/ioctl.h>
-#include <cmath>
-#include "ColorDebug.hpp"
-#include <iomanip>
+#include "global.h"
 
 #include <yarp/sig/Vector.h>
 
@@ -67,14 +50,13 @@ class ThreadImpl : public yarp::os::Thread {
         void setICartesianSolver(roboticslab::ICartesianSolver *iCartesianSolver) {
             this->leftArmICartesianSolver = iCartesianSolver;        }
 
-        void setInputPorts(yarp::os::Port *inputPortImu, yarp::os::Port *inputPortFt0, yarp::os::Port *inputPortFt1, yarp::os::Port *inputPortFt2, yarp::os::Port *inputPortFt3) {
+        void setInputPorts(yarp::os::Port *inputPortImu) {
             this->portImu = inputPortImu;
-            this->portFt0 = inputPortFt0;
-            this->portFt1 = inputPortFt1;
-            this->portFt2 = inputPortFt2;
-            this->portFt3 = inputPortFt3;        }
+       }
 
-        void setIAnalogSensor(IAnalogSensor *iFT2AnalogSensor,IAnalogSensor *iFT3AnalogSensor) {
+        void setIAnalogSensor(IAnalogSensor *iFT0AnalogSensor,IAnalogSensor *iFT1AnalogSensor,IAnalogSensor *iFT2AnalogSensor,IAnalogSensor *iFT3AnalogSensor) {
+            this->ft0AnalogSensor = iFT0AnalogSensor;
+            this->ft1AnalogSensor = iFT1AnalogSensor;
             this->ft2AnalogSensor = iFT2AnalogSensor;
             this->ft3AnalogSensor = iFT3AnalogSensor;        }
 
@@ -102,15 +84,24 @@ class ThreadImpl : public yarp::os::Thread {
         float Xzmp_ft, Yzmp_ft; // Global ZMP-FT despues de filtrar
         double Xzmp_imu, Yzmp_imu, Xzmp_total; // Global ZMP-IMU despues de filtrar*/
 
+        //-- IMU variables
+        double acc_x, acc_y, acc_z;
+        double ang_x, ang_y, ang_z;
+        double spd_x, spd_y, spd_z;
+        double mag_x, mag_y, mag_z;
+        deque<double> x_sensor, y_sensor, z_sensor;
+        //-- IMU LOW-FILTER variables & CONVERTION
+        double ddx, ddy, ddz, ddx_robot, ddy_robot, ddz_robot;
+
         // ----- variables para el control de la Bandeja -----
         struct SensorData { // lectura F/T del sensor JR3
             struct ForceVector {
                 double fx, fy, fz;
-            } _initF; // vector de fuerza proporcionado por el JR3
+            } _F; // vector de fuerza proporcionado por el JR3
             struct TorqueVector {
                 double mx, my, mz;
-            } _initT; // vector de momento proporcionado por el JR3
-        } _FTLeftHand, _FTRightHand, _FTLeftFoot, _FTRightFoot, _med;
+            } _T; // vector de momento proporcionado por el JR3
+        } _RL, _LL, _RA, _LA, _med;
 
         struct TrayData { // variable para el control con los valores finales en la bandeja
             struct ForceVector {
@@ -150,7 +141,8 @@ class ThreadImpl : public yarp::os::Thread {
         void openingPorts();/** Opening Ports & connecting with sensor programs **/
         void calcParam_D();/** Calculating _d parameter **/
         void getInitialTime();
-        void readSensors();/** Reading from the FT_JR3_sensor. **/
+        void readSensorsFT3();/** Reading from the FT3_JR3_sensor. **/
+        void readSensorsIMU();/** Reading from the IMU_XSENS_sensor. **/
         void axesTransform1();/** Rotation Transformation matrix of JR3. **/
         void axesTransform2();/** Transformation matrix between JR3 and tray. **/
         void zmpComp();/** Calculating ZMP of the bottle. **/
@@ -159,13 +151,9 @@ class ThreadImpl : public yarp::os::Thread {
         void saveInFileCsv();/** Saving the ZMP measurements. **/
         void getCurrentTime();
 
-        yarp::os::Port *portFt0;
-        yarp::os::Port *portFt1;
-        yarp::os::Port *portFt2;
-        yarp::os::Port *portFt3;
+        //-- IMU data port
+        //yarp::os::BufferedPort<yarp::os::Bottle> *portImu;
         yarp::os::Port *portImu;
-
-        //yarp::os::Port *portft3;
 
 
         /** Axes number **/
@@ -238,6 +226,8 @@ class ThreadImpl : public yarp::os::Thread {
         yarp::dev::IPositionControl2 *leftLegIPositionControl2; // para control en posicion
         /** Left Leg VelocityControl2 Interface */
         yarp::dev::IVelocityControl2 *leftLegIVelocityControl2; // para control en velocidad
+        /** FT 1 AnalogSensor Interface */
+        yarp::dev::IAnalogSensor *ft1AnalogSensor;
 
         /** Axes number **/
         int numRightLegJoints;
@@ -251,6 +241,8 @@ class ThreadImpl : public yarp::os::Thread {
         yarp::dev::IPositionControl2 *rightLegIPositionControl2; // para control en posicion
         /** Right Leg VelocityControl2 Interface */
         yarp::dev::IVelocityControl2 *rightLegIVelocityControl2; // para control en velocidad
+        /** FT 0 AnalogSensor Interface */
+        yarp::dev::IAnalogSensor *ft0AnalogSensor;
 
         // -------------------------------------------------------------------------------------
 

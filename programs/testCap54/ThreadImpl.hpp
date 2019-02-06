@@ -54,10 +54,27 @@ namespace roboticslab
 class ThreadImpl : public yarp::os::Thread {
     public:
 
-    void setIEncodersControl(IEncoders *iRightLegEncoders, IEncoders *iLeftLegEncoders);
-    void setIPositionControl2(IPositionControl2 *iRightLegPositionControl2,IPositionControl2 *iLeftLegPositionControl2);
-    void setIVelocityControl2(IVelocityControl2 *iRightLegVelocityControl2,IVelocityControl2 *iLeftLegVelocityControl2);
-    void setInputPorts(yarp::os::Port *inputPortImu, yarp::os::Port *inputPortFt0, yarp::os::Port *inputPortFt1, yarp::os::Port *inputPortFt2, yarp::os::Port *inputPortFt3);
+    void setIEncodersControl(IEncoders *iRightLegEncoders, IEncoders *iLeftLegEncoders) {
+        this->rightLegIEncoders = iRightLegEncoders;
+        this->leftLegIEncoders = iLeftLegEncoders;        }
+
+    void setIPositionControl2(IPositionControl2 *iRightLegPositionControl2,IPositionControl2 *iLeftLegPositionControl2) {
+        this->rightLegIPositionControl2 = iRightLegPositionControl2;
+        this->leftLegIPositionControl2 = iLeftLegPositionControl2;        }
+
+    void setIVelocityControl2(IVelocityControl2 *iRightLegVelocityControl2,IVelocityControl2 *iLeftLegVelocityControl2) {
+        this->rightLegIVelocityControl2 = iRightLegVelocityControl2;
+        this->leftLegIVelocityControl2 = iLeftLegVelocityControl2;        }
+
+    void setInputPorts(yarp::os::Port *inputPortImu) {
+        this->portImu = inputPortImu;   }
+
+    void setIAnalogSensor(IAnalogSensor *iFT0AnalogSensor,IAnalogSensor *iFT1AnalogSensor,IAnalogSensor *iFT2AnalogSensor,IAnalogSensor *iFT3AnalogSensor) {
+        this->ft0AnalogSensor = iFT0AnalogSensor;
+        this->ft1AnalogSensor = iFT1AnalogSensor;
+        this->ft2AnalogSensor = iFT2AnalogSensor;
+        this->ft3AnalogSensor = iFT3AnalogSensor;        }
+
 
     protected:
 
@@ -78,7 +95,7 @@ class ThreadImpl : public yarp::os::Thread {
             struct TorqueVector {
                 double mx, my, mz;
             } _T; // torque vector by JR3
-        } _LH, _RH, _LF, _RF, _med;
+        } _LL, _RL, _LA, _RA, _med;
 
         int a, b, n; // main process control variables
 
@@ -103,20 +120,13 @@ class ThreadImpl : public yarp::os::Thread {
         LIPM2d _evalLIPM; // Discrete-time Space State DLIPM Model evaluation
 
 
-        //-- Sensors variables
-        yarp::os::Port *portFt0;
-        yarp::os::Port *portFt1;
-        yarp::os::Port *portFt2;
-        yarp::os::Port *portFt3;
+        //-- IMU data port
         yarp::os::Port *portImu;
 
 
         //-- ThreadImpl Funtions
         bool threadInit();
         void run();
-
-        void confCSVfile();/** Configuring CSV file **/
-        void openingPorts();/** Opening Ports & connecting with sensor programs **/
 
         void readSensorsFT0();/** Reading from the FT0_JR3_sensor. **/
         void readSensorsFT1();/** Reading from the FT1_JR3_sensor. **/
@@ -130,6 +140,7 @@ class ThreadImpl : public yarp::os::Thread {
         void setJoints();/** Position control. **/
 
         void printData();/** Printing data info on terminal **/
+        void confCSVfile();/** Configuring CSV file **/
         void saveInFileCsv();/** Saving the ZMP measurements. **/
 
         void getInitialTime();
@@ -161,6 +172,8 @@ class ThreadImpl : public yarp::os::Thread {
         yarp::dev::IPositionControl2 *leftArmIPositionControl2; // para control en posicion
         /** Left Arm VelocityControl2 Interface */
         yarp::dev::IVelocityControl2 *leftArmIVelocityControl2; // para control en velocidad
+        /** FT 3 AnalogSensor Interface */
+        yarp::dev::IAnalogSensor *ft3AnalogSensor;
 
         /** Axes number **/
         int numRightArmJoints;
@@ -174,6 +187,8 @@ class ThreadImpl : public yarp::os::Thread {
         yarp::dev::IPositionControl2 *rightArmIPositionControl2; // para control en posicion
         /** Right Arm VelocityControl2 Interface */
         yarp::dev::IVelocityControl2 *rightArmIVelocityControl2; // para control en velocidad
+        /** FT 2 AnalogSensor Interface */
+        yarp::dev::IAnalogSensor *ft2AnalogSensor;
 
         //-- lower body devices variables
         /** Axes number **/
@@ -201,6 +216,8 @@ class ThreadImpl : public yarp::os::Thread {
         yarp::dev::IPositionControl2 *leftLegIPositionControl2; // para control en posicion
         /** Left Leg VelocityControl2 Interface */
         yarp::dev::IVelocityControl2 *leftLegIVelocityControl2; // para control en velocidad
+        /** FT 1 AnalogSensor Interface */
+        yarp::dev::IAnalogSensor *ft1AnalogSensor;
 
         /** Axes number **/
         int numRightLegJoints;
@@ -214,6 +231,8 @@ class ThreadImpl : public yarp::os::Thread {
         yarp::dev::IPositionControl2 *rightLegIPositionControl2; // para control en posicion
         /** Right Leg VelocityControl2 Interface */
         yarp::dev::IVelocityControl2 *rightLegIVelocityControl2; // para control en velocidad
+        /** FT 0 AnalogSensor Interface */
+        yarp::dev::IAnalogSensor *ft0AnalogSensor;
 
 };
 
