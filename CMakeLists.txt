@@ -19,6 +19,7 @@ project(WBPC_WAITER)
 option(ENABLE_testCap511 "Choose if you want to compile test 511" TRUE)
 option(ENABLE_testCap52 "Choose if you want to compile test_52" TRUE)
 option(ENABLE_testCap53 "Choose if you want to compile test53" TRUE)
+option(ENABLE_testCap53a "Choose if you want to compile test53a" TRUE)
 option(ENABLE_testCap54 "Choose if you want to compile test54" TRUE)
 option(ENABLE_testCap91 "Choose if you want to compile test91" TRUE)
 

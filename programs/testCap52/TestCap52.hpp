@@ -115,7 +115,7 @@ private:
     yarp::dev::IVelocityControl2 *trunkIVelocityControl2; // para control en velocidad
 
     /** Axes number **/
-    int numleftLegJoints;
+    int numLeftLegJoints;
     /** Left Leg Device */
     yarp::dev::PolyDriver leftLegDevice;
     /** Encoders **/
