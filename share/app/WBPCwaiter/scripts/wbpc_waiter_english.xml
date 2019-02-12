@@ -2,7 +2,7 @@
     <!-- Descrption for the Waiter Demostration -->
     
 <application>
-<name>manip_waiter_english_App</name>
+<name>WBPCwaiter_english_App</name>
 
     <module>
         <name>manipWaiterDialogueManager</name>
