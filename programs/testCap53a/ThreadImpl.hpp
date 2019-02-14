@@ -132,7 +132,8 @@ class ThreadImpl : public yarp::os::Thread {
         void evaluateModel();/** Calculating OUTPUT (Qi) of the legs. **/
         void setJoints();/** Position control. **/
 
-        void handleGcmp(const std::vector<double> &rightLegQs,const std::vector<double> &leftLegQs);/** Torque control. **/
+        void legsLimbGcmp(const std::vector<double> &rightLegQs,const std::vector<double> &leftLegQs);/** Torque control. **/
+        void trunkLimbGcmp(const std::vector<double> &trunkQs);/** Torque control. **/
 
         void printData();/** Printing data info on terminal **/
         void saveInFileCsv();/** Saving the ZMP measurements. **/

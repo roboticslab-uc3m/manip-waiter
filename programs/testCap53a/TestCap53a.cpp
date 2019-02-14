@@ -228,11 +228,11 @@ bool TestCap53a::configure(ResourceFinder &rf) {
     trunkSolverOptions.put("mins", yarp::os::Value::makeList(qtMin.toString().c_str()));
     trunkSolverOptions.put("maxs", yarp::os::Value::makeList(qtMax.toString().c_str()));
     trunkSolverDevice.open(trunkSolverOptions);
-    if( ! trunkDevice.isValid() )    {
+    if( ! trunkSolverDevice.isValid() )    {
         CD_ERROR("[ERROR] KDLSolver solver device for left-arm is not valid \n");
         return false;
     }
-    if( ! trunkDevice.view(trunkICartesianSolver) )    {
+    if( ! trunkSolverDevice.view(trunkICartesianSolver) )    {
         CD_ERROR("[ERROR] Could not view iCartesianSolver in KDLSolver\n");
         return false;
     } else printf("[success] Acquired leftLegICartesianSolver interface\n");

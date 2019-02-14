@@ -17,6 +17,7 @@ bool ThreadImpl::threadInit()
     _ang_ref = 0; // initial value and our angle reference
     _ang_out = 0; // initial value and our output
 
+    trunkIEncoders->getAxes(&numTrunkJoints);
     leftLegIEncoders->getAxes(&numLeftLegJoints);
     rightLegIEncoders->getAxes(&numRightLegJoints);
 
@@ -59,6 +60,8 @@ void ThreadImpl::run()
             //readSensorsFT0();
             //readSensorsFT1();
 
+
+/*            //--- GCMP LEGS ---
             std::vector<double> rightLegQs(numRightLegJoints);
             std::vector<double> leftLegQs(numLeftLegJoints);
             if (!rightLegIEncoders->getEncoders(rightLegQs.data()))            {
@@ -67,10 +70,17 @@ void ThreadImpl::run()
             if (!leftLegIEncoders->getEncoders(leftLegQs.data()))            {
                 CD_ERROR("getEncoders failed, unable to check joint limits.\n");
                 return;            }
+            legsLimbGcmp(rightLegQs,leftLegQs);*/
 
-            printf("[success] hasta aqui hemos llegado\n");
 
-            handleGcmp(rightLegQs,leftLegQs);
+            //--- GCMP TRUNK ---
+            std::vector<double> trunkQs(numTrunkJoints);
+            if (!trunkIEncoders->getEncoders(trunkQs.data()))            {
+                CD_ERROR("getEncoders failed, unable to check joint limits.\n");
+                return;            }
+            trunkLimbGcmp(trunkQs);
+
+
 
 /*            if (n>300)  {
                 zmpCompFT(); // calculation of the ZMP_FT
@@ -373,7 +383,7 @@ void ThreadImpl::setJoints()        /** Position control **/
 }
 
 /************************************************************************/
-void ThreadImpl::handleGcmp(const std::vector<double> &rightLegQs, const std::vector<double> &leftLegQs)
+void ThreadImpl::legsLimbGcmp(const std::vector<double> &rightLegQs, const std::vector<double> &leftLegQs)
 {
     std::vector<double> rightLegTorques(numRightLegJoints);
     std::vector<double> leftLegTorques(numLeftLegJoints);
@@ -388,6 +398,19 @@ void ThreadImpl::handleGcmp(const std::vector<double> &rightLegQs, const std::ve
         CD_WARNING("invDyn failed, not updating control this iteration.\n");
         return;    }
     if (!leftLegITorqueControl->setRefTorques(leftLegTorques.data()))    {
+        CD_WARNING("setRefTorques failed, not updating control this iteration.\n");    }
+
+}
+
+/************************************************************************/
+void ThreadImpl::trunkLimbGcmp(const std::vector<double> &trunkQs)
+{
+    std::vector<double> trunkTorques(numTrunkJoints);
+
+    if (!rightLegICartesianSolver->invDyn(trunkQs, trunkTorques))    {
+        CD_WARNING("invDyn failed, not updating control this iteration.\n");
+        return;    }
+    if (!rightLegITorqueControl->setRefTorques(trunkTorques.data()))    {
         CD_WARNING("setRefTorques failed, not updating control this iteration.\n");    }
 
 }
