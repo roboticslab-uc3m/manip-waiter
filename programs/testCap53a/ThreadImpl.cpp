@@ -17,8 +17,8 @@ bool ThreadImpl::threadInit()
     _ang_ref = 0; // initial value and our angle reference
     _ang_out = 0; // initial value and our output
 
-    //rightLegIPositionControl2->positionMove(4, 0); // position in degrees
-    //leftLegIPositionControl2->positionMove(4, 0);
+    leftLegIEncoders->getAxes(&numLeftLegJoints);
+    rightLegIEncoders->getAxes(&numRightLegJoints);
 
     Time::delay(2);
     return true;
@@ -36,6 +36,7 @@ void ThreadImpl::run()
             a=1;    }
         if (a==1 && b!=1)    {    // STEP 2 - Opening & Connecting Ports
             openingPorts();
+            getchar();
             b=1;    }
 
         // ------------------------------------------------------------------------
@@ -55,18 +56,19 @@ void ThreadImpl::run()
 
             getInitialTime();
 
-            readSensorsFT0();
-            readSensorsFT1();
+            //readSensorsFT0();
+            //readSensorsFT1();
 
             std::vector<double> rightLegQs(numRightLegJoints);
             std::vector<double> leftLegQs(numLeftLegJoints);
-
             if (!rightLegIEncoders->getEncoders(rightLegQs.data()))            {
                 CD_ERROR("getEncoders failed, unable to check joint limits.\n");
                 return;            }
             if (!leftLegIEncoders->getEncoders(leftLegQs.data()))            {
                 CD_ERROR("getEncoders failed, unable to check joint limits.\n");
                 return;            }
+
+            printf("[success] hasta aqui hemos llegado\n");
 
             handleGcmp(rightLegQs,leftLegQs);
 
@@ -441,31 +443,35 @@ void ThreadImpl::saveInFileCsv()
 }
 
 /************************************************************************/
-void ThreadImpl::setIEncodersControl(IEncoders *iRightLegEncoders, IEncoders *iLeftLegEncoders)
+void ThreadImpl::setIEncodersControl(IEncoders *iRightLegEncoders,IEncoders *iLeftLegEncoders,IEncoders *iTrunkEncoders)
 {
     this->rightLegIEncoders = iRightLegEncoders;
     this->leftLegIEncoders = iLeftLegEncoders;
+    this->trunkIEncoders = iTrunkEncoders;
 }
 
 /************************************************************************/
-void ThreadImpl::setIPositionControl2(IPositionControl2 *iRightLegPositionControl2,IPositionControl2 *iLeftLegPositionControl2)
+void ThreadImpl::setIPositionControl2(IPositionControl2 *iRightLegPositionControl2,IPositionControl2 *iLeftLegPositionControl2,IPositionControl2 *iTrunkPositionControl2)
 {
     this->rightLegIPositionControl2 = iRightLegPositionControl2;
     this->leftLegIPositionControl2 = iLeftLegPositionControl2;
+    this->trunkIPositionControl2 = iTrunkPositionControl2;
 }
 
 /************************************************************************/
-void ThreadImpl::setIVelocityControl2(IVelocityControl2 *iRightLegVelocityControl2,IVelocityControl2 *iLeftLegVelocityControl2)
+void ThreadImpl::setIVelocityControl2(IVelocityControl2 *iRightLegVelocityControl2,IVelocityControl2 *iLeftLegVelocityControl2,IVelocityControl2 *iTrunkVelocityControl2)
 {
     this->rightLegIVelocityControl2 = iRightLegVelocityControl2;
     this->leftLegIVelocityControl2 = iLeftLegVelocityControl2;
+    this->trunkIVelocityControl2 = iTrunkVelocityControl2;
 }
 
 /************************************************************************/
-void ThreadImpl::setITorqueControl(ITorqueControl *iRightLegITorqueControl,ITorqueControl *iLeftLegITorqueControl) // no se utiliza de momento
+void ThreadImpl::setITorqueControl(ITorqueControl *iRightLegITorqueControl,ITorqueControl *iLeftLegITorqueControl,ITorqueControl *iTrunkITorqueControl) // no se utiliza de momento
 {
     this->rightLegITorqueControl = iRightLegITorqueControl;
     this->leftLegITorqueControl = iLeftLegITorqueControl;
+    this->trunkITorqueControl = iTrunkITorqueControl;
 }
 
 /************************************************************************/
@@ -479,10 +485,11 @@ void ThreadImpl::setInputPorts(Port *inputPortImu,Port *inputPortFt0,Port *input
 }
 
 /************************************************************************/
-void ThreadImpl::setICartesianSolver(ICartesianSolver *iRightLegCartesianSolver,ICartesianSolver *iLeftLegCartesianSolver)
+void ThreadImpl::setICartesianSolver(ICartesianSolver *iRightLegCartesianSolver,ICartesianSolver *iLeftLegCartesianSolver,ICartesianSolver *iTrunkCartesianSolver)
 {
     this->rightLegICartesianSolver = iRightLegCartesianSolver;
     this->leftLegICartesianSolver = iLeftLegCartesianSolver;
+    this->trunkICartesianSolver = iTrunkCartesianSolver;
 }
 
 }   // namespace roboticslab

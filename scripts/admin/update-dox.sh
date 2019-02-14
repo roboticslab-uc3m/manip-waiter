@@ -5,10 +5,10 @@
 # crontab -e
 # 30 2 * * * /your/command
 
-echo "Update manip-waiter..."
-cd $HOME/manip-waiter
+echo "Update WBPCwaiter..."
+cd $HOME/WBPCwaiter
 git pull
-echo "Doxy manip-waiter..."
+echo "Doxy WBPCwaiter..."
 cd doc
 rm -r html
 /usr/bin/doxygen

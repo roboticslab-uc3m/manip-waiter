@@ -5,28 +5,28 @@
 namespace roboticslab {}
 
 /**
- * \defgroup wbpc-waiter_libraries wbpc-waiter Libraries
+ * \defgroup WBPCwaiter_libraries WBPCwaiter Libraries
  *
- * @brief wbpc-waiter libraries.
+ * @brief WBPCwaiter libraries.
  *
  */
 
 /**
- * \defgroup wbpc-waiter_programs wbpc-waiter Programs
+ * \defgroup WBPCwaiter_programs WBPCwaiter Programs
  *
- * @brief wbpc-waiter programs.
+ * @brief WBPCwaiter programs.
  */
 
 /**
- * \defgroup wbpc-waiter_applications wbpc-waiter Applications (Collections of Programs)
+ * \defgroup WBPCwaiter_applications WBPCwaiter Applications (Collections of Programs)
  *
- * @brief wbpc-waiter applications (collections of programs).
+ * @brief WBPCwaiter applications (collections of programs).
  */
 
 /**
- * \defgroup wbpc-waiter_examples wbpc-waiter Examples
+ * \defgroup WBPCwaiter_examples WBPCwaiter Examples
  *
- * @brief wbpc-waiter examples.
+ * @brief WBPCwaiter examples.
  */
 
 

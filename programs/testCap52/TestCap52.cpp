@@ -296,7 +296,7 @@ bool TestCap52::configure(ResourceFinder &rf) {
             printf("Joint %d limits: [%f,%f]\n",joint,min,max);        }
 
     yarp::os::Property leftArmSolverOptions;
-    leftArmSolverOptions.fromConfigFile("/usr/local/share/manip-waiter/contexts/kinematics/leftArmKinematics-waiter.ini");
+    leftArmSolverOptions.fromConfigFile("/usr/local/share/WBPCwaiter/contexts/kinematics/leftArmKinematics-waiter.ini");
     leftArmSolverOptions.put("device", "KdlSolver");
     leftArmSolverOptions.put("mins", yarp::os::Value::makeList(qlMin.toString().c_str()));
     leftArmSolverOptions.put("maxs", yarp::os::Value::makeList(qlMax.toString().c_str()));

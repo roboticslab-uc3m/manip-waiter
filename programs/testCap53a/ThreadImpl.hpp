@@ -54,12 +54,12 @@ namespace roboticslab
 class ThreadImpl : public yarp::os::Thread {
     public:
 
-    void setIEncodersControl(IEncoders *iRightLegEncoders, IEncoders *iLeftLegEncoders);
-    void setIPositionControl2(IPositionControl2 *iRightLegPositionControl2,IPositionControl2 *iLeftLegPositionControl2);
-    void setIVelocityControl2(IVelocityControl2 *iRightLegVelocityControl2,IVelocityControl2 *iLeftLegVelocityControl2);
-    void setITorqueControl(ITorqueControl *iRightLegITorqueControl,ITorqueControl *iLeftLegITorqueControl); // no se utiliza de momento
+    void setIEncodersControl(IEncoders *iRightLegEncoders, IEncoders *iLeftLegEncoders,IEncoders *iTrunkEncoders);
+    void setIPositionControl2(IPositionControl2 *iRightLegPositionControl2,IPositionControl2 *iLeftLegPositionControl2,IPositionControl2 *iTrunkPositionControl2);
+    void setIVelocityControl2(IVelocityControl2 *iRightLegVelocityControl2,IVelocityControl2 *iLeftLegVelocityControl2,IVelocityControl2 *iTrunkVelocityControl2);
+    void setITorqueControl(ITorqueControl *iRightLegITorqueControl,ITorqueControl *iLeftLegITorqueControl,ITorqueControl *iTrunkITorqueControl); // no se utiliza de momento
     void setInputPorts(yarp::os::Port *inputPortImu, yarp::os::Port *inputPortFt0, yarp::os::Port *inputPortFt1, yarp::os::Port *inputPortFt2, yarp::os::Port *inputPortFt3);
-    void setICartesianSolver(ICartesianSolver *iRightLegCartesianSolver,ICartesianSolver *iLeftLegCartesianSolver);
+    void setICartesianSolver(ICartesianSolver *iRightLegCartesianSolver,ICartesianSolver *iLeftLegCartesianSolver,ICartesianSolver *iTrunkCartesianSolver);
 
     protected:
 
@@ -189,15 +189,21 @@ class ThreadImpl : public yarp::os::Thread {
 
         // -------------------------------------------------------------------------------------
 
+        /** Trunk ControlLimits2 Interface */
+        yarp::dev::IControlLimits *trunkIControlLimits;
+        /** Trunk Solver device **/
+        yarp::dev::PolyDriver trunkSolverDevice;
+        roboticslab::ICartesianSolver *trunkICartesianSolver;
+
         /** Lelt Leg ControlLimits2 Interface */
         yarp::dev::IControlLimits *leftLegIControlLimits;
-        /** Solver device **/
+        /** Lelt Leg Solver device **/
         yarp::dev::PolyDriver leftLegSolverDevice;
         roboticslab::ICartesianSolver *leftLegICartesianSolver;
 
         /** Right Leg ControlLimits2 Interface */
         yarp::dev::IControlLimits *rightLegIControlLimits;
-        /** Solver device **/
+        /** Right Leg Solver device **/
         yarp::dev::PolyDriver rightLegSolverDevice;
         roboticslab::ICartesianSolver *rightLegICartesianSolver;
 

@@ -102,15 +102,21 @@ private:
 
     // -------------------------------------------------------------------------------------
 
+    /** Trunk ControlLimits2 Interface */
+    yarp::dev::IControlLimits *trunkIControlLimits;
+    /** Trunk Solver device **/
+    yarp::dev::PolyDriver trunkSolverDevice;
+    roboticslab::ICartesianSolver *trunkICartesianSolver;
+
     /** Lelt Leg ControlLimits2 Interface */
     yarp::dev::IControlLimits *leftLegIControlLimits;
-    /** Solver device **/
+    /** Lelt Leg Solver device **/
     yarp::dev::PolyDriver leftLegSolverDevice;
     roboticslab::ICartesianSolver *leftLegICartesianSolver;
 
     /** Right Leg ControlLimits2 Interface */
     yarp::dev::IControlLimits *rightLegIControlLimits;
-    /** Solver device **/
+    /** Right Leg Solver device **/
     yarp::dev::PolyDriver rightLegSolverDevice;
     roboticslab::ICartesianSolver *rightLegICartesianSolver;
 
