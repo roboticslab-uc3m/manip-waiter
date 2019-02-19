@@ -97,7 +97,7 @@ class ThreadImpl : public yarp::os::Thread {
         double Xzmp_imu, Yzmp_imu; // Global ZMP-IMU after filter
 
         //-- Control/Movement variables
-        float zmp_ref, _ang_ref, _ang_out, ka;
+        float zmp_ref, _ang_ref, _ang_out, _ang_out2, ka;
         float vel;
 
         //-- Time variables
@@ -129,13 +129,13 @@ class ThreadImpl : public yarp::os::Thread {
 
         void zmpCompFT();/** Calculating ZMP-FT of the body. **/
         void zmpCompIMU();/** Calculating ZMP-IMU of the body. **/
-        void evaluateModel();/** Calculating OUTPUT (Qi) of the legs. **/
+        void evaluateModel(std::vector<double> &rightLegQs,std::vector<double> &leftLegQs);/** Calculating OUTPUT (Qi) of the legs. **/
         void setJoints();/** Position control. **/
 
         void legsLimbGcmp(const std::vector<double> &rightLegQs,const std::vector<double> &leftLegQs);/** Torque control. **/
         void trunkLimbGcmp(const std::vector<double> &trunkQs);/** Torque control. **/
 
-        void printData();/** Printing data info on terminal **/
+        void printData(std::vector<double> &rightLegQs,std::vector<double> &leftLegQs);/** Printing data info on terminal **/
         void saveInFileCsv();/** Saving the ZMP measurements. **/
 
         void getInitialTime();

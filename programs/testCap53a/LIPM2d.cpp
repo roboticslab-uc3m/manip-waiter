@@ -8,6 +8,7 @@
 #include "global.h"
 #include "LIPM2d.h"
 
+/**  // lo de loli
 LIPM2d::LIPM2d()
 {
     _A[0][0] = 1.003;
@@ -68,9 +69,9 @@ LIPM2d::LIPM2d()
     Iout = 0.0;
     Dout = 0.0;
 
-}
+}**/
 
-/**
+
 LIPM2d::LIPM2d()
 {
 /*  // printing at the initalization
@@ -114,9 +115,9 @@ LIPM2d::LIPM2d()
     cout << "\nLinear Quadratic Regulator gain:" << endl;
     cout << "K = [ " << _K[0] << " , "<< _K[1] << " ]" << endl;
     cout << "\nSample Time : " << _T << " s" << endl;
-*
+*/
 
-/*    // Inicializacion variables JUANMI
+    // Inicializacion variables JUANMI
     _ang_ref = 0.0; // inintialization of the inputs
     _zmp_ft = 0;
     //_zmp_ref = 0.0;
@@ -156,7 +157,7 @@ LIPM2d::LIPM2d()
 //    _ba = 30.6949; // para chi=0.8 - para zmp_ref=0.09
     //_ba = 51.1582; // para chi = 1 - para zmp_ref=0.09*
 
-}**/
+}
 
 
 LIPM2d::~LIPM2d(){
@@ -164,7 +165,7 @@ LIPM2d::~LIPM2d(){
 
 float LIPM2d::model(float ft, float ref)     /** STATE FEEDBACK WITH DAMPING (ka, ba) **/
 {
-    /** STATE FEEDBACK WITH INTEGRAL ACTION **/
+    /** STATE FEEDBACK WITH INTEGRAL ACTION - lo de loli
 
 
    _zmp_ref = ref;
@@ -203,11 +204,11 @@ float LIPM2d::model(float ft, float ref)     /** STATE FEEDBACK WITH DAMPING (ka
    _x2[1] = _A[1][0]*_x1[0] + _A[1][1]*_x2[0] + _B[1][0]*_u;
 
    pre_y = y;
-   _pre_zmp_error = _zmp_error;*/
+   _pre_zmp_error = _zmp_error;*
 
    return dy;
-
-/**    // Discrete-time Space State Model evaluation
+**/
+    // Discrete-time Space State Model evaluation
 
     _zmp_error =  ref - ft;
 
@@ -232,7 +233,7 @@ float LIPM2d::model(float ft, float ref)     /** STATE FEEDBACK WITH DAMPING (ka
 
     Alpha = ba/(m*L);
     Beta = (ka-G)/L;
-*
+*/
 
     _ka_const = 0.25 * ref + 9.95;
     _ang_ref = (ref*(-G))/ (L*(_ka_const-G)) ;
@@ -280,7 +281,7 @@ float LIPM2d::model(float ft, float ref)     /** STATE FEEDBACK WITH DAMPING (ka
     //_zmp_PD = _Kp*_zmp_error + _Kd*((_zmp_error-_pre_zmp_error)/_T);
     //_angle_error =  (_zmp_PD/L) * 180 / G;; // sin Ki
     //_u =  _angle_error -_K[0]*_x1[0] -_K[1]*_x2[0] - _Ku*_u_ref;
-*
+*/
 
     _u = _zmp_error; //bucle abierto. nuestra entrada es directamente la refencia de ZMP que queramos.
     y = _C[0]*_x1[0] + _C[1]*_x2[0] + _D*_u;
@@ -293,6 +294,6 @@ float LIPM2d::model(float ft, float ref)     /** STATE FEEDBACK WITH DAMPING (ka
     //_pre_zmp_error = _zmp_error;
 
     ang_error_out = y; // only for a intuitive name fot the output
-    return ang_error_out;**/
+    return ang_error_out;
 
 }

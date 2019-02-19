@@ -28,6 +28,9 @@ bool ThreadImpl::threadInit()
 /************************************************************************/
 void ThreadImpl::run()
 {
+    std::vector<double> rightLegQs(numRightLegJoints);
+    std::vector<double> leftLegQs(numLeftLegJoints);
+
     while(!isStopping()) {
 
         if (a!=1)    {    // STEP 1 - Creating & Configuring CSV file
@@ -57,38 +60,32 @@ void ThreadImpl::run()
 
             getInitialTime();
 
-            //readSensorsFT0();
-            //readSensorsFT1();
-
+            readSensorsFT0();
+            readSensorsFT1();
+            zmpCompFT(); // calculation of the ZMP_FT
 
 /*            //--- GCMP LEGS ---
-            std::vector<double> rightLegQs(numRightLegJoints);
-            std::vector<double> leftLegQs(numLeftLegJoints);
             if (!rightLegIEncoders->getEncoders(rightLegQs.data()))            {
                 CD_ERROR("getEncoders failed, unable to check joint limits.\n");
                 return;            }
             if (!leftLegIEncoders->getEncoders(leftLegQs.data()))            {
                 CD_ERROR("getEncoders failed, unable to check joint limits.\n");
                 return;            }
-            legsLimbGcmp(rightLegQs,leftLegQs);*/
+            //legsLimbGcmp(rightLegQs,leftLegQs);*/
 
-
-            //--- GCMP TRUNK ---
+/*            //--- GCMP TRUNK ---
             std::vector<double> trunkQs(numTrunkJoints);
             if (!trunkIEncoders->getEncoders(trunkQs.data()))            {
                 CD_ERROR("getEncoders failed, unable to check joint limits.\n");
                 return;            }
-            trunkLimbGcmp(trunkQs);
+            trunkLimbGcmp(trunkQs);*/
 
+            if (n>300)  {
+                evaluateModel(rightLegQs,leftLegQs); // evaluacion the model and the angle output
+                //setJoints(); // applying the ankle movement
+            }
 
-
-/*            if (n>300)  {
-                zmpCompFT(); // calculation of the ZMP_FT
-                evaluateModel(); // evaluacion the model and the angle output
-                setJoints(); // applying the ankle movement
-            }*/
-
-            printData();
+            printData(rightLegQs,leftLegQs);
             cout << endl << "Press ENTER to exit..." << endl;
             cout << "*******************************" << endl << endl;
             saveInFileCsv();  // saving the information ¡
@@ -343,31 +340,40 @@ void ThreadImpl::zmpCompIMU()       /** Calculating ZMP-IMU of the body . **/
 }
 
 /************************************************************************/
-void ThreadImpl::evaluateModel()        /** Calculating OUTPUT (Qi) of the legs. **/
+void ThreadImpl::evaluateModel(std::vector<double> &rightLegQs,std::vector<double> &leftLegQs)        /** Calculating OUTPUT (Qi) of the legs. **/
 {
-/**    // obtaining the angle error for the D-LIPM space state
-    _evalLIPM.model(Xzmp_ft,zmp_ref);
+    //--- test for torque control based on GCMP ---
+    if(abs(Xzmp_ft)<0.01){
+        leftLegQs[4] =  0;
+        rightLegQs[4] =  0;      }
+    else {
+        _evalLIPM.model(Xzmp_ft,zmp_ref);
 
-    ka = 0.25 * zmp_ref + 9.95; // dudo entre zmp_ref o Xzmp_ft
-    _ang_ref = (zmp_ref*(-G))/ (L*(ka-G));
+        if ( ! leftLegIEncoders->getEncoders( leftLegQs.data() ) )    {
+            CD_WARNING("getEncoders failed, not updating control this iteration.\n");
+            return;    }
+        if ( ! rightLegIEncoders->getEncoders( rightLegQs.data() ) )    {
+            CD_WARNING("getEncoders failed, not updating control this iteration.\n");
+            return;    }
 
-/*    como otra posibilidad para calcular:  _angle_ref
-    if ( ! leftArmIEncoders->getEncoders( encLegs.data() ) )    {
-        CD_WARNING("getEncoders failed, not updating control this iteration.\n");
-        return;    }
-    _angle_ref = encLegs[4];
-*
+        if(Xzmp_ft>0.0) { // balanceo hacia adelante
+            leftLegQs[4] =  leftLegQs[4] - _evalLIPM.ang_error_out;
+            rightLegQs[4] =  rightLegQs[4] - _evalLIPM.ang_error_out;
+        } else { // balanceo hacia atras
+            leftLegQs[4] =  leftLegQs[4] + _evalLIPM.ang_error_out;
+            rightLegQs[4] =  rightLegQs[4] + _evalLIPM.ang_error_out;
+        }
+    }
 
-    _ang_out =  _evalLIPM.ang_error_out + _ang_ref;
-**/
+    legsLimbGcmp(leftLegQs,rightLegQs);
 
-    /** EVALUACION MODELO LOLI **/
+/*    //--- EVALUACION MODELO LOLI ---
     _evalLIPM.model(Xzmp_ft,zmp_ref);
 
     _ang_out = -(_evalLIPM.y-(4.3948*pow(_evalLIPM.y,2))+0.23*_evalLIPM.y)/0.0135;
 
     vel = _evalLIPM.dy * (1/L) * (180/PI); //velocity in degrees per second
-    //vel = 0.35* _evalLIPM.dy * (1/L) * (180/PI); //velocity in degrees per second
+    //vel = 0.35* _evalLIPM.dy * (1/L) * (180/PI); //velocity in degrees per second*/
 
 }
 
@@ -416,7 +422,7 @@ void ThreadImpl::trunkLimbGcmp(const std::vector<double> &trunkQs)
 }
 
 /************************************************************************/
-void ThreadImpl::printData()
+void ThreadImpl::printData(std::vector<double> &rightLegQs,std::vector<double> &leftLegQs)
 {
 /*        cout << endl << "El angulo 1 es: " << _angle_ref_a << endl;
     cout << endl << "El angulo 2 es: " << _angle_ref_b << endl;
@@ -429,10 +435,13 @@ void ThreadImpl::printData()
     //cout << endl << "El HIP pid es: " << pid_output_hip << endl;
     //cout << endl << "El ZMP REF es: " << setpoint << endl;
 
-    cout << endl << "El ZMP REF es: " << zmp_ref << endl;
+    //cout << endl << "El ZMP REF es: " << zmp_ref << endl;
     cout << endl << "El ZMP FT es: " << Xzmp_ft << endl;
-    cout << endl << "El ANG OUT es: " << _ang_out << endl;
-    cout << endl << "La Vel OUT es: " << vel << endl;
+    cout << endl << "El ERR es: " << _evalLIPM.ang_error_out << endl;
+    cout << endl << "La ENC 0 es: " << leftLegQs[4] << endl;
+    cout << endl << "La OUT 1 es: " << _ang_out << endl;
+    cout << endl << "La ENC 2 es: " << rightLegQs[4] << endl;
+    cout << endl << "La OUT 3 es: " << _ang_out2 << endl;
 
     //cout << endl << "La capture_point es: " << capture_point << endl;
     //cout << endl << "ZMP_Error_Loli = ("<< _eval_x._zmp_error << ") [mm]" << endl;
