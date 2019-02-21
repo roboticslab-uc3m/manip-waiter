@@ -51,9 +51,9 @@ void ThreadImpl::run()
 
             readSensorsFT0();
             readSensorsFT1();
+            zmpCompFT(); // calculation of the ZMP_FT
 
             if (n>300)  {
-                zmpCompFT(); // calculation of the ZMP_FT
                 evaluateModel(); // evaluacion the model and the angle output
                 setJoints(); // applying the ankle movement
             }
