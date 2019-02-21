@@ -435,7 +435,7 @@ bool TestCap52::configure(ResourceFinder &rf) {
     //-- Set home waiter poss & Initial SPEED-ACC
     configInitPosition(25,25);
     double leftArmInitPoss[7] = {-30,0,0,-90,0,30,0};
-    double trunkInitPoss[2] = {0,-2.5};
+    double trunkInitPoss[2] = {0,-2};
     std::vector<double> leftArm(&leftArmInitPoss[0], &leftArmInitPoss[0]+7);
     std::vector<double> trunk(&trunkInitPoss[0], &trunkInitPoss[0]+2);
     moveJointsInitPosition(trunk, leftArm);
