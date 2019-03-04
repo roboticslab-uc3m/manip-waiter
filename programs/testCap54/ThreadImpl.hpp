@@ -136,7 +136,7 @@ class ThreadImpl : public yarp::os::Thread {
 
         void zmpCompFT();/** Calculating ZMP-FT of the body. **/
         void zmpCompIMU();/** Calculating ZMP-IMU of the body. **/
-        void evaluateModel();/** Calculating OUTPUT (Qi) of the legs. **/
+        void evaluateModel(std::vector<double> &rightLegQs,std::vector<double> &leftLegQs);/** Calculating OUTPUT (Qi) of the legs. **/
         void setJoints();/** Position control. **/
 
         void printData();/** Printing data info on terminal **/
@@ -205,7 +205,7 @@ class ThreadImpl : public yarp::os::Thread {
         yarp::dev::IVelocityControl2 *trunkIVelocityControl2; // para control en velocidad
 
         /** Axes number **/
-        int numtLegJoints;
+        int numLeftLegJoints;
         /** Left Leg Device */
         yarp::dev::PolyDriver leftLegDevice;
         /** Encoders **/

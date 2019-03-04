@@ -16,14 +16,19 @@ bool ThreadImpl::threadInit() {
     _ang_ref = 0; // initial value and our angle reference
     _ang_out = 0; // initial value and our output
 
-    //double initspe[7] = {2.0,2.0,2.0,2.0,2.0,2.0,0.0}; // --set NEW ref speed
-    double initspe[7] = {10.0,10.0,10.0,10.0,10.0,10.0,0.0}; // --set NEW ref speed
+    double initspe[7] = {2.0,2.0,2.0,2.0,2.0,2.0,0.0}; // --set NEW ref speed
+    //double initspe[7] = {10.0,10.0,10.0,10.0,10.0,10.0,0.0}; // --set NEW ref speed
     //double initspe[7] = {20.0,20.0,20.0,20.0,20.0,20.0,0.0}; // --set NEW ref speed
     leftLegIPositionControl2->setRefSpeeds(initspe);
-    //double initacc[7] = {2.0,2.0,2.0,2.0,2.0,2.0,0.0}; // --set NEW ref accelaration
-    double initacc[7] = {10.0,10.0,10.0,10.0,10.0,10,0.0}; // --set NEW ref accelaration
+    rightLegIPositionControl2->setRefSpeeds(initspe);
+    double initacc[7] = {2.0,2.0,2.0,2.0,2.0,2.0,0.0}; // --set NEW ref accelaration
+    //double initacc[7] = {10.0,10.0,10.0,10.0,10.0,10,0.0}; // --set NEW ref accelaration
     //double initacc[7] = {20.0,20.0,20.0,20.0,20.0,20,0.0}; // --set NEW ref accelaration
     leftLegIPositionControl2->setRefAccelerations(initacc);
+    rightLegIPositionControl2->setRefAccelerations(initacc);
+
+    leftLegIEncoders->getAxes(&numLeftLegJoints);
+    rightLegIEncoders->getAxes(&numRightLegJoints);
 
 return true;
 }
@@ -31,6 +36,9 @@ return true;
 /************************************************************************/
 void ThreadImpl::run()
 {
+    std::vector<double> rightLegQs(numRightLegJoints);
+    std::vector<double> leftLegQs(numLeftLegJoints);
+
     while(!isStopping()) {
 
         if (a!=1)    {  // STEP 1 - Creating & Configuring CSV file
@@ -51,8 +59,8 @@ void ThreadImpl::run()
             readSensorsIMU();
             zmpCompFT(); // calculation of the ZMP_FT
 
-            if (n>300)  {
-                evaluateModel(); // evaluacion the model and the angle output
+            if (n>1000)  {
+                evaluateModel(rightLegQs,leftLegQs); // evaluacion the model and the angle output
                 setJoints(); // applying the ankle movement
             }
 
@@ -178,9 +186,10 @@ void ThreadImpl::zmpCompFT()        /** Calculating ZMP-FT of the body . **/
     //_yzmp01_ft = (_yzmp0_ft * _RF._F.fz + _yzmp1_ft * _LF._F.fz) / (_RF._F.fz + _LF._F.fz); // xzmp_ft in [m] robot
 
     // OFFSET FT - deleting the offset of _xzmp01_ft ( both ZMPs from sensor in frontal plane)
-    if (n >=0 && n < 100){
+    if (n >=0 && n < 500){
         sum_x_ft = _xzmp_ft01 + sum_x_ft;
         offs_x_ft = sum_x_ft / n;
+        zmp_ref = offs_x_ft;
         printf("offs = %f\n", offs_x_ft);
     }
 
@@ -194,21 +203,40 @@ void ThreadImpl::zmpCompFT()        /** Calculating ZMP-FT of the body . **/
 }
 
 /************************************************************************/
-void ThreadImpl::evaluateModel()        /** Calculating OUTPUT (Qi) of the legs. **/
+void ThreadImpl::evaluateModel(std::vector<double> &rightLegQs,std::vector<double> &leftLegQs)        /** Calculating OUTPUT (Qi) of the legs. **/
 {
     // obtaining the angle error for the D-LIPM space-state
-
-    if(abs(Xzmp_ft)<0.01){
-        _ang_out = 0;       }
+/*    // opcion 1
+    if(abs(Xzmp_ft)<0.02){
+        //_ang_out = 0;
+    }
     else {
         _evalLIPM.model(Xzmp_ft,zmp_ref);
 
         ka = 0.25 * zmp_ref + 9.95;
         _ang_ref = (zmp_ref*(-G))/ (L*(ka-G));
 
-        _ang_out =  1*(_evalLIPM.ang_error_out + _ang_ref)/10;      }
+        //_ang_out =  1*(_evalLIPM.ang_error_out + _ang_ref)/10;      }
 
-    //_ang_out =  (_evalLIPM.ang_error_out + _ang_ref); // original
+        _ang_out =  (_evalLIPM.ang_error_out + _ang_ref);     } // original*/
+
+    // opcion 2
+    if(abs(Xzmp_ft)<0.015){
+        //_ang_out = 0;
+    }
+    else {
+        _evalLIPM.model(Xzmp_ft,zmp_ref);
+
+        if ( ! leftLegIEncoders->getEncoders( leftLegQs.data() ) )    {
+            CD_WARNING("getEncoders failed, not updating control this iteration.\n");
+            return;    }
+        if ( ! rightLegIEncoders->getEncoders( rightLegQs.data() ) )    {
+            CD_WARNING("getEncoders failed, not updating control this iteration.\n");
+            return;    }
+
+        //_ang_out =  1*(_evalLIPM.ang_error_out + _ang_ref)/10;      }
+
+        _ang_out =  (_evalLIPM.ang_error_out + leftLegQs[4]); }// original
 
 /*    como otra posibilidad para calcular:  _angle_ref
     if ( ! leftArmIEncoders->getEncoders( encLegs.data() ) )    {

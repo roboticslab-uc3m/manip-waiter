@@ -75,6 +75,7 @@ LIPM2d::LIPM2d()
     _z[1] = 0.0;
 
     pre_y = 0.0; // others options (not used)
+    _pre_zmp_error = 0.0;
     dy = 0.0;
 
     PIDout = 0.0; // PID options (not used)
@@ -92,6 +93,14 @@ LIPM2d::LIPM2d()
     //_ka = 9.9971; // para zmp_ref=0.09
 //    _ba = 30.6949; // para chi=0.8 - para zmp_ref=0.09
     //_ba = 51.1582; // para chi = 1 - para zmp_ref=0.09
+
+    _K[0] = 13.5366;
+    _K[1] = 5.1035;
+    _Ki = 0.0; // Antes era 10.0
+    _Kp = -0.0025; // Antes era -0.5
+    _Kd = -0.00005;
+    _Ku = 1.4; // antes era 1.65;
+    _T = 0.03;
 
 }
 
@@ -176,6 +185,8 @@ float LIPM2d::model(float ft, float ref)     /** STATE FEEDBACK WITH DAMPING (ka
     //_u =  _angle_error -_K[0]*_x1[0] -_K[1]*_x2[0] - _Ku*_u_ref;
 */
 
+    //_u = -_K[0]*_x1[0] -_K[1]*_x2[0] + _Ki*(_pre_zmp_error + _zmp_error)*_T + _Kp*_zmp_error - _Ku*_ang_ref; // basico - LOLI
+
     _u = _zmp_error; //bucle abierto. nuestra entrada es directamente la refencia de ZMP que queramos.
     y = _C[0]*_x1[0] + _C[1]*_x2[0] + _D*_u;
     //dy = (y - pre_y) / _T; // velocity
@@ -184,7 +195,7 @@ float LIPM2d::model(float ft, float ref)     /** STATE FEEDBACK WITH DAMPING (ka
     _x2[1] = _A[1][0]*_x1[0] + _A[1][1]*_x2[0] + _B[1][0]*_u;
 
     //pre_y = y;
-    //_pre_zmp_error = _zmp_error;
+    _pre_zmp_error = _zmp_error;
 
     ang_error_out = y; // only for a intuitive name fot the output
     return ang_error_out;
