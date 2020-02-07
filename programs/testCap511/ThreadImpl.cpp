@@ -141,9 +141,9 @@ void ThreadImpl::preprogrammedInitTrajectory()
 
     if ( ! leftArmICartesianSolver->fwdKin(befQ,curX_AAS) )    {
         CD_ERROR("fwdKin failed.\n");    }
-    KinRepresentation::decodePose(curX_AAS, befX, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
+    KinRepresentation::decodePose(curX_AAS, befX, KinRepresentation::coordinate_system::CARTESIAN, KinRepresentation::orientation_system::AXIS_ANGLE, KinRepresentation::angular_units::DEGREES);
 
-/** ----- generate initial POSE --------------- **/
+    /** ----- generate initial POSE --------------- **/
     // -- 0.303928 0.347326 0.248109 0.008763 -0.999962 -0.000286 10.03554
     desX[0] = befX[0]; // new X position
     desX[1] = befX[1]; // new Y position
@@ -152,7 +152,7 @@ void ThreadImpl::preprogrammedInitTrajectory()
     desX[4]= 1; // a: 0 - b: 1 - c: 1
     desX[5]= 0;
     desX[6]= -10;
-    KinRepresentation::encodePose(desX, desX_AAS, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
+    KinRepresentation::encodePose(desX, desX_AAS, KinRepresentation::coordinate_system::CARTESIAN, KinRepresentation::orientation_system::AXIS_ANGLE, KinRepresentation::angular_units::DEGREES);
 
 
     if ( ! leftArmICartesianSolver->invKin(desX_AAS,befQ,desQ) )    {
@@ -417,7 +417,7 @@ void ThreadImpl::zmpComp(){         /** Bottle ZMP measurements    **/
 */
     if ( ! leftArmICartesianSolver->fwdKin(curQ,curX_AAS) )    {
         CD_ERROR("fwdKin failed.\n");    }
-    KinRepresentation::decodePose(curX_AAS, curX, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
+    KinRepresentation::decodePose(curX_AAS, curX, KinRepresentation::coordinate_system::CARTESIAN, KinRepresentation::orientation_system::AXIS_ANGLE, KinRepresentation::angular_units::DEGREES);
 
 
     //angle=(cX[6]/180)*3.1415926; // transformando a rad
@@ -525,7 +525,7 @@ void ThreadImpl::LIPM3d(){          /** Control - Joint Position Calculus    **/
         desX[5]= 0;
         desX[6]= inputAngle;
         inputAngle++;
-        KinRepresentation::encodePose(desX, desX_AAS, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
+        KinRepresentation::encodePose(desX, desX_AAS, KinRepresentation::coordinate_system::CARTESIAN, KinRepresentation::orientation_system::AXIS_ANGLE, KinRepresentation::angular_units::DEGREES);
     }
 
     if ( ! leftArmICartesianSolver->invKin(desX_AAS,curQ,desQ) )    {

@@ -118,7 +118,7 @@ void ThreadImpl::homeTrajectory(){       /** Set home waiter poss & Initial VEL-
         return;    }
     if ( ! leftArmICartesianSolver->fwdKin(iniQ,curX_AAS) )    {
         CD_ERROR("fwdKin failed.\n");    }
-    KinRepresentation::decodePose(curX_AAS, iniX, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
+    KinRepresentation::decodePose(curX_AAS, iniX, KinRepresentation::coordinate_system::CARTESIAN, KinRepresentation::orientation_system::AXIS_ANGLE, KinRepresentation::angular_units::DEGREES);
 
     desX[0] = iniX[0]; // new X position
     desX[1] = iniX[1]; // new Y position
@@ -128,7 +128,7 @@ void ThreadImpl::homeTrajectory(){       /** Set home waiter poss & Initial VEL-
     desX[5] = iniX[5];
     desX[6] = iniX[6];
 
-    KinRepresentation::encodePose(desX, desX_AAS, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
+    KinRepresentation::encodePose(desX, desX_AAS, KinRepresentation::coordinate_system::CARTESIAN, KinRepresentation::orientation_system::AXIS_ANGLE, KinRepresentation::angular_units::DEGREES);
     if ( ! leftArmICartesianSolver->invKin(desX_AAS,iniQ,desQ) )    {
         CD_ERROR("invKin failed.\n");    }
     /*if( ! leftArmIPositionControl2->positionMove( desQ.data() )) {
@@ -467,7 +467,7 @@ void ThreadImpl::zmpComp(){         /** Bottle ZMP measurements    **/
 
     if ( ! leftArmICartesianSolver->fwdKin(curQ,curX_AAS) )    {
         CD_ERROR("fwdKin failed.\n");    }
-    KinRepresentation::decodePose(curX_AAS, curX, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
+    KinRepresentation::decodePose(curX_AAS, curX, KinRepresentation::coordinate_system::CARTESIAN, KinRepresentation::orientation_system::AXIS_ANGLE, KinRepresentation::angular_units::DEGREES);
 
 
     //angle=(cX[6]/180)*3.1415926; // transformando a rad
@@ -578,7 +578,7 @@ void ThreadImpl::LIPM3d(){          /** Control - Joint Position Calculus    **/
 
             desX[6] = (fabs(curX[6]) - (_alpha));
 
-            KinRepresentation::encodePose(desX, desX_AAS, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
+            KinRepresentation::encodePose(desX, desX_AAS, KinRepresentation::coordinate_system::CARTESIAN, KinRepresentation::orientation_system::AXIS_ANGLE, KinRepresentation::angular_units::DEGREES);
             if ( ! leftArmICartesianSolver->invKin(desX_AAS,curQ,desQ) )    {
                 CD_ERROR("invKin failed.\n");    }
             if( ! leftArmIPositionControl2->positionMove( desQ.data() )) {
@@ -594,7 +594,7 @@ void ThreadImpl::LIPM3d(){          /** Control - Joint Position Calculus    **/
             if (_rzmp_b<15)   { // me voy a la waiter pose
 
                 desX = iniX;
-                KinRepresentation::encodePose(desX, desX_AAS, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
+                KinRepresentation::encodePose(desX, desX_AAS, KinRepresentation::coordinate_system::CARTESIAN, KinRepresentation::orientation_system::AXIS_ANGLE, KinRepresentation::angular_units::DEGREES);
                 if ( ! leftArmICartesianSolver->invKin(desX_AAS,iniQ,desQ) )    {
                     CD_ERROR("invKin failed.\n");    }
                 if( ! leftArmIPositionControl2->positionMove( desQ.data() )) {
@@ -686,7 +686,7 @@ void ThreadImpl::LIPM3d(){          /** Control - Joint Position Calculus    **/
 
         cout << "[error] ... botella NO puesta " << endl;
 
-        KinRepresentation::encodePose(iniX, desX_AAS, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES);
+        KinRepresentation::encodePose(iniX, desX_AAS, KinRepresentation::coordinate_system::CARTESIAN, KinRepresentation::orientation_system::AXIS_ANGLE, KinRepresentation::angular_units::DEGREES);
         if ( ! leftArmICartesianSolver->invKin(desX_AAS,befQ,desQ) )    {
             CD_ERROR("invKin failed.\n");    }
         if( ! leftArmIPositionControl2->positionMove( desQ.data() )) {
