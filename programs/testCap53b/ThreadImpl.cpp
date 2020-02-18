@@ -17,6 +17,9 @@ bool ThreadImpl::threadInit()
     _ang_ref = 0; // initial value and our angle reference
     _ang_out = 0; // initial value and our output
 
+    //rightLegIPositionControl->positionMove(4, 0); // position in degrees
+    //leftLegIPositionControl->positionMove(4, 0);
+
     return true;
 }
 
@@ -39,34 +42,45 @@ void ThreadImpl::run()
             // STEP 3 - main code
 
             // Test escalon con rampa // generacion del ZMP_ref para test FT sensor
-            // equaction: zmp_ref = (0.0X / 30) * n - 0.X
+            // equaction: zmp_ref = (0.0X / 60000) * n - 0.X/2
             // where x is the ref value
-            // example_1: zmp_ref = (0.05/30)*n - 0.5 ------> for zmp_ref = 0.05 meters
-            // example_2: zmp_ref = (0.09/30)*n - 0.9 ------> for zmp_ref = 0.09 meters
+            // example_1: zmp_ref = (0.05/60000)*n - 0.25 ------> for zmp_ref = 0.05 meters
+            // example_2: zmp_ref = (0.09/60000)*n - 0.45 ------> for zmp_ref = 0.09 meters
 
-            if (n <= 300){zmp_ref = 0.0;}
-            else if (n >= 300 && n <= 330){zmp_ref = (0.05/30)*n - 0.5;} // test from 0.01 to 0.09 [m]
-            else {zmp_ref = zmp_ref;}
+            if (n <= 600)
+                {zmp_ref = 0.0;}
+
+            else if (n >= 600 && n <= 660)
+                {zmp_ref = (0.09/60)*n - 0.9;} // test from 0.01 to 0.09 [m]
+
+            else
+                {zmp_ref = zmp_ref;}
 
             getInitialTime();
 
             readSensorsFT0();
+            //cout << endl << "leyendo sensor 0" << endl;
             readSensorsFT1();
+            //cout << endl << "leyendo sensor 1" << endl;
             zmpCompFT(); // calculation of the ZMP_FT
+            //cout << endl << "calculando ZMP" << endl;
 
-            if (n>300)  {
-                evaluateModel(); // evaluacion the model and the angle output
+            if (n >= 600 && n <= 660)  {
+                evaluateLIPM(); // evaluacion the model and the angle output
+                //cout << endl << "generando angulo" << endl;
+
                 setJoints(); // applying the ankle movement
             }
 
             printData();
-            cout << endl << "Press ENTER to exit..." << endl;
+            cout << endl << "Press Ctrl+C to exit..." << endl;
             cout << "*******************************" << endl << endl;
             saveInFileCsv();  // saving the information ¡
-            n++;
             cout << n << endl << endl;
+            n++;
 
             getCurrentTime();
+            yarp::os::Time::delay(0.02);
         }
     }
 }
@@ -75,29 +89,31 @@ void ThreadImpl::run()
 /************************************************************************/
       //--  CONTROL  --//
 /************************************************************************/
-void ThreadImpl::evaluateModel()        /** Calculating OUTPUT (Qi) of the legs. **/
+void ThreadImpl::evaluateLIPM()        /** Calculating OUTPUT (Qi) of the legs based on LIPM. **/
 {
-    // obtaining the angle error for the D-LIPM space state
-    _evalLIPM.model(Xzmp_ft,zmp_ref);
 
-    ka = 0.25 * zmp_ref + 9.95; // dudo entre zmp_ref o Xzmp_ft
-    _ang_ref = (zmp_ref*(-G))/ (L*(ka-G));
-
-/*    como otra posibilidad para calcular:  _angle_ref
-    if ( ! leftArmIEncoders->getEncoders( encLegs.data() ) )    {
-        CD_WARNING("getEncoders failed, not updating control this iteration.\n");
-        return;    }
-    _angle_ref = encLegs[4];*/
-
-    _ang_out =  _evalLIPM.ang_error_out + _ang_ref;
+    _ang_out = -360*zmp_ref/ (2*PI*L);
 
 }
 
 /************************************************************************/
 void ThreadImpl::setJoints()        /** Position control **/
 {
+    /*cout << endl << "moviendome 1" << endl;
     rightLegIPositionControl->positionMove(4, _ang_out); // position in degrees
-    leftLegIPositionControl->positionMove(4, _ang_out);
+    cout << endl << "moviendome 2" << endl;
+    leftLegIPositionControl->positionMove(4, _ang_out);*/
+
+    cout << endl << "moviendome 1" << endl;
+    rightLegIPositionDirect->setPosition(4, _ang_out); // position in degrees
+    cout << endl << "moviendome 2" << endl;
+    leftLegIPositionDirect->setPosition(4, _ang_out);
+
+ /*   vector<double> rightLegPoss[6] = {0.0, 0.0, 0.0, 0.0, _ang_out, 0.0};
+    vector<double> leftLegPoss[6] = {0.0, 0.0, 0.0, 0.0, _ang_out, 0.0};
+    rightLegIPositionControl->positionMove(rightLegPoss.data()); // position in degrees
+    leftLegIPositionControl->positionMove(leftLegPoss.data());*/
+
 }
 
 
@@ -214,11 +230,10 @@ void ThreadImpl::zmpCompFT()        /** Calculating ZMP-FT of the body . **/
     //_yzmp01_ft = (_yzmp0_ft * _RF._F.fz + _yzmp1_ft * _LF._F.fz) / (_RF._F.fz + _LF._F.fz); // xzmp_ft in [m] robot
 
     // OFFSET FT - deleting the offset of _xzmp01_ft ( both ZMPs from sensor in frontal plane)
-    if (n >=0 && n < 500){
+    if (n >=1 && n < 100){
         sum_x_ft = _xzmp_ft01 + sum_x_ft;
         offs_x_ft = sum_x_ft / n;
-        zmp_ref = offs_x_ft;
-        printf("offs = %f\n", offs_x_ft);
+        printf("offset zmp X = %f\n", offs_x_ft);
     }
 
     Xzmp_ft  = _xzmp_ft01 - offs_x_ft; // frontal plane
@@ -331,5 +346,23 @@ void ThreadImpl::getCurrentTime()       /** Get Current Time    **/
     act_loop = Time::now() - init_loop;
 }
 
+/************************************************************************/
+void ThreadImpl::evaluateModel()        /** Calculating OUTPUT (Qi) of the legs. **/
+{
+    // obtaining the angle error for the D-LIPM space state
+    _evalLIPM.model(Xzmp_ft,zmp_ref);
+
+    ka = 0.25 * zmp_ref + 9.95; // dudo entre zmp_ref o Xzmp_ft
+    _ang_ref = (zmp_ref*(-G))/ (L*(ka-G));
+
+/*    como otra posibilidad para calcular:  _angle_ref
+    if ( ! leftArmIEncoders->getEncoders( encLegs.data() ) )    {
+        CD_WARNING("getEncoders failed, not updating control this iteration.\n");
+        return;    }
+    _angle_ref = encLegs[4];*/
+
+    _ang_out =  _evalLIPM.ang_error_out + _ang_ref;
+
+}
 
 }   // namespace roboticslab

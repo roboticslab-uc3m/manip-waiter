@@ -63,6 +63,10 @@ class ThreadImpl : public yarp::os::Thread {
         this->rightLegIPositionControl = iRightLegPositionControl;
         this->leftLegIPositionControl = iLeftLegPositionControl;        }
 
+    void setIPositionDirect(IPositionDirect *iRightLegPositionDirect,IPositionDirect *iLeftLegPositionDirect) {
+        this->rightLegIPositionDirect = iRightLegPositionDirect;
+        this->leftLegIPositionDirect = iLeftLegPositionDirect;        }
+
     void setIVelocityControl(IVelocityControl *iRightLegVelocityControl,IVelocityControl *iLeftLegVelocityControl) {
         this->rightLegIVelocityControl = iRightLegVelocityControl;
         this->leftLegIVelocityControl = iLeftLegVelocityControl;        }
@@ -141,7 +145,8 @@ protected:
 
         void zmpCompFT();/** Calculating ZMP-FT of the body. **/
         void zmpCompIMU();/** Calculating ZMP-IMU of the body. **/
-        void evaluateModel();/** Calculating OUTPUT (Qi) of the legs. **/
+        void evaluateModel();/** Calculating OUTPUT (Qi) of the legs based on D-LIPM. **/
+        void evaluateLIPM();/** Calculating OUTPUT (Qi) of the legs based on LIPM. **/
         void setJoints();/** Position control. **/
 
         void printData();/** Printing data info on terminal **/
@@ -219,6 +224,8 @@ protected:
         yarp::dev::IControlMode *leftLegIControlMode;
         /** Left Leg PositionControl Interface */
         yarp::dev::IPositionControl *leftLegIPositionControl; // para control en posicion
+        /** Left Leg PositionDirect Interface */
+        yarp::dev::IPositionDirect *leftLegIPositionDirect; // para control en posicion
         /** Left Leg VelocityControl Interface */
         yarp::dev::IVelocityControl *leftLegIVelocityControl; // para control en velocidad
         /** FT 1 AnalogSensor Interface */
@@ -234,6 +241,8 @@ protected:
         yarp::dev::IControlMode *rightLegIControlMode;
         /** Right Leg PositionControl Interface */
         yarp::dev::IPositionControl *rightLegIPositionControl; // para control en posicion
+        /** Right Leg PositionDirect Interface */
+        yarp::dev::IPositionDirect *rightLegIPositionDirect; // para control en posicion
         /** Right Leg VelocityControl Interface */
         yarp::dev::IVelocityControl *rightLegIVelocityControl; // para control en velocidad
         /** FT 0 AnalogSensor Interface */

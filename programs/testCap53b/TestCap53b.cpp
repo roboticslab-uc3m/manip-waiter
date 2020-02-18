@@ -174,6 +174,11 @@ bool TestCap53b::configure(ResourceFinder &rf) {
         printf("[warning] Problems acquiring leftLegIPositionControl interface\n");
         return false;
     } else printf("[success] Acquired leftLegIPositionControl interface\n");
+
+    if (!leftLegDevice.view(leftLegIPositionDirect) ) { // connecting our device with "position control" interface (configuring our device: speed, acceleration... and sending joint positions)
+        printf("[warning] Problems acquiring leftLegIPositionDirect interface\n");
+        return false;
+    } else printf("[success] Acquired leftLegIPositionDirect interface\n");
     /** **************************************************************************************
      * ******************************************************************************** **/
 
@@ -201,6 +206,10 @@ bool TestCap53b::configure(ResourceFinder &rf) {
         printf("[warning] Problems acquiring rightLegIPositionControl interface\n");
         return false;
     } else printf("[success] Acquired rightLegIPositionControl interface\n");
+    if (!rightLegDevice.view(rightLegIPositionDirect) ) { // connecting our device with "position control" interface (configuring our device: speed, acceleration... and sending joint positions)
+        printf("[warning] Problems acquiring rightLegIPositionDirect interface\n");
+        return false;
+    } else printf("[success] Acquired rightLegIPositionDirect interface\n");
     /** **************************************************************************************
      * ******************************************************************************** **/
 
@@ -233,13 +242,13 @@ bool TestCap53b::configure(ResourceFinder &rf) {
         return false;
     }*/
     leftLegIPositionControl->getAxes(&numLeftLegJoints);
-    std::vector<int> leftLegControlModes(numLeftLegJoints,VOCAB_CM_POSITION);
+    std::vector<int> leftLegControlModes(numLeftLegJoints,VOCAB_CM_POSITION_DIRECT);
     if(! leftLegIControlMode->setControlModes( leftLegControlModes.data() )){
         printf("[warning] Problems setting position control mode of: left-Leg\n");
         return false;
     }
     rightLegIPositionControl->getAxes(&numRightLegJoints);
-    std::vector<int> rightLegControlModes(numRightLegJoints,VOCAB_CM_POSITION);
+    std::vector<int> rightLegControlModes(numRightLegJoints,VOCAB_CM_POSITION_DIRECT);
     if(! rightLegIControlMode->setControlModes(rightLegControlModes.data())){
         printf("[warning] Problems setting position control mode of: right-Leg\n");
         return false;
@@ -367,7 +376,7 @@ bool TestCap53b::configure(ResourceFinder &rf) {
      * ******************************************************************************** **/
 
     // ----- FT2 SENSOR DEVICE -----
-    yarp::os::Property ft2SensorOptions;
+/*    yarp::os::Property ft2SensorOptions;
     ft2SensorOptions.put("device","analogsensorclient");
     ft2SensorOptions.put("remote","/jr3/ch2:o");
     ft2SensorOptions.put("local",waiterStr+"/jr3/ch2:i");
@@ -387,13 +396,13 @@ bool TestCap53b::configure(ResourceFinder &rf) {
     yarp::os::Time::delay(1);   // The following delay should avoid 0 channels and bad read
 
     int channelsFT2 = iFT2AnalogSensor->getChannels();
-    printf("channels: %d\n", channelsFT2);
+    printf("channels: %d\n", channelsFT2);*/
     /** **************************************************************************************
      * ******************************************************************************** **/
 
 
     // ----- FT3 SENSOR DEVICE -----
-    yarp::os::Property ft3SensorOptions;
+/*    yarp::os::Property ft3SensorOptions;
     ft3SensorOptions.put("device","analogsensorclient");
     ft3SensorOptions.put("remote","/jr3/ch3:o");
     ft3SensorOptions.put("local",waiterStr+"/jr3/ch3:i");
@@ -413,7 +422,7 @@ bool TestCap53b::configure(ResourceFinder &rf) {
     yarp::os::Time::delay(1);   // The following delay should avoid 0 channels and bad read
 
     int channelsFT3 = iFT3AnalogSensor->getChannels();
-    printf("channels: %d\n", channelsFT3);
+    printf("channels: %d\n", channelsFT3);*/
     /** **************************************************************************************
      * ******************************************************************************** **/
 
@@ -425,8 +434,8 @@ bool TestCap53b::configure(ResourceFinder &rf) {
     yarp::os::Time::delay(0.5);
 
     // imu trunk
-    Network::connect("/inertial", waiterStr+"/inertial:i");
-    if ( NetworkBase::isConnected("/inertial",waiterStr+"/inertial:i") == false ){
+    Network::connect("/teo/inertial", waiterStr+"/inertial:i");
+    if ( NetworkBase::isConnected("/teo/inertial",waiterStr+"/inertial:i") == false ){
         cerr << "[error] Couldn't connect to YARP port /inertial:i." << endl;
     } else cout << "[success] Connected to IMU." << endl;
     yarp::os::Time::delay(0.5);
@@ -438,6 +447,7 @@ bool TestCap53b::configure(ResourceFinder &rf) {
     //threadImpl.setNumJoints(numLeftArmJoints);
     threadImpl.setIEncodersControl(rightLegIEncoders,leftLegIEncoders);
     threadImpl.setIPositionControl(rightLegIPositionControl,leftLegIPositionControl);
+    threadImpl.setIPositionDirect(rightLegIPositionDirect,leftLegIPositionDirect);
     //threadImpl.setIVelocityControl(rightLegIVelocityControl,leftLegIVelocityControl); // no se utiliza de momento
     threadImpl.setInputPorts(&portImu);
     threadImpl.setIAnalogSensor(iFT0AnalogSensor,iFT1AnalogSensor,iFT2AnalogSensor,iFT3AnalogSensor);
