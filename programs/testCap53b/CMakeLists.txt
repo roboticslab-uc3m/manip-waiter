@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.6)
 
 IF (ENABLE_testCap53b)
 
-set(KEYWORD "testingLIPM_identification")
+set(KEYWORD "TEO_identification")
 
 # Find YARP.  Point the YARP_DIR environment variable at your build.
 find_package(YARP REQUIRED)
