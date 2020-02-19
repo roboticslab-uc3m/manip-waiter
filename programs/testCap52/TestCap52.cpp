@@ -64,7 +64,11 @@ bool TestCap52::configure(ResourceFinder &rf) {
     if (!headDevice.view(headIPositionControl) ) { // connecting our device with "position control" interface (configuring our device: speed, acceleration... and sending joint positions)
         printf("[warning] Problems acquiring headIPositionControl interface\n");
         return false;
-    } else printf("[success] Acquired headIPositionControl interface\n");*/
+    } else printf("[success] Acquired headIPositionControl interface\n");
+    if (!headDevice.view(headIPositionDirect) ) { // connecting our device with "position direct control" interface (configuring our device: speed, acceleration... and sending joint positions)
+        printf("[warning] Problems acquiring headIPositionDirect interface\n");
+        return false;
+    } else printf("[success] Acquired headIPositionDirect interface\n");*/
     /** **************************************************************************************
      * ******************************************************************************** **/
 
@@ -92,6 +96,10 @@ bool TestCap52::configure(ResourceFinder &rf) {
         printf("[warning] Problems acquiring leftArmIPositionControl interface\n");
         return false;
     } else printf("[success] Acquired leftArmIPositionControl interface\n");
+    if (!leftArmDevice.view(leftArmIPositionDirect) ) { // connecting our device with "position direct control" interface (configuring our device: speed, acceleration... and sending joint positions)
+        printf("[warning] Problems acquiring leftArmIPositionDirect interface\n");
+        return false;
+    } else printf("[success] Acquired leftArmIPositionDirect interface\n");
     /** **************************************************************************************
      * ******************************************************************************** **/
 
@@ -118,7 +126,11 @@ bool TestCap52::configure(ResourceFinder &rf) {
     if (!rightArmDevice.view(rightArmIPositionControl) ) { // connecting our device with "position control" interface (configuring our device: speed, acceleration... and sending joint positions)
         printf("[warning] Problems acquiring rightArmIPositionControl interface\n");
         return false;
-    } else printf("[success] Acquired rightArmIPositionControl interface\n");*/
+    } else printf("[success] Acquired rightArmIPositionControl interface\n");
+    if (!rightArmDevice.view(rightArmIPositionDirect) ) { // connecting our device with "position direct control" interface (configuring our device: speed, acceleration... and sending joint positions)
+        printf("[warning] Problems acquiring rightArmIPositionDirect interface\n");
+        return false;
+    } else printf("[success] Acquired rightArmIPositionDirect interface\n");*/
     /** **************************************************************************************
      * ******************************************************************************** **/
 
@@ -147,6 +159,10 @@ bool TestCap52::configure(ResourceFinder &rf) {
         printf("[warning] Problems acquiring trunkIPositionControl interface\n");
         return false;
     } else printf("[success] Acquired trunkIPositionControl interface\n");
+    if (!trunkDevice.view(trunkIPositionDirect) ) { // connecting our device with "position direct control" interface (configuring our device: speed, acceleration... and sending joint positions)
+        printf("[warning] Problems acquiring trunkIPositionDirect interface\n");
+        return false;
+    } else printf("[success] Acquired trunkIPositionDirect interface\n");
     /** **************************************************************************************
      * ******************************************************************************** **/
 
@@ -174,7 +190,11 @@ bool TestCap52::configure(ResourceFinder &rf) {
     if (!leftLegDevice.view(leftLegIPositionControl) ) { // connecting our device with "position control" interface (configuring our device: speed, acceleration... and sending joint positions)
         printf("[warning] Problems acquiring leftLegIPositionControl interface\n");
         return false;
-    } else printf("[success] Acquired leftLegIPositionControl interface\n");*/
+    } else printf("[success] Acquired leftLegIPositionControl interface\n");
+    if (!leftLegDevice.view(leftLegIPositionDirect) ) { // connecting our device with "position direct control" interface (configuring our device: speed, acceleration... and sending joint positions)
+        printf("[warning] Problems acquiring leftLegIPositionDirect interface\n");
+        return false;
+    } else printf("[success] Acquired leftLegIPositionDirect interface\n");*/
     /** **************************************************************************************
      * ******************************************************************************** **/
 
@@ -201,7 +221,11 @@ bool TestCap52::configure(ResourceFinder &rf) {
     if (!rightLegDevice.view(rightLegIPositionControl) ) { // connecting our device with "position control" interface (configuring our device: speed, acceleration... and sending joint positions)
         printf("[warning] Problems acquiring rightLegIPositionControl interface\n");
         return false;
-    } else printf("[success] Acquired rightLegIPositionControl interface\n");  */
+    } else printf("[success] Acquired rightLegIPositionControl interface\n");
+    if (!rightLegDevice.view(rightLegIPositionDirect) ) { // connecting our device with "position direct control" interface (configuring our device: speed, acceleration... and sending joint positions)
+        printf("[warning] Problems acquiring rightLegIPositionDirect interface\n");
+        return false;
+    } else printf("[success] Acquired rightLegIPositionDirect interface\n");*/
     /** **************************************************************************************
      * ******************************************************************************** **/
 
@@ -462,11 +486,13 @@ bool TestCap52::configure(ResourceFinder &rf) {
     threadImpl.setIEncodersControl(leftArmIEncoders);
     threadImpl.setLeftArmIPositionControl(leftArmIPositionControl);
     threadImpl.setTrunkIPositionControl(trunkIPositionControl); // not used
+    //threadImpl.setLeftArmIPositionDirect(leftArmIPositionDirect);
+    //threadImpl.setTrunkIPositionDirect(trunkIPositionDirect); // not used
     //threadImpl.setIVelocityControl(leftArmIVelocityControl); // not used
     threadImpl.setICartesianSolver(leftArmICartesianSolver);
     threadImpl.setInputPorts(&portImu);
     threadImpl.setIAnalogSensor(iFT0AnalogSensor,iFT1AnalogSensor,iFT2AnalogSensor,iFT3AnalogSensor);
-    //yarp::dev::IAnalogSensor *iFT3AnalogSensor;
+
 
     threadImpl.start();
 
@@ -556,6 +582,8 @@ bool TestCap52::interruptModule() {
     //rightLegDevice.close(); // not used
     //leftLegDevice.close(); // not used
 
+    ft0SensorDevice.close();
+    ft1SensorDevice.close();
     ft2SensorDevice.close();
     ft3SensorDevice.close();
 

@@ -63,17 +63,17 @@ void ThreadImpl::run()
 {
     while(!isStopping()) {
 
-        if (a!=1)    {    // STEP 1 - Creating & Configuring CSV file
-            confCSVfile();
+        if (a!=1)    {
+            confCSVfile();  // STEP 1 - Creating & Configuring CSV file
             a=1;    }
-        if (a==1 && b!=1)    {    // STEP 2 - Moving the arm/trunk to the stability pose
-            homeTrajectory();
+        if (a==1 && b!=1)    {
+            homeTrajectory();   // STEP 2 - Moving the arm/trunk to the stability pose
             b=1;    }
-        if (a==1 && b==1 && c!=1)    {    // STEP 3 - Opening & Connecting Ports
-            //openingPorts();
+        if (a==1 && b==1 && c!=1)    {
+            //openingPorts();   // STEP 3 - Opening & Connecting Ports
             c=1;    }
-        if (a==1 && b==1 && c==1 && e!=250)    {    // STEP 4 - Calculating _d parameter
-            calcParam_D();    }
+        if (a==1 && b==1 && c==1 && e!=250)    {
+            calcParam_D();    } // STEP 4 - Calculating _d parameter
 
         // ------------------------------------------------------------------------
         if (a==1 && b==1 && c==1 && e==250)   {     // STEP 5 - main code
@@ -89,11 +89,11 @@ void ThreadImpl::run()
             LIPM3d(); // Calculo y generacion de la actuacion en funcion del ZMP_tray
 
             printData();
-            cout << endl << "Press ENTER to exit..." << endl;
+            cout << endl << "Press Ctrl+C to exit..." << endl;
             cout << "*******************************" << endl << endl;
             saveInFileCsv();  // almacenamiento de datos
-            n++;
             cout << n << endl << endl;
+            n++;
 
             getCurrentTime();
 

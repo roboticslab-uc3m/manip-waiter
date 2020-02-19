@@ -61,6 +61,8 @@ private:
     yarp::dev::IControlMode *headIControlMode;
     /** Head PositionControl Interface */
     yarp::dev::IPositionControl *headIPositionControl; // para control en posicion
+    /** Head Arm PositionDirect Interface */
+    yarp::dev::IPositionDirect *headIPositionDirect; // para control en posicion directa
     /** Head VelocityControl Interface */
     yarp::dev::IVelocityControl *headIVelocityControl; // para control en velocidad
 
@@ -74,6 +76,8 @@ private:
     yarp::dev::IControlMode *leftArmIControlMode;
     /** Left Arm PositionControl Interface */
     yarp::dev::IPositionControl *leftArmIPositionControl; // para control en posicion
+    /** Left Arm PositionDirect Interface */
+    yarp::dev::IPositionDirect *leftArmIPositionDirect; // para control en posicion directa
     /** Left Arm VelocityContro2 Interface */
     yarp::dev::IVelocityControl *leftArmIVelocityControl; // para control en velocidad
     /** FT 3 Sensor Device */
@@ -92,6 +96,8 @@ private:
     yarp::dev::IControlMode *rightArmIControlMode;
     /** Right Arm PositionControl Interface */
     yarp::dev::IPositionControl *rightArmIPositionControl; // para control en posicion
+    /** Right Arm PositionDirect Interface */
+    yarp::dev::IPositionDirect *rightArmIPositionDirect; // para control en posicion directa
     /** Right Arm VelocityControl Interface */
     yarp::dev::IVelocityControl *rightArmIVelocityControl; // para control en velocidad
     /** FT 2 Sensor Device */
@@ -111,6 +117,8 @@ private:
     yarp::dev::IControlMode *trunkIControlMode;
     /** Trunk PositionControl Interface */
     yarp::dev::IPositionControl *trunkIPositionControl; // para control en posicion
+    /** Left Arm PositionDirect Interface */
+    yarp::dev::IPositionDirect *trunkIPositionDirect; // para control en posicion directa
     /** Trunk VelocityControl Interface */
     yarp::dev::IVelocityControl *trunkIVelocityControl; // para control en velocidad
 
@@ -124,6 +132,8 @@ private:
     yarp::dev::IControlMode *leftLegIControlMode;
     /** Left Leg PositionControl Interface */
     yarp::dev::IPositionControl *leftLegIPositionControl; // para control en posicion
+    /** Left Leg PositionDirect Interface */
+    yarp::dev::IPositionDirect *leftLegIPositionDirect; // para control en posicion directa
     /** Left Leg VelocityControl Interface */
     yarp::dev::IVelocityControl *leftLegIVelocityControl; // para control en velocidad
     /** FT 1 Sensor Device */
@@ -141,6 +151,8 @@ private:
     yarp::dev::IControlMode *rightLegIControlMode;
     /** Right Leg PositionControl Interface */
     yarp::dev::IPositionControl *rightLegIPositionControl; // para control en posicion
+    /** Right Leg PositionDirect Interface */
+    yarp::dev::IPositionDirect *rightLegIPositionDirect; // para control en posicion directa
     /** Right Leg VelocityControl Interface */
     yarp::dev::IVelocityControl *rightLegIVelocityControl; // para control en velocidad
     /** FT 0 Sensor Device */

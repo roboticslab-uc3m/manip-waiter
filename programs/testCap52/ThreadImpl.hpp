@@ -44,8 +44,14 @@ class ThreadImpl : public yarp::os::Thread {
         void setTrunkIPositionControl(yarp::dev::IPositionControl *iPositionControl) {
             this->trunkIPositionControl = iPositionControl;        }
 
-        void setIVelocityControl(yarp::dev::IVelocityControl *iVelocityControl) {
-            this->leftArmIVelocityControl = iVelocityControl;        }
+        void setLeftArmIPositionDirect(yarp::dev::IPositionDirect *iPositionDirect) {
+            this->leftArmIPositionDirect = iPositionDirect;        }
+
+        void setTrunkIPositionDirect(yarp::dev::IPositionDirect *iPositionDirect) {
+            this->trunkIPositionDirect = iPositionDirect;        }
+
+/*        void setIVelocityControl(yarp::dev::IVelocityControl *iVelocityControl) {
+            this->leftArmIVelocityControl = iVelocityControl;        }*/
 
         void setICartesianSolver(roboticslab::ICartesianSolver *iCartesianSolver) {
             this->leftArmICartesianSolver = iCartesianSolver;        }
@@ -178,6 +184,8 @@ class ThreadImpl : public yarp::os::Thread {
         yarp::dev::IControlMode *leftArmIControlMode;
         /** Left Arm PositionControl Interface */
         yarp::dev::IPositionControl *leftArmIPositionControl; // para control en posicion
+        /** Left Arm PositionDirect Interface */
+        yarp::dev::IPositionDirect *leftArmIPositionDirect; // para control en posicion direct
         /** Left Arm VelocityControl Interface */
         yarp::dev::IVelocityControl *leftArmIVelocityControl; // para control en velocidad
         /** FT 3 AnalogSensor Interface */
@@ -210,6 +218,8 @@ class ThreadImpl : public yarp::os::Thread {
         yarp::dev::IControlMode *trunkIControlMode;
         /** Trunk PositionControl Interface */
         yarp::dev::IPositionControl *trunkIPositionControl; // para control en posicion
+        /** Left Arm PositionDirect Interface */
+        yarp::dev::IPositionDirect *trunkIPositionDirect; // para control en posicion direct
         /** Trunk VelocityControl Interface */
         yarp::dev::IVelocityControl *trunkIVelocityControl; // para control en velocidad
 
