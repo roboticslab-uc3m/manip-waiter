@@ -159,10 +159,10 @@ bool TestCap52::configure(ResourceFinder &rf) {
         printf("[warning] Problems acquiring trunkIPositionControl interface\n");
         return false;
     } else printf("[success] Acquired trunkIPositionControl interface\n");
-    if (!trunkDevice.view(trunkIPositionDirect) ) { // connecting our device with "position direct control" interface (configuring our device: speed, acceleration... and sending joint positions)
+/*    if (!trunkDevice.view(trunkIPositionDirect) ) { // connecting our device with "position direct control" interface (configuring our device: speed, acceleration... and sending joint positions)
         printf("[warning] Problems acquiring trunkIPositionDirect interface\n");
         return false;
-    } else printf("[success] Acquired trunkIPositionDirect interface\n");
+    } else printf("[success] Acquired trunkIPositionDirect interface\n");*/
     /** **************************************************************************************
      * ******************************************************************************** **/
 
@@ -458,8 +458,8 @@ bool TestCap52::configure(ResourceFinder &rf) {
 
     //-- Set home waiter poss & Initial SPEED-ACC
     configInitPosition(25,25);
-    double leftArmInitPoss[7] = {-30,0,0,-90,0,30,0};
-    double trunkInitPoss[2] = {0,-2};
+    double leftArmInitPoss[7] = {-30,0,0,-90,-1,22,0};
+    double trunkInitPoss[2] = {0,0};
     std::vector<double> leftArm(&leftArmInitPoss[0], &leftArmInitPoss[0]+7);
     std::vector<double> trunk(&trunkInitPoss[0], &trunkInitPoss[0]+2);
     moveJointsInitPosition(trunk, leftArm);
@@ -473,10 +473,10 @@ bool TestCap52::configure(ResourceFinder &rf) {
     //-- Calibrating the sensor
     int ret = iFT3AnalogSensor->calibrateChannel(3);
     // ret value is not checked due to a bug in yarp(2.3.70/2.3.72.1)
-    /*if (ret != yarp::dev::IAnalogSensor::AS_OK) {
+    if (ret != yarp::dev::IAnalogSensor::AS_OK) {
         printf("[ERROR] Calibrating Channel ...\n");
         return false;    }
-    else printf("[OK] All channels reseted\n");*/
+    else printf("[OK] All channels reseted\n");
     /** **************************************************************************************
      * ******************************************************************************** **/
 

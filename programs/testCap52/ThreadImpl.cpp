@@ -77,6 +77,7 @@ void ThreadImpl::run()
 
         // ------------------------------------------------------------------------
         if (a==1 && b==1 && c==1 && e==250)   {     // STEP 5 - main code
+
             getInitialTime();
 
             readSensorsFT3();
@@ -88,10 +89,12 @@ void ThreadImpl::run()
             zmpComp(); // calculo del ZMP_FT
             LIPM3d(); // Calculo y generacion de la actuacion en funcion del ZMP_tray
 
-            printData();
+            printData(); // muestreo de datos por terminal
+            saveInFileCsv();  // almacenamiento de datos
+
             cout << endl << "Press Ctrl+C to exit..." << endl;
             cout << "*******************************" << endl << endl;
-            saveInFileCsv();  // almacenamiento de datos
+
             cout << n << endl << endl;
             n++;
 

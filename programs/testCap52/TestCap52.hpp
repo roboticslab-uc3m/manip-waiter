@@ -61,7 +61,7 @@ private:
     yarp::dev::IControlMode *headIControlMode;
     /** Head PositionControl Interface */
     yarp::dev::IPositionControl *headIPositionControl; // para control en posicion
-    /** Head Arm PositionDirect Interface */
+    /** Head PositionDirect Interface */
     yarp::dev::IPositionDirect *headIPositionDirect; // para control en posicion directa
     /** Head VelocityControl Interface */
     yarp::dev::IVelocityControl *headIVelocityControl; // para control en velocidad
@@ -117,7 +117,7 @@ private:
     yarp::dev::IControlMode *trunkIControlMode;
     /** Trunk PositionControl Interface */
     yarp::dev::IPositionControl *trunkIPositionControl; // para control en posicion
-    /** Left Arm PositionDirect Interface */
+    /** Trunk PositionDirect Interface */
     yarp::dev::IPositionDirect *trunkIPositionDirect; // para control en posicion directa
     /** Trunk VelocityControl Interface */
     yarp::dev::IVelocityControl *trunkIVelocityControl; // para control en velocidad
