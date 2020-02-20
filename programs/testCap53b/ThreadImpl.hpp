@@ -25,10 +25,8 @@
 #include "KinematicRepresentation.hpp"
 #include "ICartesianSolver.h"
 
-#include "LIPM2d.h"
-#include "global.h"
-
 #include "fcontrol.h"
+#include "global.h"
 
 using namespace std;
 using namespace yarp::os;
@@ -56,10 +54,6 @@ namespace roboticslab
  */
 class ThreadImpl : public yarp::os::Thread {
     public:
-
-/*    void setNumJoints(int *iNumLeftArmJoints, int *iNumRightArmJoints) {
-        this->numLeftArmJoints = iNumLeftArmJoints;
-        this->numRightArmJoints = iNumRightArmJoints;        }*/
 
     void setIEncodersControl(IEncoders *iRightLegEncoders, IEncoders *iLeftLegEncoders) {
         this->rightLegIEncoders = iRightLegEncoders;
@@ -95,8 +89,7 @@ protected:
         double spd_x, spd_y, spd_z;
         double mag_x, mag_y, mag_z;
         deque<double> x_sensor, y_sensor, z_sensor;
-        //-- IMU LOW-FILTER variables & CONVERTION
-        double ddx, ddy, ddz, ddx_robot, ddy_robot, ddz_robot;
+
 
         //-- struct variable for F/T reading from the JR3 sensors
         struct SensorFT_Data {
@@ -108,13 +101,18 @@ protected:
             } _T; // torque vector by JR3
         } _LL, _RL, _LA, _RA, _med;
 
-        int a, b, n; // main process control variables
+
+         // main process control variables
+        int a, b, n;
+        float test;
+
 
         //-- FT & IMU LOW-FILTER variables
         float offs_x_imu, offs_x_ft; // zmp offset in initial time - frontal plane
         float offs_y_imu, offs_y_ft; // zmp offset in initial time - frontal plane
         float sum_x_imu, sum_y_imu, sum_x_ft, sum_y_ft; // adding offset values.
-        float test;
+        double ddx, ddy, ddz, ddx_robot, ddy_robot, ddz_robot;
+
 
         //-- ZMP & IMU variables
         float _xzmp_ft0, _yzmp_ft0; // ZMP-FT sensor 0 (right)
@@ -123,25 +121,22 @@ protected:
         float Xzmp_ft, Yzmp_ft; // Global ZMP-FT after filter
         double Xzmp_imu, Yzmp_imu; // Global ZMP-IMU after filter
 
+
         //-- Control/Movement variables
         float zmp_ref, _ang_ref, _ang_out, ka;
+
 
         //-- Time variables
         double init_time, act_time, init_loop, act_loop, it_time, it_prev; // for calculating process time
 
 
-        //-- iDENTIFICATION
+        //-- Identification vaiables
         OnlineSystemIdentification id1;
         vector<double> *num, *den;
 
-        LIPM2d _evalLIPM; // Discrete-time Space State DLIPM Model evaluation
 
 
         //-- Sensors variables
-        yarp::os::Port *portFt0;
-        yarp::os::Port *portFt1;
-        yarp::os::Port *portFt2;
-        yarp::os::Port *portFt3;
         yarp::os::Port *portImu;
 
 

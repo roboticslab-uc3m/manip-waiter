@@ -30,11 +30,11 @@ using namespace roboticslab;
 
 //General constants
 #define PI  3.14159265358979323846
-#define J_G   9.81 // Gravity [m/s²]
+#define G   9.81 // Gravity [m/s²]
 #define TS  0.03 // Time Samples [s]
-#define J_L   0.8927 // Pendulum Longitude [m]
-#define J_M   62.589 // Robot mass [kg]
-#define J_e   0.03225 // Height FT sensor // Loli 0.0194
+#define L   0.8927 // Pendulum Longitude [m]
+#define M   62.589 // Robot mass [kg]
+#define e   0.03225 // Height FT sensor // Loli 0.0194
 
 //Low-pass Filter
 #define samples 30 //Number of samples for computing average
@@ -45,7 +45,7 @@ using namespace roboticslab;
 #define Zcom 0.683 //Distance to COM in Z axis [cm] - Zcom 103.6602 JUANLO
 
 //PID parameters
-#define J_dt 0.05 //Loop interval time [s]
+#define dt 0.05 //Loop interval time [s]
 #define maximo 10 //Maximum output value
 #define minimo -10 //Minimum output value
 //Ankle parameters

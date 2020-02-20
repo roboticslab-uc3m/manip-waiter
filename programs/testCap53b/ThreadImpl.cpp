@@ -7,7 +7,7 @@ namespace roboticslab
 /************************************************************************/
 bool ThreadImpl::threadInit()
 {
-    printf("[success] entrando en ratethread -> init/run\n");
+    printf("[success] Entrando en ratethread -> init/run\n");
 
     a = 0;
     b = 0;
@@ -17,38 +17,12 @@ bool ThreadImpl::threadInit()
     _ang_ref = 0; // initial value and our angle reference
     _ang_out = 0; // initial value and our output
 
-    test = 0.05;
+    test = 0.05; // valor del ZMP al que se quiere testear
 
-/*
-    rightLegIPositionControl->positionMove(4, 0); // left home position in degrees
-    leftLegIPositionControl->positionMove(4, 0); // right home position in degrees
-    printf("[warning] Activating homing position\n");
-
-    yarp::os::Time::delay(0.5);
-
-    // cambiando el modo de control a POSITION_DIRECT
-    leftLegIPositionControl->getAxes(&numLeftLegJoints);
-    std::vector<int> leftLegControlModes(numLeftLegJoints,VOCAB_CM_POSITION_DIRECT);
-    if(! leftLegIControlMode->setControlModes( leftLegControlModes.data() )){
-        printf("[warning] Problems setting DIRECT POSITION control mode of: left-Leg\n");
-        return false;
-    }
-    rightLegIPositionControl->getAxes(&numRightLegJoints);
-    std::vector<int> rightLegControlModes(numRightLegJoints,VOCAB_CM_POSITION_DIRECT);
-    if(! rightLegIControlMode->setControlModes(rightLegControlModes.data())){
-        printf("[warning] Problems setting DIRECT POSITION control mode of: right-Leg\n");
-        return false;
-    }*/
-
-
-    id1 = OnlineSystemIdentification(1,2); // configuracion del orden de la ft
-    cout << "todo va bien  " << endl;
-
+    // configuracion del orden de la ft
+    id1 = OnlineSystemIdentification(1,2);
     num = new std::vector<double> (2);
-    cout << "todo va bien por segunda vez " << endl;
-
     den = new std::vector<double> (3);
-    cout << "todo va bien por tercera vez " << endl;
 
     return true;
 }
@@ -58,34 +32,32 @@ void ThreadImpl::run()
 {
     while(!isStopping()) {
 
+        // ------------------------------------------------------------------------
         if (a!=1)    {    // STEP 1 - Creating & Configuring CSV file
             confCSVfile();
             a=1;    }
-        if (a==1 && b!=1)    {    // STEP 2 - Opening & Connecting Ports
-            cout << "[waiting arm pose] ... STEP 2 " << endl;
+        if (a==1 && b!=1)    {    // STEP 2 - waiting to start
+            cout << "[push ENTER, please] ... STEP 2 " << endl;
             getchar();
             b=1;    }
 
+
         // ------------------------------------------------------------------------
-        if (a==1 && b==1)
-        {
-            // STEP 3 - main code
+        if (a==1 && b==1)   {   // STEP 3 - main code
 
             // Test escalon con rampa // generacion del ZMP_ref para test FT sensor
-            // equaction: zmp_ref = (0.0X / 60000) * n - 0.X/2
-            // where x is the ref value
-            // example_1: zmp_ref = (0.05/60000)*n - 0.25 ------> for zmp_ref = 0.05 meters
-            // example_2: zmp_ref = (0.09/60000)*n - 0.45 ------> for zmp_ref = 0.09 meters
+            // equaction - positive slope: zmp_ref = (test/60)*n - (test*10);
+            // equaction - negative slope: zmp_ref = (-test/60)*n + ((test*15)+test);
 
             getInitialTime();
-            readSensorsFT0();
-            readSensorsFT1();
-            zmpCompFT(); // calculation of the ZMP_FT
+            readSensorsFT0(); // reading AnalogSensor FT0
+            readSensorsFT1(); // reading AnalogSensor FT1
+            zmpCompFT(); // ZMP_FT computation
 
             if (n <= 600)
             {
-                zmp_ref = 0.0;
-                zmp_ref = zmp_ref+0.0001*((rand() % 10 + 1)-5);
+                zmp_ref = 0.0; // target
+                zmp_ref = zmp_ref+0.0001*((rand() % 10 + 1)-5); // random function to include noise
 
                 /** IDENTIFICATION   **/
                 id1.UpdateSystem(zmp_ref*100,Xzmp_ft*100);
@@ -99,8 +71,8 @@ void ThreadImpl::run()
 
             else if (n >= 600 && n <= 660)  // test from 0.01 to 0.09 [m]
             {
-                zmp_ref = (test/60)*n - (test*10);
-                zmp_ref = zmp_ref+0.0001*((rand() % 10 + 1)-5);
+                zmp_ref = (test/60)*n - (test*10); // target
+                zmp_ref = zmp_ref+0.0001*((rand() % 10 + 1)-5); // random function to include noise
 
                 evaluateLIPM(); // evaluacion the model and the angle output
                 setJoints(); // applying the ankle movement
@@ -116,11 +88,11 @@ void ThreadImpl::run()
 
             else if (n >= 660 && n <= 900)
             {
-                zmp_ref = test;
-                zmp_ref = zmp_ref+0.0001*((rand() % 10 + 1)-5);
+                zmp_ref = test; // target
+                zmp_ref = zmp_ref+0.0001*((rand() % 10 + 1)-5); // random function to include noise
 
-                /** IDENTIFICATION   **/
-                id1.UpdateSystem(zmp_ref*100,Xzmp_ft*100);
+                /** IDENTIFICATION FUCTIONS  **/
+                id1.UpdateSystem(zmp_ref*100,Xzmp_ft*100); // applying the new output/input
                 id1.PrintZTransferFunction(0.02);
                 id1.GetZTransferFunction(*num, *den);
 
@@ -130,10 +102,10 @@ void ThreadImpl::run()
 
             else if (n >= 900 && n <= 960)
             {
-                zmp_ref = (-test/60)*n + ((test*15)+test);
-                zmp_ref = zmp_ref+0.0001*((rand() % 10 + 1)-5);
+                zmp_ref = (-test/60)*n + ((test*15)+test); // target
+                zmp_ref = zmp_ref+0.0001*((rand() % 10 + 1)-5); // random function to include noise
 
-                evaluateLIPM(); // evaluacion the model and the angle output
+                evaluateLIPM(); // generation of the angle output based on LIPM
                 setJoints(); // applying the ankle movement
 
                 printData();
@@ -141,7 +113,6 @@ void ThreadImpl::run()
 
             else
                 {zmp_ref = 0;}
-
 
 
             cout << endl << "Press Ctrl+C to exit..." << endl << endl;
@@ -162,29 +133,14 @@ void ThreadImpl::run()
 /************************************************************************/
 void ThreadImpl::evaluateLIPM()        /** Calculating OUTPUT (Qi) of the legs based on LIPM. **/
 {
-
-    _ang_out = -360*zmp_ref/ (2*PI*J_L);
-
+    _ang_out = -360*zmp_ref/ (2*PI*L); // Transforming from ZMP to Angle
 }
 
 /************************************************************************/
 void ThreadImpl::setJoints()        /** Position control **/
 {
-    /*cout << endl << "moviendome 1" << endl;
-    rightLegIPositionControl->positionMove(4, _ang_out); // position in degrees
-    cout << endl << "moviendome 2" << endl;
-    leftLegIPositionControl->positionMove(4, _ang_out);*/
-
-    cout << endl << "moviendome 1" << endl;
     rightLegIPositionDirect->setPosition(4, _ang_out); // position in degrees
-    cout << endl << "moviendome 2" << endl;
     leftLegIPositionDirect->setPosition(4, _ang_out);
-
- /*   vector<double> rightLegPoss[6] = {0.0, 0.0, 0.0, 0.0, _ang_out, 0.0};
-    vector<double> leftLegPoss[6] = {0.0, 0.0, 0.0, 0.0, _ang_out, 0.0};
-    rightLegIPositionControl->positionMove(rightLegPoss.data()); // position in degrees
-    leftLegIPositionControl->positionMove(leftLegPoss.data());*/
-
 }
 
 
@@ -279,21 +235,11 @@ void ThreadImpl::readSensorsIMU()       /** Reading input messages from IMU SENS
 /************************************************************************/
 void ThreadImpl::zmpCompFT()        /** Calculating ZMP-FT of the body . **/
 {
-
     //ZMP Equations : Double Support - FT
 
-/*      //Con el coeficiente 1000 - unidades en milimetros
-    _xzmp0 = -(((_my0/10) + e*_fx0)*1000) / _fz0; // xzmp0 in [mm]
-    _yzmp0 = (((_mx0/10) + e*_fy0)*1000) / _fz0; // yzmp0 in [mm]
-
-    _xzmp1 = -(((_my1/10) + e*_fx1)*1000) / _fz1; // xzmp1 in [mm]
-    _yzmp1 = (((_mx1/10) + e*_fy1)*1000) / _fz1; // yzmp1 in [mm]
-*/
-
-    //without the coeficient 1000 - unids in meters
-    _xzmp_ft0 = -(((_RL._T.my/10) + J_e*_RL._F.fx)) / _RL._F.fz; // xzmp0_ft in [m] right foot
+    _xzmp_ft0 = -(((_RL._T.my/10) + e*_RL._F.fx)) / _RL._F.fz; // xzmp0_ft in [m] right foot
     //_yzmp0_ft = -(((_RF._T.mx/10) + e*_RF._F.fy)) / _RF._F.fz; // xzmp0_ft in [m] right foot
-    _xzmp_ft1 = -(((_LL._T.my/10) + J_e*_LL._F.fx)) / _LL._F.fz; // xzmp1_ft in [m] left foot
+    _xzmp_ft1 = -(((_LL._T.my/10) + e*_LL._F.fx)) / _LL._F.fz; // xzmp1_ft in [m] left foot
     //_yzmp1_ft = -(((_LF._T.mx/10) + e*_LF._F.fy)) / _LF._F.fz; // xzmp1_ft in [m] left foot
 
     _xzmp_ft01 = (_xzmp_ft0 * _RL._F.fz + _xzmp_ft1 * _LL._F.fz) / (_RL._F.fz + _LL._F.fz); // xzmp_ft in [m] robot
@@ -306,8 +252,8 @@ void ThreadImpl::zmpCompFT()        /** Calculating ZMP-FT of the body . **/
         printf("offset zmp X = %f\n", offs_x_ft);
     }
 
-    Xzmp_ft  = _xzmp_ft01 - offs_x_ft; // frontal plane
-    //Yzmp_ft = _yzmp01_ft - offs_y_ft; // saggital plane
+    Xzmp_ft  = _xzmp_ft01 - offs_x_ft; // frontal plane - final ZMP X [m]
+    //Yzmp_ft = _yzmp01_ft - offs_y_ft; // saggital plane - final ZMP Y [m]
 
     if ((_xzmp_ft01 != _xzmp_ft01) || (_yzmp_ft01 != _yzmp_ft01)){
         printf ("Warning: No zmp data\n");
@@ -318,7 +264,6 @@ void ThreadImpl::zmpCompFT()        /** Calculating ZMP-FT of the body . **/
 /************************************************************************/
 void ThreadImpl::zmpCompIMU()       /** Calculating ZMP-IMU of the body . **/
 {
-
     //ZMP Equations : Double Support - IMU
 
     // OFFSET IMU - eliminando el offset de ddx_robot (aceleracion en X)
@@ -330,10 +275,10 @@ void ThreadImpl::zmpCompIMU()       /** Calculating ZMP-IMU of the body . **/
 
     ddx_robot = ddx_robot - offs_x_imu; // frontal plane
     //ddy_robot = ddy_robot - offs_y_imu; // saggital plane
-    //ZERO MOMENT POINT COMPUTATION - IMU
-    Xzmp_imu = Xcom - (Zcom / ddz_robot) * ddx_robot; //ZMP X coordinate [m]
-    //Yzmp_imu = Ycom - (Zcom / ddz_robot) * ddy_robot; //ZMP Y coordinate [m]
 
+    //ZERO MOMENT POINT COMPUTATION - IMU
+    Xzmp_imu = Xcom - (Zcom / ddz_robot) * ddx_robot; // frontal plane - final ZMP X [m]
+    //Yzmp_imu = Ycom - (Zcom / ddz_robot) * ddy_robot;// saggital plane - final ZMP Y [m]
 }
 
 
@@ -343,34 +288,14 @@ void ThreadImpl::zmpCompIMU()       /** Calculating ZMP-IMU of the body . **/
 /************************************************************************/
 void ThreadImpl::printData()
 {
-/*        cout << endl << "El angulo 1 es: " << _angle_ref_a << endl;
-    cout << endl << "El angulo 2 es: " << _angle_ref_b << endl;
-    cout << endl << "El angulo 3 es: " << _angle_ref_c << endl;
-    cout << endl << "El angulo 4 es: " << _angle_ref_d << endl;
-    cout << endl << "El angulo 4 es: " << g << endl;
-    cout << endl << "El angulo 4 es: " << ka << endl;
-*/
-    //cout << endl << "El ANKLE pid es: " << pid_output_ankle << endl;
-    //cout << endl << "El HIP pid es: " << pid_output_hip << endl;
-    //cout << endl << "El ZMP REF es: " << setpoint << endl;
-
     cout << endl << "El ZMP REF es: " << zmp_ref << endl;
     cout << endl << "El ZMP FT es: " << Xzmp_ft << endl;
     cout << endl << "El angulo out es: " << _ang_out << endl;
-
-    //cout << endl << "La capture_point es: " << capture_point << endl;
-    //cout << endl << "ZMP_Error_Loli = ("<< _eval_x._zmp_error << ") [mm]" << endl;
-    //cout << endl << "ZMP model es: " << _eval_x.y << endl;
-    //cout << endl << "Num es: " << _num << endl;  _u_ref
-    //cout << endl << "El _u_ref x es: " << _eval_x._u_ref << endl;
-    //cout << endl << "El _angle_error x es: " << _eval_x._angle_error << endl;
-
 }
 
 /************************************************************************/
 void ThreadImpl::saveInFileCsv()
 {
-
     fprintf(fp,"\n%.2f", act_time);
 
     fprintf(fp,",%.10f", _RL._F.fx); // f_x - sensor ft 0
@@ -383,29 +308,27 @@ void ThreadImpl::saveInFileCsv()
 
     fprintf(fp,",%.8f", Xzmp_ft); // ZMP body (double support) (frontal plane)
     fprintf(fp,",%.8f", _xzmp_ft0); // zmp (right foot)
-    fprintf(fp,",%.8f", _xzmp_ft1); // zmp (leftt foot)
+    fprintf(fp,",%.8f", _xzmp_ft1); // zmp (left foot)
 
-    fprintf(fp,",%.10f", num->data()[0]); // f_x - sensor ft 1
-    fprintf(fp,",%.10f", num->data()[1]); // f_z - sensor ft 1
+    fprintf(fp,",%.10f", num->data()[0]); // Z al 0 numerador
+    fprintf(fp,",%.10f", num->data()[1]); // Z al 1 numerador
 
-    fprintf(fp,",%.10f", den->data()[0]); // f_x - sensor ft 1
-    fprintf(fp,",%.10f", den->data()[1]); // f_z - sensor ft 1
-    fprintf(fp,",%.10f", den->data()[2]); // m_y - sensor ft 1
+    fprintf(fp,",%.10f", den->data()[0]); // Z al 0 denominador
+    fprintf(fp,",%.10f", den->data()[1]); // Z al 1 denominador
+    fprintf(fp,",%.10f", den->data()[2]); // Z al 2 denominador
 
-
-    fprintf(fp,",%i", n);
-
+    fprintf(fp,",%i", n); // numero de interaciones
 }
 
 /************************************************************************/
 void ThreadImpl::confCSVfile()      /** Configuring CSV file    **/
 {
     cout << "[configuring] ... STEP 1 " << endl;
-    fp = fopen("../data_testingDLIPM.csv","w+");
+    fp = fopen("../data_identificationTeoTest.csv","w+");
     fprintf(fp,"Time,Fx_ft0,Fz_ft0,My_ft0,Fx_ft1,Fz_ft1,My_ft1,Xzmp_ft,zmp_RF,zmp_LF,num0,num1,den0,den1,den2,iter");
     yarp::os::Time::delay(1);
 
-    cout << "[success] data_dlipm_threat.csv file configured." << endl;
+    cout << "[success] data_identificationTeoTest.csv file configured." << endl;
 }
 
 /************************************************************************/
@@ -428,18 +351,11 @@ void ThreadImpl::getCurrentTime()       /** Get Current Time    **/
 void ThreadImpl::evaluateModel()        /** Calculating OUTPUT (Qi) of the legs. **/
 {
     // obtaining the angle error for the D-LIPM space state
-    _evalLIPM.model(Xzmp_ft,zmp_ref);
 
+/*    _evalLIPM.model(Xzmp_ft,zmp_ref);
     ka = 0.25 * zmp_ref + 9.95; // dudo entre zmp_ref o Xzmp_ft
     _ang_ref = (zmp_ref*(-J_G))/ (J_L*(ka-J_G));
-
-/*    como otra posibilidad para calcular:  _angle_ref
-    if ( ! leftArmIEncoders->getEncoders( encLegs.data() ) )    {
-        CD_WARNING("getEncoders failed, not updating control this iteration.\n");
-        return;    }
-    _angle_ref = encLegs[4];*/
-
-    _ang_out =  _evalLIPM.ang_error_out + _ang_ref;
+    _ang_out =  _evalLIPM.ang_error_out + _ang_ref;*/
 
 }
 
