@@ -10,6 +10,7 @@ set(KEYWORD "TEO_identification")
 find_package(YARP REQUIRED)
 find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)
 find_package(COLOR_DEBUG REQUIRED)
+find_package(fcontrol REQUIRED)
 
 # Search for source code.
 file(GLOB folder_source *.cpp *.cc *.c)
@@ -26,12 +27,13 @@ endforeach(header_file ${folder_header})
 # Inclue any directories needed for YARP
 include_directories(${YARP_INCLUDE_DIRS}
                     ${COLOR_DEBUG_INCLUDE_DIRS}
-                    ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS})
+                    ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS}
+                    /usr/include/eigen3)
 
 # Set up our main executable.
 if (folder_source)
   add_executable(${KEYWORD} ${folder_source} ${folder_header})
-  target_link_libraries(${KEYWORD} ${YARP_LIBRARIES} KinematicRepresentationLib)
+  target_link_libraries(${KEYWORD} ${YARP_LIBRARIES} KinematicRepresentationLib fcontrol)
   install(TARGETS ${KEYWORD} DESTINATION bin)
 else (folder_source)
   message(FATAL_ERROR "No source code files found. Please add something")

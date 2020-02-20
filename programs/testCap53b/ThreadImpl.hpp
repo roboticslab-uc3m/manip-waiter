@@ -28,6 +28,8 @@
 #include "LIPM2d.h"
 #include "global.h"
 
+#include "fcontrol.h"
+
 using namespace std;
 using namespace yarp::os;
 using namespace yarp::dev;
@@ -54,6 +56,10 @@ namespace roboticslab
  */
 class ThreadImpl : public yarp::os::Thread {
     public:
+
+/*    void setNumJoints(int *iNumLeftArmJoints, int *iNumRightArmJoints) {
+        this->numLeftArmJoints = iNumLeftArmJoints;
+        this->numRightArmJoints = iNumRightArmJoints;        }*/
 
     void setIEncodersControl(IEncoders *iRightLegEncoders, IEncoders *iLeftLegEncoders) {
         this->rightLegIEncoders = iRightLegEncoders;
@@ -108,6 +114,7 @@ protected:
         float offs_x_imu, offs_x_ft; // zmp offset in initial time - frontal plane
         float offs_y_imu, offs_y_ft; // zmp offset in initial time - frontal plane
         float sum_x_imu, sum_y_imu, sum_x_ft, sum_y_ft; // adding offset values.
+        float test;
 
         //-- ZMP & IMU variables
         float _xzmp_ft0, _yzmp_ft0; // ZMP-FT sensor 0 (right)
@@ -121,6 +128,11 @@ protected:
 
         //-- Time variables
         double init_time, act_time, init_loop, act_loop, it_time, it_prev; // for calculating process time
+
+
+        //-- iDENTIFICATION
+        OnlineSystemIdentification id1;
+        vector<double> *num, *den;
 
         LIPM2d _evalLIPM; // Discrete-time Space State DLIPM Model evaluation
 
@@ -215,7 +227,7 @@ protected:
         yarp::dev::IVelocityControl *trunkIVelocityControl; // para control en velocidad
 
         /** Axes number **/
-        int numtLegJoints;
+        int numLeftLegJoints;
         /** Left Leg Device */
         yarp::dev::PolyDriver leftLegDevice;
         /** Encoders **/

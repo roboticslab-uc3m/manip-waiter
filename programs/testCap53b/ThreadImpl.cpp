@@ -17,8 +17,38 @@ bool ThreadImpl::threadInit()
     _ang_ref = 0; // initial value and our angle reference
     _ang_out = 0; // initial value and our output
 
-    //rightLegIPositionControl->positionMove(4, 0); // position in degrees
-    //leftLegIPositionControl->positionMove(4, 0);
+    test = 0.05;
+
+/*
+    rightLegIPositionControl->positionMove(4, 0); // left home position in degrees
+    leftLegIPositionControl->positionMove(4, 0); // right home position in degrees
+    printf("[warning] Activating homing position\n");
+
+    yarp::os::Time::delay(0.5);
+
+    // cambiando el modo de control a POSITION_DIRECT
+    leftLegIPositionControl->getAxes(&numLeftLegJoints);
+    std::vector<int> leftLegControlModes(numLeftLegJoints,VOCAB_CM_POSITION_DIRECT);
+    if(! leftLegIControlMode->setControlModes( leftLegControlModes.data() )){
+        printf("[warning] Problems setting DIRECT POSITION control mode of: left-Leg\n");
+        return false;
+    }
+    rightLegIPositionControl->getAxes(&numRightLegJoints);
+    std::vector<int> rightLegControlModes(numRightLegJoints,VOCAB_CM_POSITION_DIRECT);
+    if(! rightLegIControlMode->setControlModes(rightLegControlModes.data())){
+        printf("[warning] Problems setting DIRECT POSITION control mode of: right-Leg\n");
+        return false;
+    }*/
+
+
+    id1 = OnlineSystemIdentification(1,2); // configuracion del orden de la ft
+    cout << "todo va bien  " << endl;
+
+    num = new std::vector<double> (2);
+    cout << "todo va bien por segunda vez " << endl;
+
+    den = new std::vector<double> (3);
+    cout << "todo va bien por tercera vez " << endl;
 
     return true;
 }
@@ -47,35 +77,76 @@ void ThreadImpl::run()
             // example_1: zmp_ref = (0.05/60000)*n - 0.25 ------> for zmp_ref = 0.05 meters
             // example_2: zmp_ref = (0.09/60000)*n - 0.45 ------> for zmp_ref = 0.09 meters
 
-            if (n <= 600)
-                {zmp_ref = 0.0;}
-
-            else if (n >= 600 && n <= 660)
-                {zmp_ref = (0.09/60)*n - 0.9;} // test from 0.01 to 0.09 [m]
-
-            else
-                {zmp_ref = zmp_ref;}
-
             getInitialTime();
-
             readSensorsFT0();
-            //cout << endl << "leyendo sensor 0" << endl;
             readSensorsFT1();
-            //cout << endl << "leyendo sensor 1" << endl;
             zmpCompFT(); // calculation of the ZMP_FT
-            //cout << endl << "calculando ZMP" << endl;
 
-            if (n >= 600 && n <= 660)  {
-                evaluateLIPM(); // evaluacion the model and the angle output
-                //cout << endl << "generando angulo" << endl;
+            if (n <= 600)
+            {
+                zmp_ref = 0.0;
+                zmp_ref = zmp_ref+0.0001*((rand() % 10 + 1)-5);
 
-                setJoints(); // applying the ankle movement
+                /** IDENTIFICATION   **/
+                id1.UpdateSystem(zmp_ref*100,Xzmp_ft*100);
+                id1.PrintZTransferFunction(0.02);
+                id1.GetZTransferFunction(*num, *den);
+
+                printData();
+                saveInFileCsv();  // saving the information
+
             }
 
-            printData();
-            cout << endl << "Press Ctrl+C to exit..." << endl;
+            else if (n >= 600 && n <= 660)  // test from 0.01 to 0.09 [m]
+            {
+                zmp_ref = (test/60)*n - (test*10);
+                zmp_ref = zmp_ref+0.0001*((rand() % 10 + 1)-5);
+
+                evaluateLIPM(); // evaluacion the model and the angle output
+                setJoints(); // applying the ankle movement
+
+                /** IDENTIFICATION   **/
+                id1.UpdateSystem(zmp_ref*100,Xzmp_ft*100);
+                id1.PrintZTransferFunction(0.02);
+                id1.GetZTransferFunction(*num, *den);
+
+                printData();
+                saveInFileCsv();  // saving the information
+            }
+
+            else if (n >= 660 && n <= 900)
+            {
+                zmp_ref = test;
+                zmp_ref = zmp_ref+0.0001*((rand() % 10 + 1)-5);
+
+                /** IDENTIFICATION   **/
+                id1.UpdateSystem(zmp_ref*100,Xzmp_ft*100);
+                id1.PrintZTransferFunction(0.02);
+                id1.GetZTransferFunction(*num, *den);
+
+                printData();
+                saveInFileCsv();  // saving the information
+            }
+
+            else if (n >= 900 && n <= 960)
+            {
+                zmp_ref = (-test/60)*n + ((test*15)+test);
+                zmp_ref = zmp_ref+0.0001*((rand() % 10 + 1)-5);
+
+                evaluateLIPM(); // evaluacion the model and the angle output
+                setJoints(); // applying the ankle movement
+
+                printData();
+            }
+
+            else
+                {zmp_ref = 0;}
+
+
+
+            cout << endl << "Press Ctrl+C to exit..." << endl << endl;
             cout << "*******************************" << endl << endl;
-            saveInFileCsv();  // saving the information ¡
+
             cout << n << endl << endl;
             n++;
 
@@ -92,7 +163,7 @@ void ThreadImpl::run()
 void ThreadImpl::evaluateLIPM()        /** Calculating OUTPUT (Qi) of the legs based on LIPM. **/
 {
 
-    _ang_out = -360*zmp_ref/ (2*PI*L);
+    _ang_out = -360*zmp_ref/ (2*PI*J_L);
 
 }
 
@@ -115,7 +186,6 @@ void ThreadImpl::setJoints()        /** Position control **/
     leftLegIPositionControl->positionMove(leftLegPoss.data());*/
 
 }
-
 
 
 /************************************************************************/
@@ -221,9 +291,9 @@ void ThreadImpl::zmpCompFT()        /** Calculating ZMP-FT of the body . **/
 */
 
     //without the coeficient 1000 - unids in meters
-    _xzmp_ft0 = -(((_RL._T.my/10) + e*_RL._F.fx)) / _RL._F.fz; // xzmp0_ft in [m] right foot
+    _xzmp_ft0 = -(((_RL._T.my/10) + J_e*_RL._F.fx)) / _RL._F.fz; // xzmp0_ft in [m] right foot
     //_yzmp0_ft = -(((_RF._T.mx/10) + e*_RF._F.fy)) / _RF._F.fz; // xzmp0_ft in [m] right foot
-    _xzmp_ft1 = -(((_LL._T.my/10) + e*_LL._F.fx)) / _LL._F.fz; // xzmp1_ft in [m] left foot
+    _xzmp_ft1 = -(((_LL._T.my/10) + J_e*_LL._F.fx)) / _LL._F.fz; // xzmp1_ft in [m] left foot
     //_yzmp1_ft = -(((_LF._T.mx/10) + e*_LF._F.fy)) / _LF._F.fz; // xzmp1_ft in [m] left foot
 
     _xzmp_ft01 = (_xzmp_ft0 * _RL._F.fz + _xzmp_ft1 * _LL._F.fz) / (_RL._F.fz + _LL._F.fz); // xzmp_ft in [m] robot
@@ -315,6 +385,14 @@ void ThreadImpl::saveInFileCsv()
     fprintf(fp,",%.8f", _xzmp_ft0); // zmp (right foot)
     fprintf(fp,",%.8f", _xzmp_ft1); // zmp (leftt foot)
 
+    fprintf(fp,",%.10f", num->data()[0]); // f_x - sensor ft 1
+    fprintf(fp,",%.10f", num->data()[1]); // f_z - sensor ft 1
+
+    fprintf(fp,",%.10f", den->data()[0]); // f_x - sensor ft 1
+    fprintf(fp,",%.10f", den->data()[1]); // f_z - sensor ft 1
+    fprintf(fp,",%.10f", den->data()[2]); // m_y - sensor ft 1
+
+
     fprintf(fp,",%i", n);
 
 }
@@ -324,7 +402,7 @@ void ThreadImpl::confCSVfile()      /** Configuring CSV file    **/
 {
     cout << "[configuring] ... STEP 1 " << endl;
     fp = fopen("../data_testingDLIPM.csv","w+");
-    fprintf(fp,"Time,Fx_ft0,Fz_ft0,My_ft0,Fx_ft1,Fz_ft1,My_ft1,Xzmp_ft,zmp_RF,zmp_LF,iter");
+    fprintf(fp,"Time,Fx_ft0,Fz_ft0,My_ft0,Fx_ft1,Fz_ft1,My_ft1,Xzmp_ft,zmp_RF,zmp_LF,num0,num1,den0,den1,den2,iter");
     yarp::os::Time::delay(1);
 
     cout << "[success] data_dlipm_threat.csv file configured." << endl;
@@ -353,7 +431,7 @@ void ThreadImpl::evaluateModel()        /** Calculating OUTPUT (Qi) of the legs.
     _evalLIPM.model(Xzmp_ft,zmp_ref);
 
     ka = 0.25 * zmp_ref + 9.95; // dudo entre zmp_ref o Xzmp_ft
-    _ang_ref = (zmp_ref*(-G))/ (L*(ka-G));
+    _ang_ref = (zmp_ref*(-J_G))/ (J_L*(ka-J_G));
 
 /*    como otra posibilidad para calcular:  _angle_ref
     if ( ! leftArmIEncoders->getEncoders( encLegs.data() ) )    {

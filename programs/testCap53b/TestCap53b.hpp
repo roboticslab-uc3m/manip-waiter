@@ -169,6 +169,18 @@ private:
     /** Forward Kinematic function **/
     bool getRightArmFwdKin(std::vector<double> *currentX);
 
+
+    /****** FUNCTIONS ******/
+
+    /** Configure Devide Initialization **/
+    bool configLimbDevice(std::string waiterStr, std::string robot);
+    /** Configure Control Mode of the Devices **/
+    bool configControlMode();
+    /** Configure Kdl Solver Device **/
+    bool configKdlSolverDevice();
+    /** Configure Analog Sensor Initialization **/
+    bool configAnalogSensor(std::string waiterStr);
+
     bool interruptModule();
     double getPeriod();
     bool updateModule();

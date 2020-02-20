@@ -129,7 +129,7 @@ float LIPM2d::model(float ft, float ref)     /** STATE FEEDBACK WITH DAMPING (ka
 */
 
     _ka_const = 0.25 * ref + 9.95;
-    _ang_ref = (ref*(-G))/ (L*(_ka_const-G)) ;
+    _ang_ref = (ref*(-J_G))/ (J_L*(_ka_const-J_G)) ;
 
     //_ang_ref = -(asin(ref/L)*180/G); // relacion entre zmp_ref y ang_ref
 
@@ -139,22 +139,22 @@ float LIPM2d::model(float ft, float ref)     /** STATE FEEDBACK WITH DAMPING (ka
         _ka = 9.95;
     }
     else    {
-        _ka = ((_zmp_ft*(-1)*G/L)/_ang_ref)+G;
+        _ka = ((_zmp_ft*(-1)*J_G/J_L)/_ang_ref)+J_G;
     }
 
-    _Wn = sqrt((_ka-G))/L; // based on the general form of a 2nd order transfer function
-    _ba = 2*_chi*_Wn*M*L; // calculation of ba related to the previous line and chi = 1 (damping coefficient);
+    _Wn = sqrt((_ka-J_G))/J_L; // based on the general form of a 2nd order transfer function
+    _ba = 2*_chi*_Wn*J_M*J_L; // calculation of ba related to the previous line and chi = 1 (damping coefficient);
 
     // Dynamical-LIPM represented in space state
     _A[0][0] = 0.0;
     _A[0][1] = 1.0;
-    _A[1][0] = -((_ka-G)/L);
-    _A[1][1] = -(_ba/(M*L));
+    _A[1][0] = -((_ka-J_G)/J_L);
+    _A[1][1] = -(_ba/(J_M*J_L));
 
     _B[0][0] = 0.0;
     _B[1][0] = 1.0;
 
-    _C[0] = -G/(L*L);
+    _C[0] = -J_G/(J_L*J_L);
     _C[1] = 0.0;
 
     _D = 0.0;
