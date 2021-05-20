@@ -17,24 +17,24 @@ bool ThreadImpl::threadInit()
     _ang_ref = 0; // initial value and our angle reference
     _ang_out = 0; // initial value and our output
 
-    test = 0.05; // valor del ZMP al que se quiere testear
+    test = 0.01; // valor del ZMP al que se quiere testear
 
 /*    // configuracion del orden de la ft 1/2
-    id1 = OnlineSystemIdentification(1,2);
+    id1 = OnlineSystemIdentification(1,2,1);
     num = new std::vector<double> (2);
     den = new std::vector<double> (3);*/
 
-/*    // configuracion del orden de la ft 2/2
-     id1 = OnlineSystemIdentification(2,2);
-     num = new std::vector<double> (3);
-     den = new std::vector<double> (3);*/
-
-   // configuracion del orden de la ft 2/3
-    id1 = OnlineSystemIdentification(2,3);
+/*   // configuracion del orden de la ft 2/3
+    id1 = OnlineSystemIdentification(2,3,1);
     num = new std::vector<double> (3);
-    den = new std::vector<double> (4);
+    den = new std::vector<double> (4);*/
 
-    return true;
+    // configuracion del orden de la ft 2/4
+     id1 = OnlineSystemIdentification(2,4,0.99);
+     num = new std::vector<double> (3);
+     den = new std::vector<double> (5);
+
+     return true;
 }
 
 /************************************************************************/
@@ -79,11 +79,11 @@ void ThreadImpl::run()
 
             }
 
-            else if (n >= 300 && n <= 500)  // test from 0.01 to 0.09 [m]
+            else if (n >= 300 && n <= 360)  // test from 0.01 to 0.09 [m]
             {
                 //zmp_ref = (test/60)*n - (test*10); // target
                 //zmp_ref = (test/90)*n - (test*300/90); // target
-                zmp_ref = (test/200)*n - (test*300/200); // target
+                zmp_ref = (test/60)*n - (test*300/60); // target
                 zmp_ref = zmp_ref+0.0001*((rand() % 10 + 1)-5); // random function to include noise
 
                 evaluateLIPM(); // evaluacion the model and the angle output
@@ -98,7 +98,7 @@ void ThreadImpl::run()
                 saveInFileCsv();  // saving the information
             }
 
-            else if (n >= 500 && n <= 900)
+            else if (n >= 360 && n <= 900)
             {
                 zmp_ref = test; // target
                 zmp_ref = zmp_ref+0.0001*((rand() % 10 + 1)-5); // random function to include noise
@@ -299,7 +299,7 @@ void ThreadImpl::zmpCompIMU()       /** Calculating ZMP-IMU of the body . **/
 /************************************************************************/
       //--  LESS IMPORTANT  --//
 /************************************************************************/
-void ThreadImpl::printData()
+void ThreadImpl::printData()      /** Printing in Terminal    **/
 {
     cout << endl << "El ZMP ref es: " << zmp_ref << endl;
     cout << endl << "El ZMP ft  es: " << Xzmp_ft << endl;
@@ -308,7 +308,7 @@ void ThreadImpl::printData()
 }
 
 /************************************************************************/
-void ThreadImpl::saveInFileCsv()
+void ThreadImpl::saveInFileCsv()      /** Saving data in CSV file    **/
 {
     fprintf(fp,"\n%.2f", act_time);
 
@@ -333,6 +333,7 @@ void ThreadImpl::saveInFileCsv()
     fprintf(fp,",%.10f", den->data()[1]); // Z al 1 denominador
     fprintf(fp,",%.10f", den->data()[2]); // Z al 2 denominador
     fprintf(fp,",%.10f", den->data()[3]); // Z al 3 denominador
+    fprintf(fp,",%.10f", den->data()[4]); // Z al 4 denominador
 
     fprintf(fp,",%i", n); // numero de interaciones
 }
@@ -343,8 +344,8 @@ void ThreadImpl::confCSVfile()      /** Configuring CSV file    **/
     cout << "[configuring] ... STEP 1 " << endl;
     fp = fopen("../data_identificationTeoTest.csv","w+");
     //fprintf(fp,"Time,Fx_ft0,Fz_ft0,My_ft0,Fx_ft1,Fz_ft1,My_ft1,Xzmp_ref,Xzmp_ft,zmp_RF,zmp_LF,num0,num1,den0,den1,den2,iter");  // para ft 1/2
-    //fprintf(fp,"Time,Fx_ft0,Fz_ft0,My_ft0,Fx_ft1,Fz_ft1,My_ft1,Xzmp_ref,Xzmp_ft,zmp_RF,zmp_LF,num0,num1,num2,den0,den1,den2,iter");  // para ft 2/2
-    fprintf(fp,"Time,Fx_ft0,Fz_ft0,My_ft0,Fx_ft1,Fz_ft1,My_ft1,Xzmp_ref,Xzmp_ft,zmp_RF,zmp_LF,num0,num1,num2,den0,den1,den2,den3,iter");  // para ft 2/3
+    //fprintf(fp,"Time,Fx_ft0,Fz_ft0,My_ft0,Fx_ft1,Fz_ft1,My_ft1,Xzmp_ref,Xzmp_ft,zmp_RF,zmp_LF,num0,num1,num2,den0,den1,den2,den3,iter");  // para ft 2/3
+    fprintf(fp,"Time,Fx_ft0,Fz_ft0,My_ft0,Fx_ft1,Fz_ft1,My_ft1,Xzmp_ref,Xzmp_ft,zmp_RF,zmp_LF,num0,num1,num2,den0,den1,den2,den3,den4,iter");  // para ft 2/4
     yarp::os::Time::delay(1);
 
     cout << "[success] data_identificationTeoTest.csv file configured." << endl;

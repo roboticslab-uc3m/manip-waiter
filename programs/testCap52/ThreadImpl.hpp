@@ -134,7 +134,7 @@ class ThreadImpl : public yarp::os::Thread {
         double initpos; // for preprogrammedInitTrajectory() - first joint movement
 
         std::vector<double> iniQ, curQ, befQ, desQ; // joint space variables
-        std::vector<double> iniX, befX, curX, curX_AAS, desX, desX_AAS;  // cartesian space variables
+        std::vector<double> homeX, iniX, befX, curX, curX_AAS, desX, desX_AAS;  // cartesian space variables
 
         double init_time, act_time, init_loop, act_loop, it_time, it_prev; // for calculating process time
 
@@ -142,20 +142,27 @@ class ThreadImpl : public yarp::os::Thread {
         //-- ThreadImpl Funtions
         bool threadInit();
         void run();
+
         void confCSVfile();/** Configuring CSV file **/
-        void homeTrajectory();/** Set home waiter poss & Initial VEL-ACC **/
+        void saveHomePrajectory();/** Save Waiter Home pose & Initial VEL-ACC **/
         void openingPorts();/** Opening Ports & connecting with sensor programs **/
         void calcParam_D();/** Calculating _d parameter **/
+        void checkBottleReady();/** Waiting to put the bottle over the tray **/
+
         void getInitialTime();
+        void getCurrentTime();
+
         void readSensorsFT3();/** Reading from the FT3_JR3_sensor. **/
         void readSensorsIMU();/** Reading from the IMU_XSENS_sensor. **/
+
         void axesTransform1();/** Rotation Transformation matrix of JR3. **/
         void axesTransform2();/** Transformation matrix between JR3 and tray. **/
-        void zmpComp();/** Calculating ZMP of the bottle. **/
-        void LIPM3d();/** Control based on the 3D-LIMP. **/
+        void zmpComp();/** Computing ZMP of the bottle. **/
+
+        void LIPM3d();/** Control based on the 3DD-LIMP. **/
+
         void printData();
         void saveInFileCsv();/** Saving the ZMP measurements. **/
-        void getCurrentTime();
 
         //-- IMU data port
         yarp::os::Port *portImu;

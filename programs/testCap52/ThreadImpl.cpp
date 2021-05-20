@@ -36,6 +36,7 @@ bool ThreadImpl::threadInit() {
     _off._M.my = 0;
     _off._M.mz = 0;
 
+    homeX.resize(7);
     iniQ.resize(7);
     iniX.resize(7);
     curQ.resize(7);
@@ -46,14 +47,16 @@ bool ThreadImpl::threadInit() {
     desQ.resize(7);
     befQ.resize(7);
 
-    //double initspe[7] = {2.0,2.0,2.0,2.0,2.0,2.0,0.0}; // --set NEW ref speed
-    double initspe[7] = {10.0,10.0,10.0,10.0,10.0,10.0,0.0}; // --set NEW ref speed
-    //double initspe[7] = {20.0,20.0,20.0,20.0,20.0,20.0,0.0}; // --set NEW ref speed
-    leftArmIPositionControl->setRefSpeeds(initspe);
-    //double initacc[7] = {2.0,2.0,2.0,2.0,2.0,2.0,0.0}; // --set NEW ref accelaration
-    double initacc[7] = {10.0,10.0,10.0,10.0,10.0,10,0.0}; // --set NEW ref accelaration
-    //double initacc[7] = {20.0,20.0,20.0,20.0,20.0,20,0.0}; // --set NEW ref accelaration
-    leftArmIPositionControl->setRefAccelerations(initacc);
+    std::vector<double> armSpeeds(7,10.0); // 7,30.0
+    if(!leftArmIPositionControl->setRefSpeeds(armSpeeds.data())){
+        printf("[Error] Problems setting reference speed on left-arm joints.\n");
+        return false;
+    }
+    std::vector<double> armAccelerations(7,10.0); // 7,30.0
+    if(!leftArmIPositionControl->setRefAccelerations(armAccelerations.data())){
+        printf("[Error] Problems setting reference acceleration on left-arm joints.\n");
+        return false;
+    }
 
 return true;
 }
@@ -67,16 +70,13 @@ void ThreadImpl::run()
             confCSVfile();  // STEP 1 - Creating & Configuring CSV file
             a=1;    }
         if (a==1 && b!=1)    {
-            homeTrajectory();   // STEP 2 - Moving the arm/trunk to the stability pose
+            saveHomePrajectory();   // STEP 2 - Moving the arm/trunk to the stability pose
             b=1;    }
-        if (a==1 && b==1 && c!=1)    {
-            //openingPorts();   // STEP 3 - Opening & Connecting Ports
-            c=1;    }
-        if (a==1 && b==1 && c==1 && e!=250)    {
-            calcParam_D();    } // STEP 4 - Calculating _d parameter
+        if (a==1 && b==1 && e!=250)    {
+            checkBottleReady();    } // STEP 3 - Waiting to put the bottle over the tray
 
         // ------------------------------------------------------------------------
-        if (a==1 && b==1 && c==1 && e==250)   {     // STEP 5 - main code
+        if (a==1 && b==1 && e==250)   {     // STEP 4 - main code
 
             getInitialTime();
 
@@ -105,15 +105,9 @@ void ThreadImpl::run()
 }
 
 /************************************************************************/
-void ThreadImpl::homeTrajectory(){       /** Set home waiter poss & Initial VEL-ACC **/
+void ThreadImpl::saveHomePrajectory(){       /** Save waiter home pose & Initial VEL-ACC **/
 
     cout << "[configuring] ... STEP 2 " << endl;
-
-    // Moving leftArm & trunk to the waiter homePoss
-/*    double initpos[7] = {-30,0,0,-90,0,30,0};
-    leftArmIPositionControl->positionMove(initpos);
-    trunkIPositionControl->positionMove(1,-2.5);
-    yarp::os::Time::delay(10);*/
 
     // Obtaining waiter homePoss in Cartesian Space
     if ( ! leftArmIEncoders->getEncoders( iniQ.data() ) )    {
@@ -123,39 +117,33 @@ void ThreadImpl::homeTrajectory(){       /** Set home waiter poss & Initial VEL-
         CD_ERROR("fwdKin failed.\n");    }
     KinRepresentation::decodePose(curX_AAS, iniX, KinRepresentation::coordinate_system::CARTESIAN, KinRepresentation::orientation_system::AXIS_ANGLE, KinRepresentation::angular_units::DEGREES);
 
-    desX[0] = iniX[0]; // new X position
-    desX[1] = iniX[1]; // new Y position
-    desX[2] = iniX[2]; // new Z position
-    desX[3] = iniX[3];
-    desX[4] = iniX[4];
-    desX[5] = iniX[5];
-    desX[6] = iniX[6];
-
-    KinRepresentation::encodePose(desX, desX_AAS, KinRepresentation::coordinate_system::CARTESIAN, KinRepresentation::orientation_system::AXIS_ANGLE, KinRepresentation::angular_units::DEGREES);
-    if ( ! leftArmICartesianSolver->invKin(desX_AAS,iniQ,desQ) )    {
-        CD_ERROR("invKin failed.\n");    }
-    /*if( ! leftArmIPositionControl->positionMove( desQ.data() )) {
-        CD_WARNING("setPositions failed, not updating control this iteration.\n");    }*/
+    homeX[0] = iniX[0]; // new X position
+    homeX[1] = iniX[1]; // new Y position
+    homeX[2] = iniX[2]; // new Z position
+    homeX[3] = iniX[3];
+    homeX[4] = iniX[4];
+    homeX[5] = iniX[5];
+    homeX[6] = iniX[6];
 
     yarp::os::Time::delay(0.5);
-    cout << "[success] Waiter Home Poss." << endl;
+    cout << "[success] Waiter Home Pose Saved." << endl;
 
-    // Configuring Speed & Acc references for the left Arm
-    if ( ! leftArmIEncoders->getEncoders( befQ.data() ) )    {
-        CD_WARNING("getEncoders failed, not updating control this iteration.\n");
-        return;    }
+    //double initspe[7] = {20.0,20.0,20.0,20.0,20.0,20.0,0.0}; // --set NEW ref speed
+    std::vector<double> armSpeeds(7,20.0); // 7,30.0
+    //leftArmIPositionControl->setRefSpeeds(initspe);
+    if(!leftArmIPositionControl->setRefSpeeds(armSpeeds.data())){
+        printf("[Error] Problems setting reference speed on left-arm joints.\n");
+        return;
+    }
 
-    //double initspe[7] = {2.0,2.0,2.0,2.0,2.0,2.0,0.0}; // --set NEW ref speed
-    //
-    //double initspe[7] = {5.0,5.0,5.0,5.0,5.0,5.0,0.0}; // --set NEW ref speed
-    //double initspe[7] = {10.0,10.0,10.0,10.0,10.0,10.0,0.0}; // --set NEW ref speed
-    double initspe[7] = {20.0,20.0,20.0,20.0,20.0,20.0,0.0}; // --set NEW ref speed
-    leftArmIPositionControl->setRefSpeeds(initspe);
-    //double initacc[7] = {2.0,2.0,2.0,2.0,2.0,2.0,0.0}; // --set NEW ref accelaration
-    //double initacc[7] = {5.0,5.0,5.0,5.0,5.0,5.0,0.0}; // --set NEW ref speed
-    //double initacc[7] = {10.0,10.0,10.0,10.0,10.0,10,0.0}; // --set NEW ref accelaration
-    double initacc[7] = {20.0,20.0,20.0,20.0,20.0,20,0.0}; // --set NEW ref accelaration
-    leftArmIPositionControl->setRefAccelerations(initacc);
+    //double initacc[7] = {20.0,20.0,20.0,20.0,20.0,20,0.0}; // --set NEW ref accelaration
+    std::vector<double> armAccelerations(7,20.0); // 7,30.0
+    //leftArmIPositionControl->setRefAccelerations(initacc);
+    if(!leftArmIPositionControl->setRefAccelerations(armAccelerations.data())){
+        printf("[Error] Problems setting reference acceleration on left-arm joints.\n");
+        return;
+    }
+
     cout << "[success] Ref Speeds and Acc configured." << endl;
 
     return;
@@ -208,15 +196,9 @@ void ThreadImpl::openingPorts(){       /** Opening Ports & Connecting with senso
 }
 
 /************************************************************************/
-void ThreadImpl::calcParam_D(){       /** Calculating _d parameter **/
+void ThreadImpl::checkBottleReady(){       /** Calculating _d parameter **/
 
-    cout << "[configuring] ... STEP 4 " << endl;
-
-/*    Bottle ch3;
-    portFt3->read(ch3); // lectura del sensor JR3 ch3 - left hand
-    _FTLeftHand._initF.fx = ch3.get(0).asDouble(); // momento eje Y
-    _FTLeftHand._initT.my = ch3.get(4).asDouble(); // momento eje Y
-    _FTLeftHand._initT.mx = ch3.get(5).asDouble(); // momento eje Y*/
+    cout << "[waiting bottle] ... STEP 3 " << endl;
 
     readSensorsFT3();
 
@@ -233,6 +215,15 @@ void ThreadImpl::calcParam_D(){       /** Calculating _d parameter **/
         cout << "[success] ... botella puesta en 1" << endl;
         yarp::os::Time::delay(1);
         e=250;        }
+
+}
+
+/************************************************************************/
+void ThreadImpl::calcParam_D(){       /** Calculating _d parameter **/
+
+    cout << "[configuring] ... STEP 4 " << endl;
+
+    readSensorsFT3();
 
 /*    // Para promediar el punto de apoyo respecto del centro de la bandeja
     if (f==1){
@@ -761,7 +752,6 @@ void ThreadImpl::confCSVfile(){       /** Configuring CSV file    **/
 /************************************************************************/
 void ThreadImpl::saveInFileCsv()
 {
-
     fprintf(fp,"\n%.4f", act_time);
 
     fprintf(fp,",%.10f", _LA._F.fx);
@@ -788,7 +778,6 @@ void ThreadImpl::saveInFileCsv()
     fprintf(fp,",%.4f", _thetaY);
 
     fprintf(fp,",%i", n);
-
 }
 
 /************************************************************************/

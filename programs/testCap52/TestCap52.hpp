@@ -181,9 +181,18 @@ private:
     /****** FUNCTIONS ******/
 
     /** Configure functions **/
-    bool configInitPosition(double speed, double acc);
+    bool configAccSpeDevice(double speed, double acc);
     /** Modes to move the joins **/
     bool moveJointsInitPosition(std::vector<double> &trunk, std::vector<double>& leftArm);
+    /** Configure Devide Initialization **/
+    bool configLimbDevice(std::string waiterStr, std::string robot);
+    /** Configure Control Mode of the Devices **/
+    bool configControlMode();
+    /** Configure Kdl Solver Device **/
+    bool configKdlSolverDevice();
+    /** Configure Analog Sensor Initialization **/
+    bool configAnalogSensor(std::string waiterStr);
+
 
     bool interruptModule();
     double getPeriod();

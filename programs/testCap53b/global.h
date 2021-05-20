@@ -32,7 +32,7 @@ using namespace roboticslab;
 #define PI  3.14159265358979323846
 #define G   9.81 // Gravity [m/s²]
 #define TS  0.03 // Time Samples [s]
-#define L   0.5 // Pendulum Longitude [m] loli 0.8927
+#define L   0.599 // Pendulum Longitude [m] loli 0.8927
 #define M   62.589 // Robot mass [kg]
 #define e   0.03225 // Height FT sensor // Loli 0.0194
 
